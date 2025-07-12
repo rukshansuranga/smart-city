@@ -1,0 +1,18 @@
+	
+@startuml
+
+[*] --> New
+New: Client Created the Workpackage
+
+New --> OpenTicket
+OpenTicket: Create a ticket for the complain
+
+OpenTicket --> Close
+Close: close the ticket
+
+Close --> Rated
+Rated: User has finish rated
+
+Rated --> [*]
+
+@enduml

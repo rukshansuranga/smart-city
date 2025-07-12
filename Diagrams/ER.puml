@@ -1,0 +1,83 @@
+	
+@startchen
+
+entity User {
+    UserNo
+    FirstName
+    LastName
+    Mobile
+}
+
+
+entity Ticket {
+    TicketId
+    Name
+    Title
+    Detail
+    Note
+    CreatedDate
+    UserId
+}
+
+relationship Assign_To{
+
+}
+
+User -1- Assign_To
+Assign_To -N- Ticket
+
+entity Client {
+    ClientId
+    Name
+    Mobile
+}
+
+entity Complaint{
+    ComplainId
+    Name
+    Detail
+    CreatedDate
+    UpdatedDate
+}
+
+relationship Raise{
+
+}
+
+Client -1- Raise
+Raise -N- Complaint
+
+relationship Creates{
+
+}
+
+
+Ticket -1- Creates
+Creates -N- Complaint
+
+entity LightPostComplint{
+    LightPostNo
+}
+
+entity GrabageComplaint{
+    GarbagePointNo
+}
+
+Complaint ->- LightPostComplint
+Complaint ->- GrabageComplaint
+
+entity LightPost{
+    LightPostNumber
+    Latitude
+    Longitue
+}
+
+relationship Relates_To_Light{
+
+}
+
+
+LightPost -1- Relates_To_Light
+Relates_To_Light -N- LightPostComplint
+
+@endchen

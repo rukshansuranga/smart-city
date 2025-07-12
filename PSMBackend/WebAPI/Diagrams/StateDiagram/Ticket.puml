@@ -1,0 +1,25 @@
+@startuml
+
+[*] --> New
+New: Created the ticket by official
+
+New --> Assigned
+Assigned: Official assigned ticket to user
+
+Assigned --> Pending
+Pending: User has started the ticket
+
+Pending --> Block
+Block: Ticket can be done for some RectangleStereotypeFontColor
+
+Pending --> Close
+Close: User has done the ticket 
+
+
+Block --> Pending
+
+Block --> Close
+
+Close --> [*]
+
+@enduml
