@@ -113,6 +113,14 @@ export default function WorkpackagePage() {
 
   console.log(67, statusList);
 
+  if (data.records.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <h1 className="text-2xl font-bold">No Workpackages Found</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-col">
       <div className="flex justify-center mb-5">
@@ -194,7 +202,7 @@ export default function WorkpackagePage() {
                   {workpackage.workPackageId}
                 </th>
                 <td className="px-6 py-4">{workpackage.name}</td>
-                <td className="px-6 py-4">{`${workpackage.createdDate?.day}-${workpackage.createdDate?.month}-${workpackage.createdDate?.year}`}</td>
+                <td className="px-6 py-4">{workpackage.createdDate}</td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td className="px-6 py-4">
                   <Checkbox

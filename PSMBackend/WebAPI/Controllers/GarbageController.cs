@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers
 {
+        [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class GarbageController : ControllerBase

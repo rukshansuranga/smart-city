@@ -72,7 +72,7 @@ export default function TicketForm({ ticket }: { ticket: Ticket }) {
           <div className="flex w-full gap-2">
             <div className="w-1/2 ">
               <Input
-                showLabel
+                showlabel
                 label="Title"
                 type="title"
                 placeholder="Enter Title"
@@ -83,7 +83,7 @@ export default function TicketForm({ ticket }: { ticket: Ticket }) {
 
             <div className="w-1/2">
               <Input
-                showLabel
+                showlabel
                 label="Detail"
                 type="detail"
                 placeholder="Enter Detail"
@@ -96,7 +96,7 @@ export default function TicketForm({ ticket }: { ticket: Ticket }) {
           <div className="w-full flex gap-2">
             <div className="w-1/2">
               <Input
-                showLabel
+                showlabel
                 label="Note"
                 type="note"
                 placeholder="Any additional notes"

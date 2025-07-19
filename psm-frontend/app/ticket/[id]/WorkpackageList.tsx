@@ -43,7 +43,7 @@ export default function WorkpackageList({
         status: statusList.join(","),
         pageSize: itemsPerPage,
         pageIndex: pageIndex,
-        duration: 14,
+        duration: 54,
       });
 
       setData(result);
@@ -142,7 +142,7 @@ export default function WorkpackageList({
                       {workpackage.workPackageId}
                     </th>
                     <td className="px-6 py-4">{workpackage.name}</td>
-                    <td className="px-6 py-4">{`${workpackage.createdDate?.day}-${workpackage.createdDate?.month}-${workpackage.createdDate?.year}`}</td>
+                    <td className="px-6 py-4">{workpackage?.createdDate}</td>
                     <td className="px-6 py-4">{workpackage.status}</td>
                     <td className="px-6 py-4">
                       <Checkbox
@@ -175,7 +175,6 @@ export default function WorkpackageList({
           ) : null}
         </div>
       </div>
-      ;
     </div>
   );
 }

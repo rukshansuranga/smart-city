@@ -1,0 +1,27 @@
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using NodaTime;
+
+namespace PSMModel.Models;
+
+public class Project
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string Type { get; set; }
+    public string? SpecificationDocument { get; set; }
+    public LocalDate? StartDate { get; set; }
+    public LocalDate? EndDate { get; set; }
+    public string Status { get; set; }
+    public string? Location { get; set; }
+    public string? LocationNote { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public decimal EstimatedCost { get; set; }
+    [ForeignKey("Tender")]
+    public int? AwadedTenderId { get; set; }
+    public Tender? Tender { get; set; }
+    public LocalDate? TenderOpeningDate { get; set; }
+    public LocalDate? TenderClosingDate { get; set; }
+}

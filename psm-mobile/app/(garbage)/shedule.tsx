@@ -107,7 +107,7 @@ export default function Shedule() {
           </>
         ) : (
           <View>
-            <Text>No shedule for this region</Text>
+            <Text>No shedule for this region123</Text>
           </View>
         )}
       </View>

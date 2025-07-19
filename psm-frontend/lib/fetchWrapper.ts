@@ -1,12 +1,13 @@
 //import { auth } from "@/auth";
 
-const baseUrl = process.env.API_URL;
+const baseUrl = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
 
 async function get(url: string) {
   const requestOptions = {
     method: "GET",
     headers: await getHeaders(),
   };
+
   const response = await fetch(baseUrl + url, requestOptions);
   return handleResponse(response);
 }

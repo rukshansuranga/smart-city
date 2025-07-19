@@ -101,7 +101,7 @@ export default function WorkpackageAssigned({
                   {workpackage.workPackageId}
                 </th>
                 <td className="px-6 py-4">{workpackage.name}</td>
-                <td className="px-6 py-4">{`${workpackage.createdDate?.day}-${workpackage.createdDate?.month}-${workpackage.createdDate?.year}`}</td>
+                <td className="px-6 py-4">{workpackage.createdDate}</td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td>
                   <Button

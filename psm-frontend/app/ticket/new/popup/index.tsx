@@ -2,27 +2,27 @@
 
 import Input from "@/app/components/forms/Input";
 import { Controller, useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import * as z from "zod";
+
 import { Button, Dropdown, DropdownItem, Label, Select } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { getUsers } from "@/app/api/actions/userActions";
 import { User, Workpackage } from "@/types";
 import { createTicket } from "@/app/api/actions/ticketActions";
-import { Router } from "next/router";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const schema = Yup.object().shape({
-  title: Yup.string().required("Title is required"),
-  detail: Yup.string(),
-  note: Yup.string(),
-  userId: Yup.string(),
+const schema = z.object({
+  title: z.string().trim().min(1, "Project name is required"),
+  detail: z.string().optional(),
+  note: z.string().optional(),
+  userId: z.string().optional(),
 });
 
 export type FormData = {
   title: string;
-  detail: string;
-  note: string;
-  userId: string;
+  detail?: string;
+  note?: string;
+  userId?: string;
 };
 
 export default function CreateTicketForm({
@@ -35,7 +35,7 @@ export default function CreateTicketForm({
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
   const { control, handleSubmit, setValue } = useForm<FormData>({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
     mode: "onChange",
   });
 
@@ -66,7 +66,7 @@ export default function CreateTicketForm({
         <div className="flex w-full gap-2">
           <div className="w-1/2 ">
             <Input
-              showLabel
+              showlabel
               label="Title"
               type="title"
               placeholder="Enter Title"
@@ -77,7 +77,7 @@ export default function CreateTicketForm({
 
           <div className="w-1/2">
             <Input
-              showLabel
+              showlabel
               label="Detail"
               type="detail"
               placeholder="Enter Detail"
@@ -90,7 +90,7 @@ export default function CreateTicketForm({
         <div className="w-full flex gap-2">
           <div className="w-1/2">
             <Input
-              showLabel
+              showlabel
               label="Note"
               type="note"
               placeholder="Any additional notes"

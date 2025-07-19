@@ -101,6 +101,41 @@ namespace PSMDataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("PSMModel.Models.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "123 Main St, Colombo",
+                            Name = "Maga"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "123 Main St, Gampaha",
+                            Name = "Access Construction"
+                        });
+                });
+
             modelBuilder.Entity("PSMModel.Models.GCShedule", b =>
                 {
                     b.Property<int>("Id")
@@ -241,6 +276,110 @@ namespace PSMDataAccess.Migrations
                             LightPostNumber = "LP002",
                             Latitude = 6.9272,
                             Longitude = 79.8613
+                        });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AwadedTenderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("EstimatedCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LocationNote")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecificationDocument")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDate?>("TenderClosingDate")
+                        .HasColumnType("date");
+
+                    b.Property<LocalDate?>("TenderOpeningDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AwadedTenderId")
+                        .IsUnique();
+
+                    b.ToTable("Projects");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AwadedTenderId = 1,
+                            Description = "Description for Project Alpha",
+                            EndDate = new NodaTime.LocalDate(2023, 12, 31),
+                            EstimatedCost = 1000000m,
+                            Latitude = 34.052199999999999,
+                            Location = "Location A",
+                            LocationNote = "Note for Location A",
+                            Longitude = -118.2437,
+                            Name = "Project Alpha",
+                            SpecificationDocument = "specification_alpha.pdf",
+                            StartDate = new NodaTime.LocalDate(2023, 1, 1),
+                            Status = "Proposed",
+                            TenderClosingDate = new NodaTime.LocalDate(2023, 1, 30),
+                            TenderOpeningDate = new NodaTime.LocalDate(2023, 1, 15),
+                            Type = "Construction"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Weliveriya road project",
+                            EndDate = new NodaTime.LocalDate(2023, 12, 31),
+                            EstimatedCost = 1000000m,
+                            Latitude = 34.052199999999999,
+                            Location = "Location A",
+                            LocationNote = "Note for Location A",
+                            Longitude = -118.2437,
+                            Name = "Weliveriya road project",
+                            SpecificationDocument = "specification_alpha.pdf",
+                            StartDate = new NodaTime.LocalDate(2023, 1, 1),
+                            Status = "Proposed",
+                            TenderClosingDate = new NodaTime.LocalDate(2023, 1, 30),
+                            TenderOpeningDate = new NodaTime.LocalDate(2023, 1, 15),
+                            Type = "Road Construction"
                         });
                 });
 
@@ -466,6 +605,65 @@ namespace PSMDataAccess.Migrations
                             Longitude = 7.0229679999999997,
                             Name = "grace health",
                             RouteNo = "R001"
+                        });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Tender", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BidAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime>("SubmittedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Tenders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BidAmount = 500000m,
+                            CompanyId = 1,
+                            Name = "Tender for Project A",
+                            Note = "This is a tender for Project A",
+                            ProjectId = 1,
+                            SubmittedDate = new NodaTime.LocalDateTime(2023, 10, 1, 10, 0)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BidAmount = 300000m,
+                            CompanyId = 1,
+                            Name = "Tender for Road Construction",
+                            Note = "This is a tender for Project A",
+                            ProjectId = 1,
+                            SubmittedDate = new NodaTime.LocalDateTime(2023, 10, 1, 10, 0)
                         });
                 });
 
@@ -909,6 +1107,15 @@ namespace PSMDataAccess.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("PSMModel.Models.Project", b =>
+                {
+                    b.HasOne("PSMModel.Models.Tender", "Tender")
+                        .WithOne()
+                        .HasForeignKey("PSMModel.Models.Project", "AwadedTenderId");
+
+                    b.Navigation("Tender");
+                });
+
             modelBuilder.Entity("PSMModel.Models.Ride", b =>
                 {
                     b.HasOne("PSMModel.Models.Region", "Region")
@@ -948,6 +1155,25 @@ namespace PSMDataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Tender", b =>
+                {
+                    b.HasOne("PSMModel.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Ticket", b =>

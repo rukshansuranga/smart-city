@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers
 {
+        [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -16,6 +18,7 @@ namespace PSMWebAPI.Controllers
         }
 
         [HttpGet]
+        
         public async Task<IActionResult> GetUsers()
         {
             var users = await _userRepository.GetUsers();

@@ -80,4 +80,65 @@ relationship Relates_To_Light{
 LightPost -1- Relates_To_Light
 Relates_To_Light -N- LightPostComplint
 
+entity Project{
+    Id 
+    Name 
+    description
+    Type
+    Specification 
+    StartDate
+    EndDate
+    Status
+    Location
+    LocationNote
+    Latitude
+    Longitude
+    EstimatedCost
+    AwadedTenderId
+    TenderOpeningDate
+    TenderClosingDate
+}
+
+entity ProjectStandard {
+    Id 
+    Title 
+    Note
+    IsManditory
+    ProjectId
+}
+
+relationship adhireTo {
+
+}
+
+Project -1- adhireTo
+adhireTo -N- ProjectCondition
+
+entity Tender{
+    Id
+    Name
+    Note
+    CompanyId
+    BidAmount
+    ProjectId  
+}
+
+relationship TenderFor{
+
+}
+
+Project -1- TenderFor
+TenderFor -N- Tender
+
+entity ProjectComplain{
+    ProjectId   
+}
+
+entity Company{
+    Id
+    Name
+    Address
+    
+}
+
 @endchen

@@ -1,13 +1,14 @@
 import { Label, TextInput, HelperText } from "flowbite-react";
-import { UseControllerProps, useController } from "react-hook-form";
+import { Control, UseControllerProps, useController } from "react-hook-form";
 
 type Props = {
   label?: string;
   placeholder?: string;
   type?: string;
-  showLabel?: boolean;
+  showlabel?: boolean;
   className?: string;
   required?: boolean;
+  control: Control;
 } & UseControllerProps;
 
 const FormField: React.FC<Props> = (props: Props) => {
@@ -15,7 +16,7 @@ const FormField: React.FC<Props> = (props: Props) => {
 
   return (
     <div className="w-full">
-      {props?.showLabel && (
+      {props?.showlabel && (
         <div className="mt-2 mb-1 block">
           <Label htmlFor={props.name}>{props.label}</Label>
           {props.required && <span className="text-red-600">*</span>}
@@ -30,6 +31,13 @@ const FormField: React.FC<Props> = (props: Props) => {
         color={
           fieldState.error ? "failure" : !fieldState.isDirty ? "" : "success"
         }
+        onChange={(e) => {
+          const fieldValue =
+            props.type === "number"
+              ? parseFloat(e.target.value)
+              : e.target.value;
+          field.onChange(fieldValue);
+        }}
       />
       <HelperText>{fieldState.error?.message}</HelperText>
     </div>

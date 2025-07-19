@@ -40,7 +40,7 @@ export default async function TicketList(props) {
             <tr key={ticket.ticketId}>
               <td className="px-6 py-4">{ticket.ticketId}</td>
               <td className="px-6 py-4">{ticket.title}</td>
-              <td className="px-6 py-4">{`${ticket.createdDate?.day}-${ticket.createdDate?.month}-${ticket.createdDate?.year}`}</td>
+              <td className="px-6 py-4">{ticket?.createdDate}</td>
               <td className="px-6 py-4">{ticket.user.name}</td>
               <td>
                 <Link

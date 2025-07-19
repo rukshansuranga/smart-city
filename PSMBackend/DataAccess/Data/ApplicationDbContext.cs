@@ -27,6 +27,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<Ride> Rides   { get; set; }
     public DbSet<RidePoint> RidePoints   { get; set; }
     public DbSet<GCShedule> GCShedules   { get; set; }
+    public DbSet<Company> Companies   { get; set; }
+    public DbSet<Project> Projects   { get; set; }
+    public DbSet<Tender> Tenders   { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -104,8 +107,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RideConfiguration());
         modelBuilder.ApplyConfiguration(new RegionConfiguration());
         modelBuilder.ApplyConfiguration(new GCSheduleConfiguration());
-
-
+        modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+        modelBuilder.ApplyConfiguration(new TenderConfiguration());
 
         #endregion
     }

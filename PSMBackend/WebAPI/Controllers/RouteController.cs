@@ -4,9 +4,11 @@ using PSMWebAPI.DTOs.Request;
 using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
 using NodaTime;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PSMWebAPI.Controllers
 {
+        [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class RouteController : ControllerBase

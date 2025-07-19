@@ -5,9 +5,11 @@ using PSMWebAPI.DTOs;
 using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
 using PSMWebAPI.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PSMWebAPI.Controllers
 {
+        [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class TicketController : ControllerBase
