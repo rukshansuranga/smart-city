@@ -4,6 +4,7 @@ import withFlowbiteReact from "flowbite-react/plugin/nextjs";
 const nextConfig: NextConfig = {
   /* config options here */
   distDir: "build",
+  output: "export",
 };
 
 export default withFlowbiteReact(nextConfig);

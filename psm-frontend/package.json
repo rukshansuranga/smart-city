@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "flowbite-react patch"
+    ,"export": "next export"
+    ,"build:static": "next build && next export"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
