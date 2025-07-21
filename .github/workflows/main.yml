@@ -27,10 +27,9 @@ jobs:
           cache-dependency-path: ./psm-frontend/package-lock.json
 
       - name: npm install and build
-        working-directory: ./psm-frontend
         run: |
           npm install
-          npm build
+          npm run build
 
       - name: Copy static files
         working-directory: ./psm-frontend
