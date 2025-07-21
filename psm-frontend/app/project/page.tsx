@@ -1,5 +1,5 @@
 "use client";
-import { Project, ProjectFilter } from "@/types";
+import { Project } from "@/types";
 import {
   Button,
   Datepicker,
@@ -33,10 +33,10 @@ export default function ProjectList() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<Partial<Project>[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [filter, setFilter] = useState<ProjectFilter>({
@@ -52,7 +52,7 @@ export default function ProjectList() {
 
   //const [query, setQuery] = useState<string>("");
 
-  function generateQuery(queryFilter) {
+  function generateQuery(queryFilter: ProjectFilter) {
     const formatFilter = {
       ...queryFilter,
       startDate: filter.startDate?.toISOString().slice(0, 10),
@@ -75,14 +75,14 @@ export default function ProjectList() {
 
   useEffect(() => {
     fetchProjects();
-    const pageIndex = parseInt(searchParams.get("pageIndex"), 10) || 1;
-    //setCurrentPage(pageIndex);
+    const pageIndex = parseInt(searchParams.get("pageIndex")!) || 1;
+
     setFilter({ ...filter, pageNumber: pageIndex });
-  }, [searchParams]);
+  }, [filter, searchParams]);
 
   useEffect(() => {
     setTotalPages(Math.ceil(totalItems / filter.pageSize));
-  }, [totalItems]);
+  }, [filter.pageSize, totalItems]);
 
   async function fetchProjects() {
     setIsLoading(true);
@@ -100,6 +100,8 @@ export default function ProjectList() {
       setTotalItems(pageList?.totalItems);
       setProjects(list);
     } catch (error) {
+      console.error("Error fetching projects:", error);
+      // Optionally, you can set an error state here to display an error message in the UI
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +135,7 @@ export default function ProjectList() {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               {typeList.map((type) => (
-                <option value={type.value} key={type.value}>
+                <option value={type.value!} key={type.value}>
                   {type.text}
                 </option>
               ))}

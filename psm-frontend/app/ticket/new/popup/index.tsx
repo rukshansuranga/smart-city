@@ -4,7 +4,7 @@ import Input from "@/app/components/forms/Input";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Button, Dropdown, DropdownItem, Label, Select } from "flowbite-react";
+import { Button, Label, Select } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { getUsers } from "@/app/api/actions/userActions";
 import { User, Workpackage } from "@/types";
@@ -52,7 +52,7 @@ export default function CreateTicketForm({
   const onSubmit = async (data: FormData) => {
     const request = {
       ...data,
-      workpackageIdList: packages.map((wp) => wp.workPackageId),
+      workpackageIdList: packages.map((wp) => wp.workPackageId!),
     };
 
     await createTicket(request);

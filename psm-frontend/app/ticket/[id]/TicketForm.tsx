@@ -2,21 +2,22 @@
 
 import Input from "@/app/components/forms/Input";
 import { Controller, useForm } from "react-hook-form";
-import * as Yup from "yup";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Ticket, User } from "@/types";
 import { useEffect, useState } from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
+
 import { getUsers } from "@/app/api/actions/userActions";
 import { Button, Label, Select } from "flowbite-react";
 import { updateTicket } from "@/app/api/actions/ticketActions";
 import { useRouter } from "next/navigation";
 
-const schema = Yup.object().shape({
-  title: Yup.string().required("Title is required"),
-  detail: Yup.string(),
-  note: Yup.string(),
-  userId: Yup.string(),
+const schema = z.object({
+  title: z.string().min(1, "Title is required"),
+  detail: z.string(),
+  note: z.string(),
+  userId: z.string().optional(),
 });
 
 export type FormData = {
@@ -32,8 +33,8 @@ export default function TicketForm({ ticket }: { ticket: Ticket }) {
 
   const router = useRouter();
 
-  const { control, handleSubmit, setValue } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  const { control, handleSubmit } = useForm<FormData>({
+    resolver: zodResolver(schema),
     mode: "onChange",
     values: {
       detail: ticket.detail ?? "",

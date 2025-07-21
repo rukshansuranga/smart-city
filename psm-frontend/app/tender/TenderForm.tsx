@@ -1,7 +1,6 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tender, Option } from "@/types";
-import { useForm } from "react-hook-form";
 import Input from "../components/forms/Input";
 import TextArea from "../components/forms/TextArea";
 import SelectField from "../components/forms/Select";
@@ -16,6 +15,7 @@ import {
   updateTender,
 } from "../api/actions/tenderActions";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 const schema = z.object({
   name: z.string().min(1, "Project name is required"),
@@ -55,31 +55,19 @@ export default function TenderForm({
     }, // or null or undefined
   });
 
-  // Fetch project data if editing
-  // useEffect(() => {
-  //   if (tenderId) {
-  //     getTendersId(tenderId).then((tender) => {
-  //       if (tender) {
-  //         reset({
-  //           ...tender,
-  //           projectId: tender.projectId.toString(),
-  //           companyId: tender.companyId.toString(),
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, [tenderId, reset]);
-
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: Tender) => {
     // Handle form submission logic here
     console.log("Form Data:", data, selectedProjectId);
 
     if (tenderId) {
       // Update existing project
-      await updateTender(tenderId, { ...data, projectId: selectedProjectId });
+      await updateTender(tenderId, {
+        ...data,
+        projectId: selectedProjectId ?? "",
+      });
     } else {
       // Create new project
-      await postTender({ ...data, projectId: selectedProjectId });
+      await postTender({ ...data, projectId: selectedProjectId ?? "" });
     }
 
     router.push("/tender/list/" + selectedProjectId);
@@ -93,7 +81,7 @@ export default function TenderForm({
     setLoading(true);
     const projectListPromise = getAllProjects();
     const companyListPromise = getCompanies();
-    const tenderPromise = getTendersId(tenderId);
+    const tenderPromise = getTendersId(tenderId!);
 
     Promise.all([projectListPromise, companyListPromise, tenderPromise])
       .then(([projectData, companyData, tenderData]) => {

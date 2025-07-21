@@ -3,10 +3,12 @@ import { getTicketPaging } from "../api/actions/ticketActions";
 import TicketPagination from "./TicketPagination";
 import Link from "next/link";
 
-export default async function TicketList(props) {
-  const { pageIndex = "1", pageSize = "5" } = props.searchParams;
-
-  console.log("params", props.searchParams);
+export default async function TicketList({
+  searchParams,
+}: {
+  searchParams: Promise<{ pageIndex?: string; pageSize?: string }>;
+}) {
+  const { pageIndex = "1", pageSize = "5" } = await searchParams;
 
   const response: Paging<Ticket> = await getTicketPaging({
     pageIndex,
@@ -40,8 +42,10 @@ export default async function TicketList(props) {
             <tr key={ticket.ticketId}>
               <td className="px-6 py-4">{ticket.ticketId}</td>
               <td className="px-6 py-4">{ticket.title}</td>
-              <td className="px-6 py-4">{ticket?.createdDate}</td>
-              <td className="px-6 py-4">{ticket.user.name}</td>
+              <td className="px-6 py-4">
+                {ticket?.createdDate?.toISOString().slice(0, 10)}
+              </td>
+              <td className="px-6 py-4">{ticket.user?.name}</td>
               <td>
                 <Link
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"

@@ -1,20 +1,26 @@
 import { Label, HelperText, Select } from "flowbite-react";
 import { JSX } from "react";
-import { UseControllerProps, useController } from "react-hook-form";
+import {
+  Control,
+  FieldValues,
+  UseControllerProps,
+  useController,
+} from "react-hook-form";
 import { Option } from "@/types"; // Assuming Option type is defined in types/index.ts
 
-type Props = {
+type Props<T extends FieldValues> = {
   label?: string;
   placeholder?: string;
   value?: string;
   showlabel?: boolean;
   className?: string;
   required?: boolean;
+  control: Control<T>;
   options: Option[];
-} & UseControllerProps;
+} & UseControllerProps<T>;
 
-const SelectField = (props: Props): JSX.Element => {
-  const { fieldState, field } = useController({ ...props, defaultValue: "" });
+const SelectField = <T extends FieldValues>(props: Props<T>): JSX.Element => {
+  const { fieldState, field } = useController({ ...props });
 
   return (
     <div className="w-full">
@@ -26,7 +32,7 @@ const SelectField = (props: Props): JSX.Element => {
       )}
       <Select {...props} {...field}>
         {props?.options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value!}>
             {option.text}
           </option>
         ))}

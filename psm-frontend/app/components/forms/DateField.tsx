@@ -1,17 +1,23 @@
 import { Label, HelperText, Datepicker } from "flowbite-react";
-import { UseControllerProps, useController } from "react-hook-form";
+import {
+  Control,
+  FieldValues,
+  UseControllerProps,
+  useController,
+} from "react-hook-form";
 
-type Props = {
+type Props<T extends FieldValues> = {
   label?: string;
   placeholder?: string;
   value?: Date;
   showlabel?: boolean;
   className?: string;
   required?: boolean;
-} & UseControllerProps;
+  control: Control<T>;
+} & UseControllerProps<T>;
 
-const DateField: React.FC<Props> = (props: Props) => {
-  const { fieldState, field } = useController({ ...props, defaultValue: "" });
+const DateField = <T extends FieldValues>(props: Props<T>) => {
+  const { fieldState, field } = useController({ ...props });
 
   return (
     <div className="w-full">

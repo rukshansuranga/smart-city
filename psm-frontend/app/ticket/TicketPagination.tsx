@@ -2,24 +2,24 @@
 import { Pagination } from "flowbite-react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function getTicketPaging({
+export default function useTicketPaging({
   totalCount,
 }: {
-  totalCount: string;
+  totalCount: number;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pageIndex = parseInt(searchParams.get("pageIndex"), 10) || 1;
+  const pageIndex = searchParams.get("pageIndex");
 
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(parseInt(totalCount) / itemsPerPage);
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   console.log("paging", pageIndex, totalPages, totalCount);
 
   return (
     <div>
       <Pagination
-        currentPage={pageIndex || 1}
+        currentPage={parseInt(pageIndex!)}
         totalPages={totalPages}
         onPageChange={(page) => {
           router.push(`?pageSize=${itemsPerPage}&pageIndex=${page}`);

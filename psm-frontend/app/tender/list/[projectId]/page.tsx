@@ -32,6 +32,8 @@ export default function TenderList() {
 
       console.log("Tenders fetched:", tenderList);
     } catch (error) {
+      console.error("Error fetching tenders:", error);
+      // Handle error appropriately, e.g., show a notification
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +50,7 @@ export default function TenderList() {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-5">
-        {tenders.length > 0 ? tenders[1]?.project.name : ""}
+        {tenders.length > 0 ? tenders[1]?.project?.name : ""}
       </div>
       <div className="my-4 flex justify-end">
         <Button type="button">
@@ -76,10 +78,12 @@ export default function TenderList() {
               <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                 {tender.name}
               </TableCell>
-              <TableCell>{tender.company.name}</TableCell>
+              <TableCell>{tender.company?.name}</TableCell>
               <TableCell>{tender.bidAmount}</TableCell>
               <TableCell>
-                {new Date(tender.submittedDate).toISOString().slice(0, 10)}
+                {new Date(tender.submittedDate ?? "")
+                  .toISOString()
+                  .slice(0, 10)}
               </TableCell>
 
               <TableCell>

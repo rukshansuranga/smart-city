@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { getAllProjects } from "../api/actions/projectActions";
 import { Button, Spinner } from "flowbite-react";
 import Link from "next/link";
+import { Project } from "@/types";
 
 export default function TenderPage() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 

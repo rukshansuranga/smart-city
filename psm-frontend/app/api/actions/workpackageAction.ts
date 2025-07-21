@@ -5,9 +5,9 @@ import { Paging, Workpackage } from "@/types";
 
 export async function getWorkpackagePaging(complainPaging: {
   status: string;
-  pageSize: number;
-  pageIndex: number;
-  duration: number;
+  pageSize: string;
+  pageIndex: string;
+  duration: string;
 }): Promise<Paging<Workpackage>> {
   console.log(34, complainPaging);
   const queryString = new URLSearchParams(complainPaging).toString();

@@ -1,17 +1,23 @@
 import { Label, HelperText, Textarea } from "flowbite-react";
-import { UseControllerProps, useController } from "react-hook-form";
+import {
+  UseControllerProps,
+  useController,
+  FieldValues,
+  Control,
+} from "react-hook-form";
 
-type Props = {
+type Props<T extends FieldValues> = {
   label?: string;
   placeholder?: string;
   rows?: number;
   showlabel?: boolean;
   className?: string;
   required?: boolean;
-} & UseControllerProps;
+  control: Control<T>;
+} & UseControllerProps<T>;
 
-const TextAreaField: React.FC<Props> = (props: Props) => {
-  const { fieldState, field } = useController({ ...props, defaultValue: "" });
+const TextAreaField = <T extends FieldValues>(props: Props<T>) => {
+  const { fieldState, field } = useController({ ...props });
 
   return (
     <div className="w-full">

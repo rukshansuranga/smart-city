@@ -6,7 +6,7 @@ export async function filterProjects(query: string): Promise<Paging<Project>> {
 }
 
 // Add this function to post a new project
-export async function postProject(project: Project): Promise<Project> {
+export async function postProject(project: Partial<Project>): Promise<Project> {
   return fetchWrapper.post("project", project);
 }
 
@@ -20,7 +20,7 @@ export async function getAllProjects(): Promise<Project[]> {
 
 export async function updateProject(
   id: string,
-  project: Project
+  project: Partial<Project>
 ): Promise<Project> {
   return fetchWrapper.put(`project/${id}`, project);
 }

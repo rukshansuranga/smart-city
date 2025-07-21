@@ -1,7 +1,6 @@
 import { getWorkpackagePaging } from "@/app/api/actions/workpackageAction";
 import { Paging, Workpackage } from "@/types";
 import { Button, ButtonGroup, Checkbox, Pagination } from "flowbite-react";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const itemsPerPage = 2;
@@ -21,7 +20,7 @@ export default function WorkpackageList({
     totalItems: 0,
   });
 
-  const [pageIndex, setPageIndex] = useState(1);
+  const [pageIndex, setPageIndex] = useState<number>(1);
 
   const [statusList, setStatusList] = useState<string[]>(["Created", "Open"]);
 
@@ -41,9 +40,9 @@ export default function WorkpackageList({
     try {
       const result = await getWorkpackagePaging({
         status: statusList.join(","),
-        pageSize: itemsPerPage,
-        pageIndex: pageIndex,
-        duration: 54,
+        pageSize: itemsPerPage.toString(),
+        pageIndex: pageIndex.toString(),
+        duration: "60",
       });
 
       setData(result);
@@ -142,7 +141,9 @@ export default function WorkpackageList({
                       {workpackage.workPackageId}
                     </th>
                     <td className="px-6 py-4">{workpackage.name}</td>
-                    <td className="px-6 py-4">{workpackage?.createdDate}</td>
+                    <td className="px-6 py-4">
+                      {workpackage?.createdDate.toISOString().slice(0, 10)}
+                    </td>
                     <td className="px-6 py-4">{workpackage.status}</td>
                     <td className="px-6 py-4">
                       <Checkbox
@@ -165,7 +166,7 @@ export default function WorkpackageList({
           {data?.records?.length > 0 ? (
             <div>
               <Pagination
-                currentPage={parseInt(pageIndex) || 1}
+                currentPage={pageIndex}
                 totalPages={Math.ceil(data.totalItems / itemsPerPage)}
                 onPageChange={(page) => {
                   setPageIndex(page);

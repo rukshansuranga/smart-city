@@ -7,13 +7,7 @@ import {
   SidebarItemGroup,
   SidebarItems,
 } from "flowbite-react";
-import {
-  HiChartPie,
-  HiInbox,
-  HiShoppingBag,
-  HiUser,
-  HiViewBoards,
-} from "react-icons/hi";
+import { HiShoppingBag, HiViewBoards } from "react-icons/hi";
 
 import { MdOutlineWorkHistory } from "react-icons/md";
 import { LuTicketPlus } from "react-icons/lu";

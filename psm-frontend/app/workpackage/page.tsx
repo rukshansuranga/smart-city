@@ -12,7 +12,6 @@ import {
   ModalHeader,
 } from "flowbite-react";
 
-import { FieldValues, useForm } from "react-hook-form";
 import CreateTicketForm from "../ticket/new/popup";
 import { useSearchParams, useRouter } from "next/navigation";
 import WorkpackagPaging from "./WorkpackagePaging";
@@ -40,16 +39,16 @@ export default function WorkpackagePage() {
   const searchParams = useSearchParams();
   const pageIndex = searchParams.get("pageIndex") ?? "1";
 
-  const [openModal, setOpenModal] = useState<true>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await getWorkpackagePaging({
           status: statusList.join(","),
-          pageSize: itemsPerPage,
-          pageIndex: parseInt(pageIndex),
-          duration: 40,
+          pageSize: itemsPerPage.toString(),
+          pageIndex: pageIndex,
+          duration: "60",
         });
 
         setData(result);
@@ -202,7 +201,9 @@ export default function WorkpackagePage() {
                   {workpackage.workPackageId}
                 </th>
                 <td className="px-6 py-4">{workpackage.name}</td>
-                <td className="px-6 py-4">{workpackage.createdDate}</td>
+                <td className="px-6 py-4">
+                  {workpackage.createdDate.toISOString().slice(0, 10)}
+                </td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td className="px-6 py-4">
                   <Checkbox

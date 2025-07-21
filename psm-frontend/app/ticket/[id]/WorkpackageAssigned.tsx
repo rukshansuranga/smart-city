@@ -38,7 +38,9 @@ export default function WorkpackageAssigned({
         (x) => x.workPackageId !== workpackageId
       );
       setWorkpackages(filterdWorkpackage);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error removing workpackage:", error);
+    }
   }
 
   async function handleWorkpackageClick(
@@ -63,8 +65,6 @@ export default function WorkpackageAssigned({
       );
       setWorkpackages(filterd);
     }
-
-    console.log("handleWorkpackageClick", id, isChecked);
   }
 
   return (
@@ -101,7 +101,9 @@ export default function WorkpackageAssigned({
                   {workpackage.workPackageId}
                 </th>
                 <td className="px-6 py-4">{workpackage.name}</td>
-                <td className="px-6 py-4">{workpackage.createdDate}</td>
+                <td className="px-6 py-4">
+                  {workpackage.createdDate.toISOString().slice(0, 10)}
+                </td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td>
                   <Button

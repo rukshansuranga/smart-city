@@ -1,5 +1,5 @@
 "use client";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import * as z from "zod";
 import Input from "../components/forms/Input";
 //import TextArea from "../components/forms/TextArea";
@@ -35,7 +35,7 @@ const schema = z.object({
 });
 
 export default function ProjectForm({ projectId }: { projectId?: string }) {
-  const fileUpload = useRef(null);
+  const fileUpload = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
@@ -81,41 +81,29 @@ export default function ProjectForm({ projectId }: { projectId?: string }) {
     }
   }, [projectId, reset]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FieldValues) => {
     // Handle form submission logic here
     console.log("Form Data:", data);
 
     try {
-      const projectData = {
+      const projectData: Partial<Project> = {
         ...data,
         tenderOpeningDate: data.tenderOpeningDate?.toISOString().slice(0, 10),
         tenderClosingDate: data.tenderClosingDate?.toISOString().slice(0, 10),
       };
 
       if (projectId) {
-        // Update existing project
         await updateProject(projectId, projectData);
         console.log("Project updated:", projectData);
       } else {
-        // Create new project
         await postProject(projectData);
         console.log("Project created:", projectData);
       }
-      // Optionally, show a success message or redirect
     } catch (error) {
       console.error("Error creating project:", error);
-      // Optionally, show an error message to the user
     }
-    router.push("/project"); // Redirect to project list or another page after submission
+    router.push("/project");
   };
-
-  function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-      // Handle the file upload logic here
-      console.log("Selected file:", file.name);
-    }
-  }
 
   if (isLoading) {
     return (
@@ -175,8 +163,10 @@ export default function ProjectForm({ projectId }: { projectId?: string }) {
               name="specificationDocument"
               control={control}
               render={({ field: { onChange, value } }) => {
-                function handleFileChange(event) {
-                  const file = event.target.files[0];
+                function handleFileChange(
+                  event: React.ChangeEvent<HTMLInputElement>
+                ) {
+                  const file = event.target.files && event.target.files[0];
                   if (file) {
                     // Handle the file upload logic here
                     console.log("Selected file:", file.name);
@@ -196,7 +186,7 @@ export default function ProjectForm({ projectId }: { projectId?: string }) {
                     <Label>{value}</Label>
                     <Button
                       type="button"
-                      onClick={() => fileUpload.current.click()}
+                      onClick={() => fileUpload.current?.click()}
                     >
                       Upload
                     </Button>

@@ -74,3 +74,7 @@
 //     </div>
 //   );
 // }
+
+export default async function TicketList() {
+  return <div>test</div>;
+}

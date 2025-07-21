@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarCollapse,
-  NavbarLink,
-  NavbarToggle,
-} from "flowbite-react";
+import { Navbar, NavbarBrand } from "flowbite-react";
 import Logo from "./Logo";
 import Link from "next/link";
 import { Session } from "next-auth";
