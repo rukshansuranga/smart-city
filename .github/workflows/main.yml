@@ -36,6 +36,7 @@ jobs:
         run: |
           cp -R ./public ./.next/standalone/public
           cp -R ./.next/static ./.next/standalone/.next/static
+          cd ./.next/standalone
           ls -a
 
       - name: Upload artifact for deployment job
