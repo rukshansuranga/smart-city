@@ -42,7 +42,7 @@ jobs:
 
         with:
           name: app
-          path: ./.next/standalone
+          path: ./psm-frontend/.next/standalone
 
   deploy:
     runs-on: ubuntu-latest
