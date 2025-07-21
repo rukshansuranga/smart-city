@@ -38,6 +38,8 @@ jobs:
           cp -R ./.next/static ./.next/standalone/.next/static
           cd ./.next/standalone
           ls -a
+          cd ./.next/standalone/.next
+          ls -a
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
