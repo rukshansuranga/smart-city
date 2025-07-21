@@ -19,21 +19,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: "yarn"
+          node-version: 20
+          cache: "npm"
 
-      - name: yarn install and build
+      - name: npm install and build
+        working-directory: ./psm-frontend
         run: |
-          yarn install --frozen-lockfile
-          yarn build
+          npm install
+          npm build
 
       - name: Copy static files
+        working-directory: ./psm-frontend
         run: |
           cp -R ./public ./.next/standalone/public
           cp -R ./.next/static ./.next/standalone/.next/static
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
+        
         with:
           name: app
           path: ./.next/standalone
