@@ -39,8 +39,9 @@ jobs:
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
-        include-hidden-files: true
+
         with:
+          include-hidden-files: true
           name: app
           path: ./psm-frontend/.next/standalone
 
