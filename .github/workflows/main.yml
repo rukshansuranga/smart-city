@@ -27,6 +27,8 @@ jobs:
           cache-dependency-path: ./psm-frontend/package-lock.json
 
       - name: npm install and build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: |
           npm install
           npm run build
