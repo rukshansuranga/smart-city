@@ -202,7 +202,7 @@ export default function WorkpackagePage() {
                 </th>
                 <td className="px-6 py-4">{workpackage.name}</td>
                 <td className="px-6 py-4">
-                  {workpackage.createdDate.toISOString().slice(0, 10)}
+                  {new Date(workpackage.createdDate).toISOString().slice(0, 10)}
                 </td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td className="px-6 py-4">

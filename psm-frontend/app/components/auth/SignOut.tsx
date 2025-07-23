@@ -1,8 +1,5 @@
 "use client";
 
-interface SignOutProps {
-  readonly name: string;
-}
 export const generateKeycloakLogoutUrl = (
   redirectUrl: string,
   idToken?: string
@@ -21,10 +18,10 @@ export const generateKeycloakLogoutUrl = (
   }
   return `${AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/logout?${urlParams.toString()}`;
 };
-export default function SignOut({ name }: SignOutProps) {
+export default function SignOut() {
   return (
     <a href={generateKeycloakLogoutUrl(process.env.NEXT_PUBLIC_AUTH_URL ?? "")}>
-      Sign out {name}
+      Sign out
     </a>
   );
 }

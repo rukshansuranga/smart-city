@@ -78,7 +78,7 @@ export default function ProjectList() {
     const pageIndex = parseInt(searchParams.get("pageIndex")!) || 1;
 
     setFilter({ ...filter, pageNumber: pageIndex });
-  }, [filter, searchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
     setTotalPages(Math.ceil(totalItems / filter.pageSize));

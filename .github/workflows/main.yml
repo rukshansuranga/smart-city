@@ -7,7 +7,12 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: web-smartcityfrontend
+  AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME }}
+  AUTH_URL: ${{ vars.AUTH_URL }}
+  AUTH_KEYCLOAK_ID: ${{ vars.AUTH_KEYCLOAK_ID }}
+  AUTH_KEYCLOAK_SECRET: ${{ secrets.AUTH_KEYCLOAK_SECRET }}
+  AUTH_KEYCLOAK_ISSUER: ${{ vars.AUTH_KEYCLOAK_ISSUER }}
+  AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
 
 jobs:
   build:
@@ -29,6 +34,9 @@ jobs:
       - name: npm install and build
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_AUTH_URL: ${{ vars.NEXT_PUBLIC_AUTH_URL }}
+          NEXT_PUBLIC_AUTH_KEYCLOAK_ID: ${{ vars.NEXT_PUBLIC_AUTH_KEYCLOAK_ID }}
+          NEXT_PUBLIC_AUTH_KEYCLOAK_ISSUER: ${{ vars.NEXT_PUBLIC_AUTH_KEYCLOAK_ISSUER }}
         run: |
           npm install
           npm run build
