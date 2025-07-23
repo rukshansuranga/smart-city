@@ -13,7 +13,7 @@ export function Header({ session }: HeaderProps) {
       {session?.user ? (
         <div className="flex flex-row justify-between items-center">
           <div className="mr-4">{session.user.name}</div>
-          <SignOut name={session.user.name ?? ""} />
+          <SignOut />
         </div>
       ) : (
         <SignIn />

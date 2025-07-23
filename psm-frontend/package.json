@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "stage": "env-cmd -f .env.stage next dev --turbopack",
-    "build": "next build",
+    "build": "env-cmd -f .env next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "flowbite-react patch"
