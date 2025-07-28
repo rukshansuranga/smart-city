@@ -110,8 +110,6 @@ export default function WorkpackagePage() {
     }
   }
 
-  console.log(67, statusList);
-
   if (data.records.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">

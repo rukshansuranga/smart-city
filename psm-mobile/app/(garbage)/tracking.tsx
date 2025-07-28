@@ -70,16 +70,7 @@ export default function Garbage() {
 
   return (
     <SafeAreaProvider>
-      <View className="flex-1 justify-center items-center gap-5">
-        {/* <View className="px-4 h-8">
-          <DatePickerInput
-            locale="en"
-            label="Select Date"
-            value={inputDate}
-            onChange={(d) => setInputDate(d)}
-            inputMode="end"
-          />
-        </View> */}
+      <View className="flex-1 justify-start items-center gap-5 p-2">
         <View className="w-full">
           <Picker
             selectedValue={region}
@@ -94,35 +85,8 @@ export default function Garbage() {
             ))}
           </Picker>
         </View>
-        {/* <View className="w-full h-96">
-          <MapView
-            style={{ flex: 1 }}
-            initialRegion={{
-              latitude: 7.028372283362622,
-              longitude: 80.02045957272463,
-              latitudeDelta: 0.043,
-              longitudeDelta: 0.034,
-            }}
-            provider={PROVIDER_GOOGLE}
-          >
-            {coordinates && coordinates.length > 1 && (
-              <>
-                <Marker coordinate={coordinates[0]} />
-                <Marker coordinate={coordinates[coordinates.length - 1]} />
-                <MapViewDirections
-                  origin={coordinates[0]}
-                  waypoints={coordinates.slice(1, coordinates.length - 2)}
-                  destination={coordinates[coordinates.length - 1]}
-                  apikey="AIzaSyBO2E_KAoN9H3bmeXlS9Np20qGmtlg-qbc"
-                  strokeWidth={3}
-                  strokeColor="hotpink"
-                  mode="WALKING"
-                />
-              </>
-            )}
-          </MapView>
-        </View> */}
-        <View className="w-full h-96">
+
+        <View className="flex-1 w-full">
           <MapView
             style={{ flex: 1 }}
             initialRegion={{
@@ -139,7 +103,7 @@ export default function Garbage() {
                 <Marker coordinate={coordinates[coordinates.length - 1]} />
                 <Polyline
                   coordinates={coordinates}
-                  strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                  strokeColor="#000"
                   strokeColors={["#7F0000"]}
                   strokeWidth={6}
                 />

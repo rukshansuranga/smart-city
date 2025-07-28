@@ -1,12 +1,17 @@
 "use client";
 
-import { AiTwotoneBank } from "react-icons/ai";
-
+import Image from "next/image";
 export default function Logo() {
   return (
-    <div className="cursor-pointer flex items-center gap-2 text-3xl font-semibold ">
-      <AiTwotoneBank className="text-green-500" size={34} />
-      <div className="text-green-500 ">PSM</div>
+    <div className="cursor-pointer flex items-center gap-4 text-3xl font-semibold ">
+      <Image
+        src="/images/icon2.png"
+        alt="Logo"
+        width={50}
+        height={50}
+        className="object-contain"
+      />
+      <div className="text-green-500 ">Smart City</div>
     </div>
   );
 }

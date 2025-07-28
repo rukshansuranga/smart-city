@@ -6,6 +6,7 @@ using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
 using PSMWebAPI.DTOs.Request;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace PSMWebAPI.Controllers
 {
@@ -15,9 +16,11 @@ namespace PSMWebAPI.Controllers
     public class TicketController : ControllerBase
     {
         private readonly ITicketRepository _ticketRepository;
-        public TicketController(ITicketRepository ticketRepository)
+        private readonly IMapper _mapper;
+        public TicketController(ITicketRepository ticketRepository, IMapper mapper)
         {
             _ticketRepository = ticketRepository;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -32,16 +35,45 @@ namespace PSMWebAPI.Controllers
                 });
             }
 
-            var ticket = new Ticket
-            {
-                Title = request.Title,
-                Detail = request.Detail,
-                CreatedDate = PSMDateTime.Now, // Uses the utility class to get current time in Colombo timezone
-                UserId = request.UserId,
-                Note = request.Note,
-                TicketPackages = workPackageList
-            };
+            // var ticket = new Ticket
+            // {
+            //     Title = request.Title,
+            //     Detail = request.Detail,
+            //     CreatedDate = PSMDateTime.Now, // Uses the utility class to get current time in Colombo timezone
+            //     UserId = request.UserId,
+            //     Note = request.Note,
+            //     TicketPackages = workPackageList,
+            //     Type = request.Type,
+            //     Status = request.Status
+            // };
 
+            var ticket = _mapper.Map<Ticket>(request);
+            ticket.CreatedDate = PSMDateTime.Now; // Uses the utility class to get current time in Colombo timezone
+            ticket.TicketPackages = workPackageList;
+
+
+            var updatedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
+            return CreatedAtAction(nameof(GetById), new { id = updatedTicket.TicketId }, updatedTicket);
+            // Returns 201 Created response with location header pointing to the new product
+        }
+
+        [HttpPost("internal")]
+        public async Task<IActionResult> AddInternal(TicketRequest request)
+        {
+
+            // var ticket = new Ticket
+            // {
+            //     Title = request.Title,
+            //     Detail = request.Detail,
+            //     CreatedDate = PSMDateTime.Now, // Uses the utility class to get current time in Colombo timezone
+            //     UserId = request.UserId,
+            //     Note = request.Note,
+            //     Type = request.Type,
+            //     Status = request.Status
+            // };
+
+            var ticket = _mapper.Map<Ticket>(request);
+            ticket.CreatedDate = PSMDateTime.Now; // Uses the utility class to get current time in Colombo timezone
 
             var updatedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
             return CreatedAtAction(nameof(GetById), new { id = updatedTicket.TicketId }, updatedTicket);
@@ -62,6 +94,20 @@ namespace PSMWebAPI.Controllers
             }
         }
 
+        [HttpGet("workpackage/{id}")]
+        public async Task<IActionResult> GetTicketListByWorkpackageId(int id)
+        {
+            try
+            {
+                var tickets = await _ticketRepository.GetTicketListByWorkPackageIdAsync(id); // Calls service to fetch product by ID
+                return Ok(tickets); // Returns 200 OK response if found
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); // Returns 404 Not Found if product does not exist
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] TicketPaging paging)
         {
@@ -70,15 +116,17 @@ namespace PSMWebAPI.Controllers
 
         }
 
-        [HttpPut("{ticketId:int}")]
+        [HttpPut("{ticketId}")]
         public async Task<IActionResult> Update(int ticketId, TicketRequest request)
         {
             var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
 
-            selectedTicket.Title = request.Title;
-            selectedTicket.Detail = request.Detail;
-            selectedTicket.Note = request.Note;
-            selectedTicket.UserId = request.UserId;
+            // selectedTicket.Title = request.Title;
+            // selectedTicket.Detail = request.Detail;
+            // selectedTicket.Note = request.Note;
+            // selectedTicket.UserId = request.UserId;
+
+            _mapper.Map<TicketRequest, Ticket>(request, selectedTicket);
 
             var updatedTicket = await _ticketRepository.UpdateAsync(selectedTicket); // Calls service to add a new product
 

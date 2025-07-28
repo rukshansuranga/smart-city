@@ -17,10 +17,7 @@ public class WorkPackage
     [ForeignKey("Client")]
     public int? ClientId { get; set; }
     public Client? Client { get; set; }
-
-    // [ForeignKey("Ticket")]
-    // public int? TicketId { get; set; }
-    // public Ticket Ticket { get; set; }
+    public string WorkPackageType { get; set; }
 
     public List<TicketPackage>? TicketPackages { get; set; }
     

@@ -18,6 +18,9 @@ export default function TenderPage() {
     setIsLoading(true);
     // Fetch projects from API
     const list = await getAllProjects();
+
+    console.log("Fetched projects:", list);
+
     setProjects(list);
     setIsLoading(false);
   }

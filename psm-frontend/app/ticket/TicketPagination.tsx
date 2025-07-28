@@ -19,7 +19,7 @@ export default function useTicketPaging({
   return (
     <div>
       <Pagination
-        currentPage={parseInt(pageIndex!)}
+        currentPage={parseInt(pageIndex || "1")}
         totalPages={totalPages}
         onPageChange={(page) => {
           router.push(`?pageSize=${itemsPerPage}&pageIndex=${page}`);

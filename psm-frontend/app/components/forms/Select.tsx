@@ -25,7 +25,7 @@ const SelectField = <T extends FieldValues>(props: Props<T>): JSX.Element => {
   return (
     <div className="w-full">
       {props?.showlabel && (
-        <div className="mt-2 mb-1 block">
+        <div className="mb-1 block">
           <Label htmlFor={props.name}>{props.label}</Label>
           {props.required && <span className="text-red-600">*</span>}
         </div>

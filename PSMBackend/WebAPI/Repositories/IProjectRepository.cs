@@ -12,4 +12,6 @@ public interface IProjectRepository
       Task<Project> GetByIdAsync(int id);
       Task<PageResponse<Project>> GetPagingAsync(ProjectPaging paging);
       Task<IEnumerable<Project>> GetAllProjects();
+      Task<IEnumerable<Project>> GetProjectByTypeAndStatusAndName(string? type, string? status, string? name, string? city, bool? isRecent = false);
+
 }

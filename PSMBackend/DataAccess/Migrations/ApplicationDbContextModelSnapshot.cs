@@ -290,6 +290,10 @@ namespace PSMDataAccess.Migrations
                     b.Property<int?>("AwadedTenderId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -338,9 +342,6 @@ namespace PSMDataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AwadedTenderId")
-                        .IsUnique();
-
                     b.ToTable("Projects");
 
                     b.HasData(
@@ -348,6 +349,7 @@ namespace PSMDataAccess.Migrations
                         {
                             Id = 1,
                             AwadedTenderId = 1,
+                            City = "Weliveriya",
                             Description = "Description for Project Alpha",
                             EndDate = new NodaTime.LocalDate(2023, 12, 31),
                             EstimatedCost = 1000000m,
@@ -366,6 +368,7 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             Id = 2,
+                            City = "Ambaraluwa",
                             Description = "Weliveriya road project",
                             EndDate = new NodaTime.LocalDate(2023, 12, 31),
                             EstimatedCost = 1000000m,
@@ -640,7 +643,8 @@ namespace PSMDataAccess.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
 
                     b.ToTable("Tenders");
 
@@ -684,8 +688,14 @@ namespace PSMDataAccess.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
                         .HasColumnType("text");
 
                     b.Property<int>("UserId")
@@ -1073,6 +1083,53 @@ namespace PSMDataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PSMModel.Models.ProjectComplain", b =>
+                {
+                    b.HasBaseType("PSMModel.Models.WorkPackage");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasDiscriminator().HasValue("ProjectComplain");
+
+                    b.HasData(
+                        new
+                        {
+                            WorkPackageId = 31,
+                            ClientId = 1,
+                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            Detail = "Project Complain 1 description",
+                            Name = "Project Complain 1",
+                            Status = "New",
+                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            ProjectId = 1
+                        },
+                        new
+                        {
+                            WorkPackageId = 32,
+                            ClientId = 2,
+                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 10, 0),
+                            Detail = "Project Complain 2 description",
+                            Name = "Project Complain 2",
+                            Status = "In Progress",
+                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 10, 0),
+                            ProjectId = 2
+                        },
+                        new
+                        {
+                            WorkPackageId = 33,
+                            ClientId = 2,
+                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 21, 9, 30),
+                            Detail = "Project Complain 3 description",
+                            Name = "Project Complain 3",
+                            Status = "Resolved",
+                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 21, 9, 30),
+                            ProjectId = 3
+                        });
+                });
+
             modelBuilder.Entity("PSMModel.Models.Comment", b =>
                 {
                     b.HasOne("PSMModel.Models.Client", "Client")
@@ -1105,15 +1162,6 @@ namespace PSMDataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Region");
-                });
-
-            modelBuilder.Entity("PSMModel.Models.Project", b =>
-                {
-                    b.HasOne("PSMModel.Models.Tender", "Tender")
-                        .WithOne()
-                        .HasForeignKey("PSMModel.Models.Project", "AwadedTenderId");
-
-                    b.Navigation("Tender");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Ride", b =>
@@ -1166,8 +1214,8 @@ namespace PSMDataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("PSMModel.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .WithOne("AwadedTener")
+                        .HasForeignKey("PSMModel.Models.Tender", "ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1213,6 +1261,24 @@ namespace PSMDataAccess.Migrations
                         .HasForeignKey("ClientId");
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectComplain", b =>
+                {
+                    b.HasOne("PSMModel.Models.Project", "Project")
+                        .WithMany("ProjectComplains")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Project", b =>
+                {
+                    b.Navigation("AwadedTener");
+
+                    b.Navigation("ProjectComplains");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Ride", b =>

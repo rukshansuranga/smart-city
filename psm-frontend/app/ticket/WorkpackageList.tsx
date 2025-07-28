@@ -1,9 +1,15 @@
 import { getWorkpackagePaging } from "@/app/api/actions/workpackageAction";
 import { Paging, Workpackage } from "@/types";
-import { Button, ButtonGroup, Checkbox, Pagination } from "flowbite-react";
+import {
+  Button,
+  ButtonGroup,
+  Checkbox,
+  Pagination,
+  Spinner,
+} from "flowbite-react";
 import { useEffect, useState } from "react";
 
-const itemsPerPage = 2;
+const itemsPerPage = 8;
 
 export default function WorkpackageList({
   selectedWorkpackages,
@@ -24,6 +30,8 @@ export default function WorkpackageList({
 
   const [statusList, setStatusList] = useState<string[]>(["Created", "Open"]);
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   useEffect(() => {
     fetchData();
   }, [pageIndex]);
@@ -38,6 +46,7 @@ export default function WorkpackageList({
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const result = await getWorkpackagePaging({
         status: statusList.join(","),
         pageSize: itemsPerPage.toString(),
@@ -48,6 +57,8 @@ export default function WorkpackageList({
       setData(result);
     } catch (error) {
       console.error("Error fetching workpackage data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,7 +70,13 @@ export default function WorkpackageList({
     }
   }
 
-  console.log("data", data);
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner aria-label="Center-aligned Large spinner example" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -142,7 +159,9 @@ export default function WorkpackageList({
                     </th>
                     <td className="px-6 py-4">{workpackage.name}</td>
                     <td className="px-6 py-4">
-                      {workpackage?.createdDate.toISOString().slice(0, 10)}
+                      {new Date(workpackage?.createdDate)
+                        .toISOString()
+                        .slice(0, 10)}
                     </td>
                     <td className="px-6 py-4">{workpackage.status}</td>
                     <td className="px-6 py-4">

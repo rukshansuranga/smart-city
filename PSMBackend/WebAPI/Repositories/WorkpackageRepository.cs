@@ -34,19 +34,49 @@ public class WorkpackageRepository : IWorkpackageRepository
     {
         try
         {
-            var query = _context.WorkPackages
-            .Where(s => complainPaging.Status.Contains(s.Status))
-            .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
-            .OrderBy(s => s.WorkPackageId)
-            .Skip((complainPaging.PageIndex - 1) * complainPaging.PageSize)
-            .Take(complainPaging.PageSize);
+            // var query = _context.WorkPackages
+            // .Where(s => complainPaging.Status.Contains(s.Status))
+            // .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
+            // .OrderBy(s => s.WorkPackageId)
+            // .Skip((complainPaging.PageIndex - 1) * complainPaging.PageSize)
+            // .Take(complainPaging.PageSize);
 
-            var list = await query.ToListAsync();
+            // var list = await query.ToListAsync();
 
-            var count = _context.WorkPackages
-            .Where(s => complainPaging.Status.Contains(s.Status))
-            .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
-            .Count();
+            // var count = _context.WorkPackages
+            // .Where(s => complainPaging.Status.Contains(s.Status))
+            // .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
+            // .Count();
+
+            var qurery = _context.WorkPackages.Include(t => t.TicketPackages).AsQueryable();
+
+            if (!string.IsNullOrEmpty(complainPaging.Status))
+            {
+                qurery = qurery.Where(s => complainPaging.Status.Contains(s.Status));
+            }
+
+            if (complainPaging.Duration > 0)
+            {
+                qurery = qurery.Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration));
+            }
+
+            if (!string.IsNullOrEmpty(complainPaging.Type))
+            {
+                qurery = qurery.Where(s => s.WorkPackageType == complainPaging.Type);
+            }
+
+            var count = await qurery.CountAsync();
+
+            var list = await qurery
+                .OrderByDescending(s => s.WorkPackageId)
+                .Skip((complainPaging.PageIndex - 1) * complainPaging.PageSize)
+                .Take(complainPaging.PageSize)
+                .ToListAsync();
+
+            // var count = _context.WorkPackages
+            //     .Where(s => complainPaging.Status.Contains(s.Status))
+            //     .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
+            //     .Count();
 
             return new PageResponse<WorkPackage> { Records = list, TotalItems = count };
         }
@@ -138,6 +168,28 @@ public class WorkpackageRepository : IWorkpackageRepository
     }
 
 
+
+
+    #endregion
+
+    #region Project Complain
+    public async Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId)
+    {
+        var complains = _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages).Where(x => x.ProjectId == projectId);
+        return complains;
+    }
+
+    public async Task<ProjectComplain> AddProjectComplainAsync(ProjectComplain projectComplain)
+    {
+        await _context.ProjectComplains.AddAsync(projectComplain);
+        await _context.SaveChangesAsync();
+        return projectComplain;
+    }
+
+    public async Task<ProjectComplain> GetProjectComplainByWorkPackageId(int workPackageId)
+    {
+        return await _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages).FirstOrDefaultAsync(x => x.WorkPackageId == workPackageId);
+    }
     #endregion
 
 

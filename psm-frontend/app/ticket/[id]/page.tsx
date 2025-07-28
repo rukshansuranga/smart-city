@@ -1,11 +1,7 @@
 import { getTicketById } from "@/app/api/actions/ticketActions";
 import { Ticket } from "@/types";
-import TicketForm from "./TicketForm";
-import WorkpackageAssigned from "./WorkpackageAssigned";
 
-// type Props = {
-//   params: Promise<{ id: string }>;
-// };
+import ManageTicket from "../ManageTicket";
 
 export default async function TicketById({
   params,
@@ -20,8 +16,7 @@ export default async function TicketById({
 
   return (
     <div>
-      <TicketForm ticket={ticket} />
-      <WorkpackageAssigned ticketId={ticket.ticketId!} />
+      <ManageTicket ticket={ticket} />
     </div>
   );
 }

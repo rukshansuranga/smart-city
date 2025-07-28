@@ -16,12 +16,14 @@ public class Project
     public string Status { get; set; }
     public string? Location { get; set; }
     public string? LocationNote { get; set; }
+    public string City { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public decimal EstimatedCost { get; set; }
     [ForeignKey("Tender")]
     public int? AwadedTenderId { get; set; }
-    public Tender? Tender { get; set; }
+    public Tender? AwadedTener { get; set; }
     public LocalDate? TenderOpeningDate { get; set; }
     public LocalDate? TenderClosingDate { get; set; }
+    public ICollection<ProjectComplain> ProjectComplains { get; set; }
 }

@@ -9,9 +9,11 @@ export default function SelectList({ list, onPress }) {
             onPress={() => onPress(item.id)}
             className="rounded-md bg-blue-300"
           >
-            <Text className="text-center text-xl font-medium p-2">
-              {item.name}
-            </Text>
+            <View className="py-2 bg-blue-300 rounded-xl elevation-sm">
+              <Text className="text-center text-2xl font-medium">
+                {item.name}
+              </Text>
+            </View>
           </Pressable>
         </View>
       ))}

@@ -91,6 +91,22 @@ namespace PSMWebAPI.Controllers
 
         }
 
-     
+        [HttpPost]
+        [Route("filter")]
+        public async Task<IActionResult> GetProjectByTypeAndStatusAndName(ProjectQuery query)
+        {
+            var response = await _projectRepository.GetProjectByTypeAndStatusAndName(query.Type, query.Status, query.Name, query.City, query.IsRecent);
+            return Ok(response); // Returns 200 OK response if found
+        }
+
+    }
+
+    public class ProjectQuery
+    {
+        public string? Type { get; set; }
+        public string? Status { get; set; }
+        public string? Name { get; set; }
+        public string? City { get; set; }
+        public bool IsRecent { get; set; }
     }
 }

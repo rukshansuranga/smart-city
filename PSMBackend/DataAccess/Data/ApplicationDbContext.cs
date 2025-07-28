@@ -30,17 +30,31 @@ public class ApplicationDbContext : DbContext
     public DbSet<Company> Companies   { get; set; }
     public DbSet<Project> Projects   { get; set; }
     public DbSet<Tender> Tenders   { get; set; }
+    public DbSet<ProjectComplain> ProjectComplains { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
+
+
+    //local connection
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     // {
     //     //optionsBuilder.UseNpgsql("Host=localhost;Database=OLD_PSM;Username=postgres;Password=test");
 
     //     optionsBuilder.UseNpgsql(
     //     "Host=localhost;Database=PSM2;Username=postgres;Password=test",
+    //     o => o.UseNodaTime()
+    // );
+    // }
+
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     //optionsBuilder.UseNpgsql("Host=localhost;Database=OLD_PSM;Username=postgres;Password=test");
+
+    //     optionsBuilder.UseNpgsql(
+    //     "Host=ep-morning-math-a10tj24y-pooler.ap-southeast-1.aws.neon.tech; Database=neondb; Username=neondb_owner; Password=npg_DiA1HhTn2Gmr; SSL Mode=VerifyFull; Channel Binding=Require;",
     //     o => o.UseNodaTime()
     // );
     // }
@@ -52,7 +66,8 @@ public class ApplicationDbContext : DbContext
             .HasValue<WorkPackage>("WorkPackage")
             .HasValue<LightPostComplint>("LightPostComplint")
             .HasValue<GarbageComplain>("GarbageComplain")
-            .HasValue<GeneralComplain>("GeneralComplain");
+            .HasValue<GeneralComplain>("GeneralComplain")
+            .HasValue<ProjectComplain>("ProjectComplain");
 
         modelBuilder.Entity<User>()
             .HasDiscriminator<string>("UserType")
@@ -110,6 +125,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CompanyConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         modelBuilder.ApplyConfiguration(new TenderConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectComplainConfiguration());
 
         #endregion
     }

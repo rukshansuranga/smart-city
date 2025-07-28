@@ -6,7 +6,7 @@ import GooglePlacesTextInput, {
   Place,
 } from "react-native-google-places-textinput";
 import MapView, { Marker } from "react-native-maps";
-import { Button, Text } from "react-native-paper";
+import { Button, IconButton, MD3Colors, Text } from "react-native-paper";
 import LightPostContainer from "./LightPostContainer";
 import SelectList from "./SelectList";
 
@@ -97,7 +97,7 @@ export default function LightPostComplainList() {
   console.log("Selected placexx:", process.env.EXPO_PUBLIC_BACKEND_URL);
 
   return (
-    <View className="bg-red-500">
+    <View className="flex-1 gap-2   p-1">
       <View>
         <GooglePlacesTextInput
           apiKey="AIzaSyBO2E_KAoN9H3bmeXlS9Np20qGmtlg-qbc"
@@ -131,36 +131,29 @@ export default function LightPostComplainList() {
       >
         {addingComplain ? (
           <View className="flex-1 justify-center items-center">
-            <View className="w-4/5  p-4 bg-slate-200 rounded-md items-center elevation-sm gap-4">
+            <View className="w-4/5  p-4 bg-slate-200 rounded-2xl items-center elevation-sm gap-4">
               <Text className="font-bold text-2xl">Add List</Text>
               <View className="flex w-full gap-2">
                 <SelectList list={complainMap} onPress={addComplain} />
               </View>
 
-              <Button
+              <IconButton
+                icon="close"
+                iconColor={MD3Colors.primary10}
+                size={30}
                 mode="contained"
                 onPress={() => setAddingComplain((prev) => !prev)}
-              >
-                Close
-              </Button>
+              />
             </View>
           </View>
         ) : (
           <View className="flex-1 justify-center items-center">
-            <View className="w-4/5  p-4 bg-slate-200 rounded-md items-center elevation-sm gap-4">
+            <View className="w-4/5  p-4 bg-slate-200 rounded-2xl items-center elevation-sm gap-4">
               <View className="w-full">
                 {selectedPostNo && (
                   <LightPostContainer postNo={selectedPostNo} />
                 )}
               </View>
-
-              <Button
-                mode="contained"
-                onPress={() => setModalVisible(!modalVisible)}
-                icon="close"
-              >
-                Close
-              </Button>
 
               <Button
                 icon="plus"
@@ -169,6 +162,14 @@ export default function LightPostComplainList() {
               >
                 Add Complain
               </Button>
+
+              <IconButton
+                icon="close"
+                iconColor={MD3Colors.primary10}
+                size={30}
+                mode="contained"
+                onPress={() => setModalVisible(!modalVisible)}
+              />
             </View>
           </View>
         )}

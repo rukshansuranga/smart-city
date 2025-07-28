@@ -8,6 +8,7 @@ export async function getWorkpackagePaging(complainPaging: {
   pageSize: string;
   pageIndex: string;
   duration: string;
+  type?: string;
 }): Promise<Paging<Workpackage>> {
   console.log(34, complainPaging);
   const queryString = new URLSearchParams(complainPaging).toString();

@@ -18,8 +18,8 @@ export default function Index() {
         </Button>
       </View>
       <View className="flex justify-center items-center bg-blue-300 py-6  w-3/4 rounded-xl">
-        <Button>
-          <Text className="font-bold text-3xl">Road Projects</Text>
+        <Button onPress={() => router.navigate("/(projects)/road")}>
+          <Text className="font-bold text-3xl">Projects</Text>
         </Button>
       </View>
 

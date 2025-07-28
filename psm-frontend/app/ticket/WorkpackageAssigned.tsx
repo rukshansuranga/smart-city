@@ -4,7 +4,7 @@ import {
   manageMappingByTicketAndPackage,
 } from "@/app/api/actions/workpackageAction";
 import { Workpackage } from "@/types";
-import { Button } from "flowbite-react";
+import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import WorkpackageList from "./WorkpackageList";
 
@@ -14,11 +14,19 @@ export default function WorkpackageAssigned({
   ticketId: number;
 }) {
   const [workpackages, setWorkpackages] = useState<Workpackage[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchWorkpackagesByTicketId() {
-      const data = await getWorkpackageByTicketId(ticketId);
-      setWorkpackages(data);
+      try {
+        setLoading(true);
+        const data = await getWorkpackageByTicketId(ticketId);
+        setWorkpackages(data);
+      } catch (error) {
+        console.error("Error fetching workpackages:", error);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchWorkpackagesByTicketId();
@@ -67,6 +75,14 @@ export default function WorkpackageAssigned({
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner aria-label="Center-aligned Large spinner example" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-col justify-between">
       <div>
@@ -102,7 +118,7 @@ export default function WorkpackageAssigned({
                 </th>
                 <td className="px-6 py-4">{workpackage.name}</td>
                 <td className="px-6 py-4">
-                  {workpackage.createdDate.toISOString().slice(0, 10)}
+                  {new Date(workpackage.createdDate).toISOString().slice(0, 10)}
                 </td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td>

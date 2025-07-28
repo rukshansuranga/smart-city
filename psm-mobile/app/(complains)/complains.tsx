@@ -8,11 +8,6 @@ export default function index() {
 
   return (
     <View className="flex-1 justify-center items-center gap-5">
-      {/* <Stack.Screen
-        options={{
-          title: `Complains`,
-        }}
-      /> */}
       <View className="flex justify-center items-center bg-blue-300 py-6 w-3/4 rounded-xl ">
         <Button
           onPress={() =>
@@ -34,6 +29,17 @@ export default function index() {
       <View className="flex justify-center items-center bg-blue-300 py-6 w-3/4 rounded-xl ">
         <Button>
           <Text className="font-bold text-3xl text-slate-50 ">Garbage </Text>
+        </Button>
+      </View>
+      <View className="flex justify-center items-center bg-blue-300 py-6 w-3/4 rounded-xl ">
+        <Button
+          onPress={() =>
+            router.push("/(complains)/project/SelectProjectForComplain")
+          }
+        >
+          <Text className="font-bold text-3xl text-slate-50 ">
+            Project Complain
+          </Text>
         </Button>
       </View>
     </View>

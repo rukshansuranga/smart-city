@@ -27,16 +27,18 @@ public class ProjectRepository : IProjectRepository
         return await _context.Projects.ToListAsync();
     }
 
-    public async Task<Project> GetByIdAsync(int id)
+    public async Task<Project?> GetByIdAsync(int id)
     {
-        return await _context.Projects.FindAsync(id);
+        var project = await _context.Projects.Include(p => p.AwadedTener).ThenInclude(x => x.Company).FirstOrDefaultAsync(p => p.Id == id);
+        //return await _context.Projects.Include(p => p.AwadedTener).FindAsync(id);
+        return project;
     }
 
     public async Task<PageResponse<Project>> GetPagingAsync(ProjectPaging paging)
     {
         try
         {
-            var query = _context.Projects.Include(x => x.Tender).AsQueryable();
+            var query = _context.Projects.Include(x => x.AwadedTener).AsQueryable();
 
             if (!string.IsNullOrEmpty(paging.SearchText))
             {
@@ -89,5 +91,39 @@ public class ProjectRepository : IProjectRepository
         {
             throw ex;
         }
+    }
+
+    public async Task<IEnumerable<Project>> GetProjectByTypeAndStatusAndName(string? type, string? status, string? name, string? city,bool? isRecent = false)
+    {
+        var query = _context.Projects.AsQueryable();
+
+        if (!string.IsNullOrEmpty(type))
+        {
+            query = query.Where(p => p.Type == type);
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {  
+            query = query.Where(p => p.Status == status);
+        }
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            query = query.Where(p => p.Name.ToLower().Contains(name.ToLower()) || p.Description.ToLower().Contains(name.ToLower()));
+        }
+
+        if (!string.IsNullOrEmpty(city))
+        {
+            query = query.Where(p => p.City.ToLower().Contains(city.ToLower()));
+        }
+
+        query.OrderByDescending(p => p.Id);
+
+        if (isRecent.HasValue && isRecent.Value)
+        {
+            query = query.Take(8);
+        }
+
+        return query;
     }
 }

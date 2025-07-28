@@ -15,6 +15,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ title: "Home" }} />
         <Stack.Screen name="(complains)" options={{ headerShown: false }} />
         <Stack.Screen name="(garbage)" options={{ headerShown: false }} />
+        <Stack.Screen name="(projects)" options={{ headerShown: false }} />
         <Stack.Screen name="screem2" />
       </Stack>
     </SafeAreaProvider>

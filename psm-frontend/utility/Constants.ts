@@ -12,3 +12,11 @@ export const statusList = [
   { value: "4", text: "Completed" },
   { value: "5", text: "Cancelled" },
 ];
+
+export const ticketStatusList = [
+  { value: "1", text: "New" },
+  { value: "2", text: "Open" },
+  { value: "3", text: "In Progress" },
+  { value: "4", text: "Completed" },
+  { value: "5", text: "Cancelled" },
+];

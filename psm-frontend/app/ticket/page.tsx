@@ -43,7 +43,7 @@ export default async function TicketList({
               <td className="px-6 py-4">{ticket.ticketId}</td>
               <td className="px-6 py-4">{ticket.title}</td>
               <td className="px-6 py-4">
-                {ticket?.createdDate?.toISOString().slice(0, 10)}
+                {new Date(ticket.createdDate!)?.toISOString().slice(0, 10)}
               </td>
               <td className="px-6 py-4">{ticket.user?.name}</td>
               <td>

@@ -9,6 +9,11 @@ export async function createTicket(
   return fetchWrapper.post(`ticket`, ticket);
 }
 
+export async function createInternalTicket(ticket: Ticket): Promise<Ticket> {
+  //console.log("ticket action 52", ticket);
+  return fetchWrapper.post(`ticket/internal`, ticket);
+}
+
 export async function getTicketPaging(params: {
   pageSize: string;
   pageIndex: string;
@@ -16,6 +21,12 @@ export async function getTicketPaging(params: {
   const queryString = new URLSearchParams(params).toString();
   console.log("queryString", queryString, params);
   return fetchWrapper.get(`ticket?${queryString}`);
+}
+
+export async function getTicketListByWorkpackageId(
+  id: string
+): Promise<Ticket[]> {
+  return fetchWrapper.get(`ticket/workpackage/${id}`);
 }
 
 export async function getTicketById(id: string): Promise<Ticket> {

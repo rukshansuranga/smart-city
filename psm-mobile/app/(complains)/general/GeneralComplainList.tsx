@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, FlatList, Modal, SafeAreaView, View } from "react-native";
+import { Alert, FlatList, Modal, View } from "react-native";
 import {
   ActivityIndicator,
   Badge,
@@ -11,7 +11,7 @@ import {
   Text,
   TextInput,
 } from "react-native-paper";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function GeneralComplainList() {
   const router = useRouter();
@@ -163,12 +163,12 @@ export default function GeneralComplainList() {
     <SafeAreaProvider>
       <SafeAreaView className="flex-1">
         <View className="flex-1 justify-between items-center">
-          <View className="h-5/6">
-            <View className="flex-row justify-between items-center mx-4">
-              <View className=" w-1/2 py-3">
-                <Text>Complain List </Text>
+          <View className="w-11/12 flex-1">
+            <View className="flex-row justify-between items-center mx-4 mt-4 ">
+              <View>
+                <Text className="font-extrabold text-xl">Complain List </Text>
               </View>
-              <View className="w-1/2 ">
+              <View>
                 <Button
                   mode="contained"
                   onPress={() =>
@@ -179,24 +179,22 @@ export default function GeneralComplainList() {
                 </Button>
               </View>
             </View>
-            <View className="pt-6">
-              <FlatList
-                data={data}
-                renderItem={itemRender} // Replace with your item rendering
-                keyExtractor={(item, index) => String(index)} // Use a unique key
-                onEndReached={() =>
-                  fetchData(hasMore, isLoading, page, isPrivate)
-                }
-                onEndReachedThreshold={0.5} // Trigger when 50% from the end
-                ListFooterComponent={
-                  isLoading && hasMore ? (
-                    <ActivityIndicator size="large" />
-                  ) : null
-                }
-              />
-            </View>
+            <FlatList
+              style={{ flex: 1 }}
+              contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
+              data={data}
+              renderItem={itemRender}
+              keyExtractor={(item, index) => String(index)}
+              onEndReached={() =>
+                fetchData(hasMore, isLoading, page, isPrivate)
+              }
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={
+                isLoading && hasMore ? <ActivityIndicator size="large" /> : null
+              }
+            />
           </View>
-          <View className="w-full h-1/6">
+          <View className="w-full h-20 justify-center">
             <View className="flex-row justify-center gap-3">
               <Button
                 {...(isPrivate
@@ -227,8 +225,8 @@ export default function GeneralComplainList() {
           }}
         >
           {selectedGeneralComplain && (
-            <View className="flex-1 justify-center items-center">
-              <View className="w-4/5 h-4/6 p-4 bg-slate-200 rounded-md items-center elevation-sm">
+            <View className="flex-1 justify-center items-center w-full px-5 bg-red-50">
+              <View className="w-full p-4 bg-slate-200 rounded-md items-center elevation-sm">
                 <View className="flex  w-full gap-2 p">
                   <View>
                     <Text className="font-semibold text-xl">Title</Text>

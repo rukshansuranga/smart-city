@@ -34,13 +34,13 @@ export default function ProjectList() {
   const searchParams = useSearchParams();
 
   const [projects, setProjects] = useState<Partial<Project>[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalPages] = useState(0);
   const [currentPage] = useState(1);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [filter, setFilter] = useState<ProjectFilter>({
-    pageSize: 4,
+    pageSize: 8,
     pageNumber: 1,
     selectedType: "",
     searchText: "",
@@ -49,8 +49,6 @@ export default function ProjectList() {
     startDate: null,
     endDate: null,
   });
-
-  //const [query, setQuery] = useState<string>("");
 
   function generateQuery(queryFilter: ProjectFilter) {
     const formatFilter = {
@@ -73,16 +71,14 @@ export default function ProjectList() {
     router.push(url);
   }
 
+  const pageIndex = parseInt(searchParams.get("pageIndex")!) || 1;
+
   useEffect(() => {
+    console.log("searchParams", searchParams.toString());
     fetchProjects();
-    const pageIndex = parseInt(searchParams.get("pageIndex")!) || 1;
 
     setFilter({ ...filter, pageNumber: pageIndex });
   }, [searchParams]);
-
-  useEffect(() => {
-    setTotalPages(Math.ceil(totalItems / filter.pageSize));
-  }, [filter.pageSize, totalItems]);
 
   async function fetchProjects() {
     setIsLoading(true);
@@ -114,6 +110,8 @@ export default function ProjectList() {
       </div>
     );
   }
+
+  console.log("projects", totalItems);
 
   return (
     <div className="flex flex-col gap-2">

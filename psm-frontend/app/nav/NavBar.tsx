@@ -21,18 +21,7 @@ export default function NavBar({ session }: HeaderProps) {
       <NavbarBrand as={Link} href="https://flowbite-react.com">
         <Logo />
       </NavbarBrand>
-      {/* <NavbarToggle />
-      <NavbarCollapse>
-        <NavbarLink href="#" active>
-          Home
-        </NavbarLink>
-        <NavbarLink as={Link} href="#">
-          About
-        </NavbarLink>
-        <NavbarLink href="#">Services</NavbarLink>
-        <NavbarLink href="#">Pricing</NavbarLink>
-        <NavbarLink href="#">Contact</NavbarLink>
-      </NavbarCollapse> */}
+
       {session?.user ? (
         <div className="flex flex-row justify-between items-center">
           <div className="mr-4">{session.user.name}</div>

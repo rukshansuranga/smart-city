@@ -34,6 +34,20 @@ namespace PSMWebAPI.Controllers
             }
         }
 
+        [HttpGet("awadedTender/{id}")]
+        public async Task<IActionResult> GetAwadedTenderByProjectId(int id)
+        {
+            try
+            {
+                var awadedTender = await _tenderRepository.GetAwadedTenderByProjectId(id); // Calls service to fetch product by ID
+                return Ok(awadedTender); // Returns 200 OK response if found
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); // Returns 404 Not Found if product does not exist
+            }
+        }
+
         [HttpGet("project/{projectId}")]
         // [Route("project")]
         public async Task<IActionResult> Get(int projectId)

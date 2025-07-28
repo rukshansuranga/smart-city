@@ -19,15 +19,24 @@ export type Workpackage = {
   status: string;
   clientId: string;
   ticketId: string;
+  ticketPackages: Ticket[];
+};
+
+export type TicketPckage = {
+  id: number;
+  ticketId: number;
+  workPackageId: number;
 };
 
 export type Ticket = {
   ticketId?: number;
   title: string;
-  detail: string;
-  note: string;
+  detail?: string;
+  note?: string;
   userId: string;
   createdDate?: Date;
+  status?: string;
+  type?: string;
   user?: {
     userId: string;
     name: string;
@@ -35,13 +44,13 @@ export type Ticket = {
 };
 
 export type User = {
-  userId: string;
+  userId: number;
   name: string;
   telNumber: string;
 };
 
 export type Option = {
-  value: string | null;
+  value: string | number | null;
   text: string;
 };
 

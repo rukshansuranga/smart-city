@@ -25,7 +25,7 @@ public class TicketRepository : ITicketRepository
         try
         {
             var query = _context.Tickets.Include(x => x.User)
-                .OrderBy(t => t.TicketId)
+                .OrderByDescending(t => t.TicketId)
                 .Skip((paging.PageIndex - 1) * paging.PageSize)
                 .Take(paging.PageSize);
 
@@ -62,5 +62,15 @@ public class TicketRepository : ITicketRepository
             throw ex;
         }
 
+    }
+
+    public async Task<IEnumerable<Ticket>> GetTicketListByWorkPackageIdAsync(int workPackageId)
+    {
+        var tickets = await _context.Tickets
+            .Where(t => t.TicketPackages.Any(tp => tp.WorkPackageId == workPackageId))
+            .Include(t => t.User)
+            .ToListAsync();
+
+        return tickets;
     }
 }

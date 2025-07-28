@@ -11,4 +11,5 @@ public interface ITenderRepository
     Task<Tender> UpdateAsync(Tender tender);
     Task<Tender> GetByIdAsync(int id);
     Task<IEnumerable<Tender>> GetTendersByProjectIdAsync(int projectId);
+    Task<Tender> GetAwadedTenderByProjectId(int id);
 }

@@ -31,4 +31,13 @@ public interface IWorkpackageRepository
     Task<IEnumerable<LightpostComplainSummary>> GetSummaryLightPostComplintsByPostId(string postNo);
 
     #endregion
+
+    #region Project Complains
+
+    Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId);
+    Task<ProjectComplain> AddProjectComplainAsync(ProjectComplain projectComplain);
+    Task<ProjectComplain> GetProjectComplainByWorkPackageId(int workPackageId);
+
+    #endregion
+
 }

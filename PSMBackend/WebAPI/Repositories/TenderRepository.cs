@@ -22,6 +22,15 @@ public class TenderRepository : ITenderRepository
         return tender;
     }
 
+    public async Task<Tender?> GetAwadedTenderByProjectId(int id)
+    {
+        var tender = await _context.Tenders
+            .Include(t => t.Company)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        return tender;
+    }
+
     public async Task<Tender> GetByIdAsync(int id)
     {
         return await _context.Tenders.FindAsync(id);
