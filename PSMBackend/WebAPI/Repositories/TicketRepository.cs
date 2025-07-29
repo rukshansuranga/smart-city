@@ -69,7 +69,7 @@ public class TicketRepository : ITicketRepository
     public async Task<IEnumerable<Ticket>> GetTicketListByWorkPackageIdAsync(int workPackageId)
     {
         var tickets = await _context.Tickets
-            .Where(t => t.TicketPackages.Any(tp => tp.WorkPackageId == workPackageId))
+            .Where(t => t.TicketPackages.Any(tp => tp.WorkpackageId == workPackageId))
             .Include(t => t.User)
             .ToListAsync();
 

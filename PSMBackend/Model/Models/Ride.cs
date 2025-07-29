@@ -4,9 +4,9 @@ using NodaTime;
 
 namespace PSMModel.Models;
 
-public class Ride
+public class Ride : BaseEntity
 {
-    public int Id { get; set; }
+    public int RideId { get; set; }
     public LocalDateTime StartTime { get; set; }
     public LocalDateTime? EndTime { get; set; }
     public string Type { get; set; }

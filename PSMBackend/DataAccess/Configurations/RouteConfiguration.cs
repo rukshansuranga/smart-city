@@ -1,4 +1,4 @@
-using System;
+ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PSMModel.Models;
@@ -13,12 +13,18 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             new Route
             {
                 RouteNo = "R001",
-                Name="Noth Root"
+                Name = "Noth Root",
+                CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
+                CreatedBy = 1,
+                IsActive = true
             },
             new Route
             {
                 RouteNo = "R002",
-                Name="South Root"
+                Name = "South Root",
+                CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
+                CreatedBy = 1,
+                IsActive = true
             }
         );
     }

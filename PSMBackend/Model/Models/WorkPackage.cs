@@ -2,24 +2,21 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
+using PSMModel.Enums;
 
 namespace PSMModel.Models;
 
-public class WorkPackage
+public class Workpackage :BaseEntity
 {
     [Key]
-    public int WorkPackageId { get; set; }
-    public string Name { get; set; }
-    public string Detail { get; set; }
-    public LocalDateTime CreatedDate { get; set; }
-    public LocalDateTime UpdatedDate { get; set; }
-    public string? Status { get; set; }
+    public int WorkpackageId { get; set; }
+    public string Subject { get; set; }
+    public string? Detail { get; set; }
+    public WorkpackageStatus? Status { get; set; }
     [ForeignKey("Client")]
     public int? ClientId { get; set; }
     public Client? Client { get; set; }
-    public string WorkPackageType { get; set; }
-
+    public string WorkpackageType { get; set; }
     public List<TicketPackage>? TicketPackages { get; set; }
-    
     public List<Comment>? Comments { get; set; }
 }

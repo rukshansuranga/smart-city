@@ -4,15 +4,14 @@ using NodaTime;
 
 namespace PSMModel.Models;
 
-public class Comment
+public class Comment : BaseEntity
 {
 public int CommentId { get; set; }
 public string Text { get; set; }
-public LocalDateTime CreatedDate { get; set; }
-public LocalDateTime UpdatedDate { get; set; }
-[ForeignKey("WorkPackage")]
+
+[ForeignKey("Workpackage")]
 public int WorkpackageId { get; set; }
-public WorkPackage? WorkPackage { get; set; }
+public Workpackage? Workpackage { get; set; }
 public bool? IsPrivate { get; set; }
 [ForeignKey("Client")]
 public int? ClientId { get; set; }

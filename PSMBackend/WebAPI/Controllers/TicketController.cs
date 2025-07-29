@@ -31,7 +31,7 @@ namespace PSMWebAPI.Controllers
             {
                 workPackageList.Add(new TicketPackage
                 {
-                    WorkPackageId = workPackageId
+                    WorkpackageId = workPackageId
                 });
             }
 
@@ -47,8 +47,7 @@ namespace PSMWebAPI.Controllers
             //     Status = request.Status
             // };
 
-            var ticket = _mapper.Map<Ticket>(request);
-            ticket.CreatedDate = PSMDateTime.Now; // Uses the utility class to get current time in Colombo timezone
+            var ticket = _mapper.Map<Ticket>(request); // Uses the utility class to get current time in Colombo timezone
             ticket.TicketPackages = workPackageList;
 
 
@@ -73,7 +72,6 @@ namespace PSMWebAPI.Controllers
             // };
 
             var ticket = _mapper.Map<Ticket>(request);
-            ticket.CreatedDate = PSMDateTime.Now; // Uses the utility class to get current time in Colombo timezone
 
             var updatedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
             return CreatedAtAction(nameof(GetById), new { id = updatedTicket.TicketId }, updatedTicket);
@@ -120,7 +118,7 @@ namespace PSMWebAPI.Controllers
         public async Task<IActionResult> Update(int ticketId, TicketRequest request)
         {
             var ticket = _mapper.Map<Ticket>(request);
-            var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId);
+            var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId.Value);
 
             //var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
 

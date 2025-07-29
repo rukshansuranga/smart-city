@@ -103,8 +103,8 @@ namespace PSMWebAPI.Controllers
 
     public class ProjectQuery
     {
-        public string? Type { get; set; }
-        public string? Status { get; set; }
+        public ProjectType? Type { get; set; }
+        public ProjectStatus? Status { get; set; }
         public string? Name { get; set; }
         public string? City { get; set; }
         public bool IsRecent { get; set; }

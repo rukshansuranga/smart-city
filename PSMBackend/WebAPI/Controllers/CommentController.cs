@@ -25,8 +25,6 @@ namespace PSMWebAPI.Controllers
             {
                 Text = request.Comment,
                 WorkpackageId = request.WorkPackageId,
-                CreatedDate = PSMDateTime.Now,
-                UpdatedDate = PSMDateTime.Now,
                 IsPrivate = request.IsPrivate,
                 Type = request.Type,
                 ClientId = request.ClientId

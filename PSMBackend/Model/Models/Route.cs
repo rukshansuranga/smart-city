@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace PSMModel.Models;
 
-public class Route
+public class Route: BaseEntity
 {
     [Key]
     public string RouteNo { get; set; }
     public string Name { get; set; }
     public float Distance { get; set; }
-
 
 }

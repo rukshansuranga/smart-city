@@ -14,25 +14,25 @@ public class TicketPackageMappingConfiguration : IEntityTypeConfiguration<Ticket
                 {
                     Id = 1,
                     TicketId = 1,
-                    WorkPackageId = 2
+                    WorkpackageId = 2
                 },
                 new TicketPackage
-                {
+                {  
                     Id = 2,
                     TicketId = 1,
-                    WorkPackageId = 3
+                    WorkpackageId = 3
                 },
                 new TicketPackage
                 {
                     Id = 3,
                     TicketId = 3,
-                    WorkPackageId = 4
+                    WorkpackageId = 4
                 },
                 new TicketPackage
                 {
                     Id = 4,
                     TicketId = 4,
-                    WorkPackageId = 5
+                    WorkpackageId = 5
                 }
             );
     }

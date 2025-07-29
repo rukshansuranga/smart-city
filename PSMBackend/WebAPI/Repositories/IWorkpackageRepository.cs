@@ -8,18 +8,18 @@ namespace PSMWebAPI.Repositories;
 
 public interface IWorkpackageRepository
 {
-    Task<PageResponse<WorkPackage>> GetWorkPackages(ComplainPaging complainPaging);
-    Task<WorkPackage> GetByIdAsync(int id);
-    Task<WorkPackage> AddWorkpackageAsync(WorkPackage workPackage);
-    Task<WorkPackage> AddComplainAsync(LightPostComplint workPackage);
-    Task<IEnumerable<WorkPackage>> GetWorkPackagesByTicketId(int ticketId);
-    Task DeleteWorkpackageMappingByTicketId(int ticketId, int workpackageId);
-    Task AddWorkpackageMappingByTicketId(int ticketId, int workpackageId);
+    Task<PageResponse<Workpackage>> GetWorkpackages(ComplainPaging complainPaging);
+    Task<Workpackage> GetByIdAsync(int id);
+    Task<Workpackage> AddWorkpackageAsync(Workpackage Workpackage);
+    Task<Workpackage> AddComplainAsync(LightPostComplain Workpackage);
+    Task<IEnumerable<Workpackage>> GetWorkpackagesByTicketId(int ticketId);
+    Task DeleteWorkpackageMappingByTicketId(int ticketId, int WorkpackageId);
+    Task AddWorkpackageMappingByTicketId(int ticketId, int WorkpackageId);
 
 
     #region General Complains
 
-    Task<WorkPackage> AddGeneralComplainAsync(GeneralComplain generalComplain);
+    Task<Workpackage> AddGeneralComplainAsync(GeneralComplain generalComplain);
     Task<IEnumerable<GeneralComplain>> GetGeneralComplain(GeneralComplainGetPagingRequest request);
 
     #endregion
@@ -36,7 +36,7 @@ public interface IWorkpackageRepository
 
     Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId);
     Task<ProjectComplain> AddProjectComplainAsync(ProjectComplain projectComplain);
-    Task<ProjectComplain> GetProjectComplainByWorkPackageId(int workPackageId);
+    Task<ProjectComplain> GetProjectComplainByWorkpackageId(int WorkpackageId);
 
     #endregion
 

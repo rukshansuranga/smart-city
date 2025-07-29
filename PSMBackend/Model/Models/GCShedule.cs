@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace PSMModel.Models;
 
-public class GCShedule
+public class GCShedule: BaseEntity
 {
-    public int Id { get; set; }
+    public int GCSheduleId { get; set; }
     public string Day { get; set; }
     public string Type { get; set; }
     public string Time { get; set; }

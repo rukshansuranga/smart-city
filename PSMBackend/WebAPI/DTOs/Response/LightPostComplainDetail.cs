@@ -4,8 +4,8 @@ namespace PSMWebAPI.DTOs.Response;
 
 public class LightPostComplainDetail
 {
-    public int WorkPackageId { get; set; }
-    public string Name { get; set; }
+    public int WorkpackageId { get; set; }
+    public string Subject { get; set; }
     public string ClientName { get; set; }
     public string Status { get; set; }
     public string ComplainDate { get; set; }

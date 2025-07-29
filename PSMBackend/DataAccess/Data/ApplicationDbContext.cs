@@ -13,8 +13,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<LightPost> LightPosts { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
-    public DbSet<WorkPackage> WorkPackages { get; set; }
-    public DbSet<LightPostComplint> LightPostComplints { get; set; }
+    public DbSet<Workpackage> Workpackages { get; set; }
+    public DbSet<LightPostComplain> LightPostComplains { get; set; }
 
     public DbSet<TicketPackage> TicketPackages { get; set; }
     public DbSet<Comment> Comments { get; set; }
@@ -62,10 +62,10 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<WorkPackage>()
-            .HasDiscriminator<string>("WorkPackageType")
-            .HasValue<WorkPackage>("WorkPackage")
-            .HasValue<LightPostComplint>("LightPostComplint")
+        modelBuilder.Entity<Workpackage>()
+            .HasDiscriminator<string>("WorkpackageType")
+            .HasValue<Workpackage>("Workpackage")
+            .HasValue<LightPostComplain>("LightPostComplain")
             .HasValue<GarbageComplain>("GarbageComplain")
             .HasValue<GeneralComplain>("GeneralComplain")
             .HasValue<ProjectComplain>("ProjectComplain");
@@ -75,41 +75,17 @@ public class ApplicationDbContext : DbContext
             .HasValue<User>("User")
             .HasValue<Driver>("Driver");
 
-        //modelBuilder.Entity<TicketPackage>().HasNoKey();
-
-        #region FeedData
-
-        //feed lightpost
-        modelBuilder.Entity<LightPost>().HasData(
-            new LightPost
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
             {
-                LightPostNumber = "LP001",
-                Latitude = 6.9271,
-                Longitude = 79.8612
-            },
-            new LightPost
-            {
-                LightPostNumber = "LP002",
-                Latitude = 6.9272,
-                Longitude = 79.8613
+                modelBuilder.Entity(entityType.ClrType).Property<LocalDateTime>("CreatedDate").HasDefaultValueSql("NOW()");
+                modelBuilder.Entity(entityType.ClrType).Property<bool>("IsActive").HasDefaultValue(true);
             }
-        );
-
-        //feed garbage complain
-        modelBuilder.Entity<GarbageComplain>().HasData(
-            new GarbageComplain
-            {
-                WorkPackageId = 7,
-                Name = "Garbage Collection",
-                Detail = "Garbage collection needed in area",
-                CreatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-                UpdatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-                Status = "Open",
-                ClientId = 2,
-                GarbagePointNo = "GP001"
-            });
-
-        modelBuilder.ApplyConfiguration(new ClientConfiguration());
+        }
+        #region Configurations
+        modelBuilder.ApplyConfiguration(new ClientConfiguration()); 
+        modelBuilder.ApplyConfiguration(new LightPostConfiguration());
         modelBuilder.ApplyConfiguration(new WorkpackageConfiguration());
         modelBuilder.ApplyConfiguration(new LightPostComplainConfiguration());
         modelBuilder.ApplyConfiguration(new TicketConfiguration());

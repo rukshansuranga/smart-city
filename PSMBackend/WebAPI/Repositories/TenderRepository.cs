@@ -26,7 +26,7 @@ public class TenderRepository : ITenderRepository
     {
         var tender = await _context.Tenders
             .Include(t => t.Company)
-            .FirstOrDefaultAsync(t => t.Id == id);
+            .FirstOrDefaultAsync(t => t.TenderId == id);
 
         return tender;
     }

@@ -14,20 +14,29 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             new User
             {
                 UserId = 1,
-                Name = "Admin",
-                TelNumber = "0777582696"
+                FirstName = "Admin",
+                LastName = "User",
+                Mobile = "0777582696",
+                Email = "admin@example.com",
+                City = "Colombo"
             },
             new User
             {
                 UserId = 2,
-                Name = "Kamal",
-                TelNumber = "0147894562"
+                FirstName = "Kamal",
+                LastName = "Perera",
+                Mobile = "0147894562",
+                Email = "kamal@example.com",
+                City = "Galle"
             },
             new User
             {
                 UserId = 3,
-                Name = "Kumara",
-                TelNumber = "0117654321"
+                FirstName = "Kumara",
+                LastName = "Fernando",
+                Mobile = "0117654321",
+                Email = "kumara@example.com",
+                City = "Kandy"
             }
         );
     }

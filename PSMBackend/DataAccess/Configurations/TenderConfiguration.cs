@@ -13,23 +13,29 @@ public class TenderConfiguration : IEntityTypeConfiguration<Tender>
         builder.HasData(
             new Tender
             {
-                Id = 1,
-                Name = "Tender for Project A",
+                TenderId = 1,
+                Subject = "Tender for Project A",
                 Note = "This is a tender for Project A",
-                SubmittedDate = new LocalDateTime(2023, 10, 1, 10, 0),
+                SubmittedDate = new LocalDateTime(2023, 10, 1, 10, 0, 0),
                 BidAmount = 500000,
                 ProjectId = 1,
-                CompanyId = 1
+                CompanyId = 1,
+                CreatedAt = new LocalDateTime(2023, 10, 1, 9, 0, 0),
+                CreatedBy = 1,
+                IsActive = true
             },
             new Tender
             {
-                Id = 2,
-                Name = "Tender for Road Construction",
+                TenderId = 2,
+                Subject = "Tender for Road Construction",
                 Note = "This is a tender for Project A",
-                SubmittedDate = new LocalDateTime(2023, 10, 1, 10, 0),
+                SubmittedDate = new LocalDateTime(2023, 10, 1, 10, 0, 0),
                 BidAmount = 300000,
                 ProjectId = 1,
-                CompanyId = 1
+                CompanyId = 1,
+                CreatedAt = new LocalDateTime(2023, 10, 1, 9, 0, 0),
+                CreatedBy = 1,
+                IsActive = true
             }
         );
     }

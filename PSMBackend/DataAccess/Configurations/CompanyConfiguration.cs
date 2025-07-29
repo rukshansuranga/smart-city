@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NodaTime;
 using PSMModel.Models;
 
 namespace PSMDataAccess.Configurations;
@@ -12,16 +13,31 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
         builder.HasData(
             new Company
             {
-                Id = 1,
+                CompanyId = 1,
                 Name = "Maga",
-                Address = "123 Main St, Colombo",
-                
+                AddressLine1 = "123 Main St",
+                AddressLine2 = null,
+                City = "Colombo",
+                Mobile = "0771234567",
+                CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
+                UpdatedAt = null,
+                CreatedBy = 1,
+                UpdatedBy = null,
+                IsActive = true
             },
             new Company
             {
-                Id = 2,
+                CompanyId = 2,
                 Name = "Access Construction",
-                Address = "123 Main St, Gampaha",
+                AddressLine1 = "123 Main St",
+                AddressLine2 = null,
+                City = "Gampaha",
+                Mobile = "0779876543",
+                CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
+                UpdatedAt = null,
+                CreatedBy = 1,
+                UpdatedBy = null,
+                IsActive = true
             }
         );
     }

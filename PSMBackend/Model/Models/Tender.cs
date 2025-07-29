@@ -4,11 +4,11 @@ using NodaTime;
 
 namespace PSMModel.Models;
 
-public class Tender
+public class Tender : BaseEntity
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Note { get; set; }
+    public int TenderId { get; set; }
+    public string Subject { get; set; }
+    public string? Note { get; set; }
     public decimal BidAmount { get; set; }
     public LocalDateTime SubmittedDate { get; set; }
     [ForeignKey("Project")]

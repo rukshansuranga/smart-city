@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
+using PSMModel.Enums;
 using PSMModel.Models;
 using PSMWebAPI.DTOs;
 using PSMWebAPI.DTOs.Request;
@@ -29,18 +30,17 @@ namespace PSMWebAPI.Controllers
         public async Task<IActionResult> Add(WorkpackageRequest request)
         {
 
-            var workPackage = new WorkPackage
+            var workpackage = new Workpackage
             {
-                Name = request.Name,
+                Subject = request.Name,
                 Detail = request.Detail,
-                CreatedDate = PSMDateTime.Now, // Uses the utility class to get current time in Colombo timezone
-                UpdatedDate = PSMDateTime.Now,
-                Status = request.Status ?? "New" // Default status if not provided
+                
+                Status = request.Status // Default status if not provided
             };
 
 
-            var updatedWorkpackage = await _workpackageRepository.AddWorkpackageAsync(workPackage); // Calls service to add a new product
-            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkPackageId }, updatedWorkpackage);
+            var updatedWorkpackage = await _workpackageRepository.AddWorkpackageAsync(workpackage); // Calls service to add a new product
+            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkpackageId }, updatedWorkpackage);
             // Returns 201 Created response with location header pointing to the new product
         }
 
@@ -48,20 +48,19 @@ namespace PSMWebAPI.Controllers
         public async Task<IActionResult> AddComplain(LightPostComplintRequest request)
         {
 
-            var workPackage = new LightPostComplint
+            var workpackage = new LightPostComplain
             {
-                Name = request.Name,
+                Subject = request.Name,
                 Detail = request.Detail,
-                CreatedDate = PSMDateTime.Now, // Uses the utility class to get current time in Colombo timezone
-                UpdatedDate = PSMDateTime.Now,
-                Status = request.Status ?? "New", // Default status if not provided
+
+                Status = request.Status.Value, // Default status if not provided
                 LightPostNumber = request.LightPostNumber,
                 ClientId = request.ClientId
             };
 
 
-            var updatedWorkpackage = await _workpackageRepository.AddWorkpackageAsync(workPackage); // Calls service to add a new product
-            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkPackageId }, updatedWorkpackage);
+            var updatedWorkpackage = await _workpackageRepository.AddWorkpackageAsync(workpackage); // Calls service to add a new product
+            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkpackageId }, updatedWorkpackage);
             // Returns 201 Created response with location header pointing to the new product
         }
 
@@ -83,7 +82,7 @@ namespace PSMWebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetWorkPackages([FromQuery] ComplainPaging complainPaging)
         {
-            var workPackages = await _workpackageRepository.GetWorkPackages(complainPaging);
+            var workPackages = await _workpackageRepository.GetWorkpackages(complainPaging);
             return Ok(workPackages); // Returns 200 OK response with the list of work packages
         }
 
@@ -93,7 +92,7 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-                var workPackages = await _workpackageRepository.GetWorkPackagesByTicketId(ticketId); // Calls service to fetch product by ID
+                var workPackages = await _workpackageRepository.GetWorkpackagesByTicketId(ticketId); // Calls service to fetch product by ID
                 return Ok(workPackages); // Returns 200 OK response if found
             }
             catch (KeyNotFoundException)
@@ -183,18 +182,16 @@ namespace PSMWebAPI.Controllers
 
             var workPackage = new GeneralComplain
             {
-                Name = request.Name,
+                Subject = request.Name,
                 Detail = request.Detail,
-                CreatedDate = PSMDateTime.Now, // Uses the utility class to get current time in Colombo timezone
-                UpdatedDate = PSMDateTime.Now,
-                Status = request.Status ?? "New", // Default status if not provided
+                Status = request.Status.Value, // Default status if not provided
                 IsPrivate = request.IsPrivate,
                 ClientId = request.ClientId
             };
-
+  
 
             var updatedWorkpackage = await _workpackageRepository.AddGeneralComplainAsync(workPackage); // Calls service to add a new product
-            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkPackageId }, updatedWorkpackage);
+            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkpackageId }, updatedWorkpackage);
             // Returns 201 Created response with location header pointing to the new product
         }
 
@@ -228,9 +225,8 @@ namespace PSMWebAPI.Controllers
         {
 
             var projectComplain = _mapper.Map<ProjectComplain>(request);
-            projectComplain.CreatedDate = PSMDateTime.Now; // Uses the utility class to get current time in Colombo timezone
-            projectComplain.UpdatedDate = PSMDateTime.Now;
-            projectComplain.Status = "New"; // Default status if not provided
+
+            projectComplain.Status = WorkpackageStatus.New; // Default status if not provided
 
             var createdProjectComplain = await _workpackageRepository.AddProjectComplainAsync(projectComplain);
             return CreatedAtAction(nameof(GetProjectComplainsByProjectId), new { projectId = createdProjectComplain.ProjectId }, createdProjectComplain);
@@ -241,7 +237,7 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-                var projectComplain = await _workpackageRepository.GetProjectComplainByWorkPackageId(workPackageId);
+                var projectComplain = await _workpackageRepository.GetProjectComplainByWorkpackageId(workPackageId);
                 return Ok(projectComplain); // Returns 200 OK response if found
             }
             catch (KeyNotFoundException)

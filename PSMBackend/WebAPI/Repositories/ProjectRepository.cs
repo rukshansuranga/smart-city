@@ -29,7 +29,8 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Project?> GetByIdAsync(int id)
     {
-        var project = await _context.Projects.Include(p => p.AwadedTener).ThenInclude(x => x.Company).FirstOrDefaultAsync(p => p.Id == id);
+        //var project = await _context.Projects.Include(p => p.AwadedTener).ThenInclude(x => x.Company).FirstOrDefaultAsync(p => p.Id == id);
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
         //return await _context.Projects.Include(p => p.AwadedTener).FindAsync(id);
         return project;
     }
@@ -38,11 +39,12 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
-            var query = _context.Projects.Include(x => x.AwadedTener).AsQueryable();
+            //var query = _context.Projects.Include(x => x.AwadedTener).AsQueryable();
+            var query = _context.Projects.AsQueryable();
 
             if (!string.IsNullOrEmpty(paging.SearchText))
             {
-                query = query.Where(t => t.Name.Contains(paging.SearchText) || t.Description.Contains(paging.SearchText));
+                query = query.Where(t => t.Subject.Contains(paging.SearchText) || t.Description.Contains(paging.SearchText));
             }
 
             if (paging.StartDate.HasValue)
@@ -55,9 +57,9 @@ public class ProjectRepository : IProjectRepository
                 query = query.Where(t => t.EndDate <= paging.EndDate.Value);
             }
 
-            if (!string.IsNullOrEmpty(paging.SelectedType))
+            if (paging.SelectedType.HasValue)
             {
-                query = query.Where(t => t.Type == paging.SelectedType);
+                query = query.Where(t => t.Type == paging.SelectedType.Value);
             }
 
             var records = await query.ToListAsync();
@@ -93,23 +95,23 @@ public class ProjectRepository : IProjectRepository
         }
     }
 
-    public async Task<IEnumerable<Project>> GetProjectByTypeAndStatusAndName(string? type, string? status, string? name, string? city,bool? isRecent = false)
+    public async Task<IEnumerable<Project>> GetProjectByTypeAndStatusAndName(ProjectType? type, ProjectStatus? status, string? name, string? city,bool? isRecent = false)
     {
         var query = _context.Projects.AsQueryable();
 
-        if (!string.IsNullOrEmpty(type))
+        if (type.HasValue)
         {
-            query = query.Where(p => p.Type == type);
+            query = query.Where(p => p.Type == type.Value);
         }
 
-        if (!string.IsNullOrEmpty(status))
-        {  
-            query = query.Where(p => p.Status == status);
+        if (status.HasValue)
+        {
+            query = query.Where(p => p.Status == status.Value);
         }
 
         if (!string.IsNullOrEmpty(name))
         {
-            query = query.Where(p => p.Name.ToLower().Contains(name.ToLower()) || p.Description.ToLower().Contains(name.ToLower()));
+            query = query.Where(p => p.Subject.ToLower().Contains(name.ToLower()) || p.Description.ToLower().Contains(name.ToLower()));
         }
 
         if (!string.IsNullOrEmpty(city))

@@ -76,7 +76,7 @@ namespace PSMWebAPI.Controllers
             tender.SubmittedDate = PSMDateTime.Now; // Set the submitted date to current time
 
             var createdTender = await _tenderRepository.AddAsync(tender);
-            return CreatedAtAction(nameof(GetById), new { id = createdTender.Id }, createdTender);
+            return CreatedAtAction(nameof(GetById), new { id = createdTender.TenderId }, createdTender);
             }
             catch (Exception ex)
             {

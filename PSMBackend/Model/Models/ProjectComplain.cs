@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PSMModel.Models;
 
-public class ProjectComplain : WorkPackage
+public class ProjectComplain : Workpackage
 {
     [ForeignKey("Project")]
     public int ProjectId { get; set; }
