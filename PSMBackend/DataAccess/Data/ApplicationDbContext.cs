@@ -31,6 +31,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Project> Projects   { get; set; }
     public DbSet<Tender> Tenders   { get; set; }
     public DbSet<ProjectComplain> ProjectComplains { get; set; }
+    public DbSet<TicketHistory> TicketHistories { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

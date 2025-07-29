@@ -53,6 +53,8 @@ public class TicketRepository : ITicketRepository
     {
         try
         {
+            //await UpdateTicketAsync(ticket, ticket.UserId);
+
             _context.Tickets.Update(ticket);
             await _context.SaveChangesAsync();
             return ticket;
@@ -72,5 +74,38 @@ public class TicketRepository : ITicketRepository
             .ToListAsync();
 
         return tickets;
+    }
+
+    public async Task<Ticket> UpdateTicketHistoryAsync(Ticket updatedTicket, int userId)
+    {
+        var existingTicket = await _context.Tickets.FindAsync(updatedTicket.TicketId);
+
+        if (existingTicket == null) return null;
+
+        var properties = typeof(Ticket).GetProperties();
+        foreach (var prop in properties)
+        {
+            var oldValue = prop.GetValue(existingTicket)?.ToString();
+            var newValue = prop.GetValue(updatedTicket)?.ToString();
+            if (oldValue != newValue)
+            {
+                var history = new TicketHistory
+                {
+                    TicketId = updatedTicket.TicketId,
+                    PropertyName = prop.Name,
+                    OldValue = oldValue,
+                    NewValue = newValue,
+                    ChangedDate = DateTime.UtcNow,
+                    ChangedBy = userId
+                };
+                _context.TicketHistories.Add(history);
+            }
+        }
+
+        // Update the ticket
+        _context.Entry(existingTicket).CurrentValues.SetValues(updatedTicket);
+        await _context.SaveChangesAsync();
+
+        return existingTicket;
     }
 }

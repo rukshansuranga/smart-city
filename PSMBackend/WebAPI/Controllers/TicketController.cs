@@ -119,16 +119,14 @@ namespace PSMWebAPI.Controllers
         [HttpPut("{ticketId}")]
         public async Task<IActionResult> Update(int ticketId, TicketRequest request)
         {
-            var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
+            var ticket = _mapper.Map<Ticket>(request);
+            var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId);
 
-            // selectedTicket.Title = request.Title;
-            // selectedTicket.Detail = request.Detail;
-            // selectedTicket.Note = request.Note;
-            // selectedTicket.UserId = request.UserId;
+            //var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
 
-            _mapper.Map<TicketRequest, Ticket>(request, selectedTicket);
+            _mapper.Map<TicketRequest, Ticket>(request, existingTicket);
 
-            var updatedTicket = await _ticketRepository.UpdateAsync(selectedTicket); // Calls service to add a new product
+            var updatedTicket = await _ticketRepository.UpdateAsync(existingTicket); // Calls service to add a new product
 
             return Ok(updatedTicket);
         }

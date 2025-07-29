@@ -1,0 +1,12 @@
+@startuml
+[*] --> New
+New --> Start : begin work
+Start --> Done : complete
+Start --> Block : block issue
+Block --> Start : unblock
+New --> Cancel : cancel
+Start --> Cancel : cancel
+Done --> Close : close ticket
+Cancel --> Close : close ticket
+Close --> [*]
+@enduml

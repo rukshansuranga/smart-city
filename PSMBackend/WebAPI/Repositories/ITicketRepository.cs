@@ -11,4 +11,5 @@ public interface ITicketRepository
       Task<Ticket> GetByIdAsync(int id);
       Task<PageResponse<Ticket>> GetPagingAsync(TicketPaging paging);
       Task<IEnumerable<Ticket>> GetTicketListByWorkPackageIdAsync(int workPackageId);
+      Task<Ticket> UpdateTicketHistoryAsync(Ticket updatedTicket, int userId);
 }

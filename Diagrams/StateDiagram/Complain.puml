@@ -1,0 +1,7 @@
+@startuml
+[*] --> New
+New --> OnProgress : start work
+OnProgress --> Close : finish
+New --> Close : cancel
+Close --> [*]
+@enduml
