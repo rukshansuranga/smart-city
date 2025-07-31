@@ -13,5 +13,3 @@ declare interface GoogleInputProps {
     address: string;
   }) => void;
 }
-
-

@@ -1,6 +1,6 @@
 using System;
 
-namespace PSMWebAPI.DTOs;
+namespace PSMWebAPI.DTOs.Ticket;
 
 public class TicketPaging
 {

@@ -1,7 +1,8 @@
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import { Text } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -13,7 +14,7 @@ const initialRegion = {
 };
 
 export default function Garbage() {
-  const [inputDate, setInputDate] = useState(undefined);
+  const [inputDate, setInputDate] = useState("2025-07-10");
   const [region, setRegion] = useState(undefined);
   const [coordinates, setCoordinates] = useState([]);
 
@@ -43,7 +44,7 @@ export default function Garbage() {
     console.log("select region", region);
     try {
       const data = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/route?regionNo=${region}`
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/route?regionNo=${region}&date=${inputDate}`
       );
 
       const ride = await data.json();
@@ -99,13 +100,22 @@ export default function Garbage() {
           >
             {coordinates && coordinates.length > 1 && (
               <>
-                <Marker coordinate={coordinates[0]} />
-                <Marker coordinate={coordinates[coordinates.length - 1]} />
-                <Polyline
+                {/* <Marker coordinate={coordinates[0]} />
+                <Marker coordinate={coordinates[coordinates.length - 1]} /> */}
+                {/* <Polyline
                   coordinates={coordinates}
                   strokeColor="#000"
                   strokeColors={["#7F0000"]}
                   strokeWidth={6}
+                /> */}
+                <MapViewDirections
+                  origin={coordinates[0]}
+                  waypoints={coordinates.slice(1, coordinates.length - 2)}
+                  destination={coordinates[coordinates.length - 1]}
+                  apikey="AIzaSyBO2E_KAoN9H3bmeXlS9Np20qGmtlg-qbc"
+                  strokeWidth={3}
+                  strokeColor="hotpink"
+                  mode="WALKING"
                 />
               </>
             )}

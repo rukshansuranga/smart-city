@@ -1,8 +1,7 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, FlatList, Modal, View } from "react-native";
 import {
-  ActivityIndicator,
   Badge,
   Button,
   Card,
@@ -13,10 +12,18 @@ import {
 } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+const pageSize = 10;
+
 export default function GeneralComplainList() {
   const router = useRouter();
+  const params = useLocalSearchParams();
 
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(() => {
+    if (params.isPrivate !== undefined) {
+      return params.isPrivate === "true";
+    }
+    return false;
+  });
 
   const [selectedGeneralComplain, setSelectedGeneralComplain] = useState(null);
 
@@ -36,24 +43,16 @@ export default function GeneralComplainList() {
   }, []);
 
   const fetchData = async (hasMore, isLoading, page, isPrivate) => {
-    //console.log(23, data.length, hasMore, isLoading);
     if (!hasMore || isLoading) return; // Prevent multiple simultaneous fetches
 
     setIsLoading(true);
     try {
-      // Replace with your actual API call
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/general?pageNumber=${page}&isPrivate=${isPrivate}`
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/general?pageNumber=${page}&isPrivate=${isPrivate}&pageSize=${pageSize}`
       );
       const newData = await response.json();
 
       setData((prevData) => [...prevData, ...newData]); // Assuming newData has an 'items' array
-      setPage((prevPage) => prevPage + 1);
-
-      if (newData.length === 0) {
-        // Check if no more data is available
-        setHasMore(false);
-      }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -89,7 +88,7 @@ export default function GeneralComplainList() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            workPackageId: selectedGeneralComplain?.workPackageId,
+            workpackageId: selectedGeneralComplain?.workpackageId,
             clientId: 1,
             comment: comment,
             isPrivate: isPrivate,
@@ -105,6 +104,33 @@ export default function GeneralComplainList() {
     }
   }
 
+  async function deletePrivateComplainHandler(item) {
+    try {
+      await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/general/${item.workpackageId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/general?pageNumber=${page}&isPrivate=${isPrivate}&pageSize=${pageSize}`
+      );
+      const newData = await response.json();
+
+      setData(newData);
+
+      console.log("res general complain", newData);
+    } catch (error) {
+      console.log("fetch active complains", error.message);
+    } finally {
+    }
+  }
+
   function itemRender({ item }) {
     console.log("23", item.name, item.ticketPackages?.length);
 
@@ -114,13 +140,13 @@ export default function GeneralComplainList() {
           <View className="w-10/12 gap-4">
             <View className="flex-row gap-6">
               <Badge size={30} style={{ backgroundColor: "green" }}>
-                {item.workPackageId}
+                {item.workpackageId}
               </Badge>
-              <Text>{item.name}</Text>
+              <Text>{item.subject}</Text>
             </View>
             <View className="flex-row justify-between">
               {item?.ticketPackages?.map((ticket) => (
-                <Text>{ticket?.ticket?.title}</Text>
+                <Text>{ticket?.ticket?.subject}</Text>
               ))}
 
               <Text>2026-1-2</Text>
@@ -128,7 +154,10 @@ export default function GeneralComplainList() {
           </View>
           {item?.ticketPackages?.length === 0 ? (
             <View className="flex-row justify-end w-2/12">
-              <IconButton icon="delete" />
+              <IconButton
+                icon="delete"
+                onPress={() => deletePrivateComplainHandler(item)}
+              />
             </View>
           ) : null}
         </View>
@@ -138,13 +167,13 @@ export default function GeneralComplainList() {
         <View className="flex mx-5 gap-6 p-4">
           <View className="flex-row justify-between ">
             <Badge size={30} style={{ backgroundColor: "green" }}>
-              {item.workPackageId}
+              {item.workpackageId}
             </Badge>
-            <Text>{item.name}</Text>
+            <Text>{item.subject}</Text>
           </View>
           <View className="flex-row justify-between items-center">
             {item?.ticketPackages?.map((ticket) => (
-              <Text>{ticket?.ticket?.title}</Text>
+              <Text>{ticket?.ticket?.subject}</Text>
             ))}
             <Text>{item?.client?.name}</Text>
             <IconButton
@@ -179,20 +208,28 @@ export default function GeneralComplainList() {
                 </Button>
               </View>
             </View>
-            <FlatList
-              style={{ flex: 1 }}
-              contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
-              data={data}
-              renderItem={itemRender}
-              keyExtractor={(item, index) => String(index)}
-              onEndReached={() =>
-                fetchData(hasMore, isLoading, page, isPrivate)
-              }
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={
-                isLoading && hasMore ? <ActivityIndicator size="large" /> : null
-              }
-            />
+            {data.length === 0 && !isLoading ? (
+              <Card className="w-full h-1/3 justify-center items-center mt-4">
+                <Text>No Complains Found</Text>
+              </Card>
+            ) : (
+              <FlatList
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
+                data={data}
+                renderItem={itemRender}
+                keyExtractor={(item, index) => item.workpackageId}
+                // onEndReached={() =>
+                //   fetchData(hasMore, isLoading, page, isPrivate)
+                // }
+                // onEndReachedThreshold={0.5}
+                // ListFooterComponent={
+                //   isLoading && hasMore ? (
+                //     <ActivityIndicator size="large" />
+                //   ) : null
+                // }
+              />
+            )}
           </View>
           <View className="w-full h-20 justify-center">
             <View className="flex-row justify-center gap-3">

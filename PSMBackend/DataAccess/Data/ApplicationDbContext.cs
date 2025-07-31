@@ -79,7 +79,7 @@ public class ApplicationDbContext : DbContext
         {
             if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
             {
-                modelBuilder.Entity(entityType.ClrType).Property<LocalDateTime>("CreatedDate").HasDefaultValueSql("NOW()");
+                modelBuilder.Entity(entityType.ClrType).Property<LocalDateTime>("CreatedAt").HasDefaultValueSql("NOW()");
                 modelBuilder.Entity(entityType.ClrType).Property<bool>("IsActive").HasDefaultValue(true);
             }
         }

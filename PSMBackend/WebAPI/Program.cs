@@ -45,7 +45,7 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ITenderRepository, TenderRepository>();
 builder.Services.AddScoped<IMiscRepository, MiscRepository>();
 
-//builder.Services.AddHostedService<RideSimulationService>();
+// builder.Services.AddHostedService<RideSimulationService>();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

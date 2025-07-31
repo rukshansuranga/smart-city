@@ -1,8 +1,11 @@
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 
-export default function ComplainAddModal({ project }) {
+export default function ComplainAddModal({ project, closeModel }) {
+  const router = useRouter();
+
   const [complainText, setComplainText] = useState("");
   const [description, setDescription] = useState("");
 
@@ -17,13 +20,15 @@ export default function ComplainAddModal({ project }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: complainText,
+            subject: complainText,
             detail: description,
             clientId: 1,
             projectId: project.id,
           }),
         }
       );
+
+      closeModel(false);
     } catch (error) {
       console.log("fetch active complains", error?.message);
     }

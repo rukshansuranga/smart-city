@@ -9,9 +9,9 @@ namespace PSMWebAPI.Repositories;
 public interface IWorkpackageRepository
 {
     Task<PageResponse<Workpackage>> GetWorkpackages(ComplainPaging complainPaging);
-    Task<Workpackage> GetByIdAsync(int id);
-    Task<Workpackage> AddWorkpackageAsync(Workpackage Workpackage);
-    Task<Workpackage> AddComplainAsync(LightPostComplain Workpackage);
+    Task<T> GetByIdAsync<T>(int id) where T : class;
+    Task<T> AddWorkpackageAsync<T>(T workPackage) where T : class;
+    Task<T> UpdateWorkpackageAsync<T>(T workpackage) where T : class;
     Task<IEnumerable<Workpackage>> GetWorkpackagesByTicketId(int ticketId);
     Task DeleteWorkpackageMappingByTicketId(int ticketId, int WorkpackageId);
     Task AddWorkpackageMappingByTicketId(int ticketId, int WorkpackageId);
@@ -19,7 +19,8 @@ public interface IWorkpackageRepository
 
     #region General Complains
 
-    Task<Workpackage> AddGeneralComplainAsync(GeneralComplain generalComplain);
+    
+    //Task<Workpackage> UpdateGeneralComplainAsync(GeneralComplain generalComplain);
     Task<IEnumerable<GeneralComplain>> GetGeneralComplain(GeneralComplainGetPagingRequest request);
 
     #endregion
@@ -35,7 +36,7 @@ public interface IWorkpackageRepository
     #region Project Complains
 
     Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId);
-    Task<ProjectComplain> AddProjectComplainAsync(ProjectComplain projectComplain);
+    
     Task<ProjectComplain> GetProjectComplainByWorkpackageId(int WorkpackageId);
 
     #endregion

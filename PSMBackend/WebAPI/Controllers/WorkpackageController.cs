@@ -7,6 +7,7 @@ using PSMModel.Enums;
 using PSMModel.Models;
 using PSMWebAPI.DTOs;
 using PSMWebAPI.DTOs.Request;
+using PSMWebAPI.DTOs.Workpackage.GeneralComplain;
 using PSMWebAPI.DTOs.Workpackage.ProjectComplain;
 using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
@@ -30,34 +31,23 @@ namespace PSMWebAPI.Controllers
         public async Task<IActionResult> Add(WorkpackageRequest request)
         {
 
-            var workpackage = new Workpackage
+            if (request == null)
             {
-                Subject = request.Name,
-                Detail = request.Detail,
-                
-                Status = request.Status // Default status if not provided
-            };
+                return BadRequest("Request cannot be null");
+            }
 
-
+            var workpackage = _mapper.Map<Workpackage>(request);
+            workpackage.Status = request.Status ?? WorkpackageStatus.New; // Default status if not provided
             var updatedWorkpackage = await _workpackageRepository.AddWorkpackageAsync(workpackage); // Calls service to add a new product
             return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkpackageId }, updatedWorkpackage);
             // Returns 201 Created response with location header pointing to the new product
         }
 
         [HttpPost("lightPost")]
-        public async Task<IActionResult> AddComplain(LightPostComplintRequest request)
+        public async Task<IActionResult> AddComplain(LightPostComplainRequest request)
         {
-
-            var workpackage = new LightPostComplain
-            {
-                Subject = request.Name,
-                Detail = request.Detail,
-
-                Status = request.Status.Value, // Default status if not provided
-                LightPostNumber = request.LightPostNumber,
-                ClientId = request.ClientId
-            };
-
+            var workpackage = _mapper.Map<LightPostComplain>(request);
+            workpackage.Status = request.Status ?? WorkpackageStatus.New;
 
             var updatedWorkpackage = await _workpackageRepository.AddWorkpackageAsync(workpackage); // Calls service to add a new product
             return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkpackageId }, updatedWorkpackage);
@@ -70,7 +60,7 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-                var workPackage = await _workpackageRepository.GetByIdAsync(id); // Calls service to fetch product by ID
+                var workPackage = await _workpackageRepository.GetByIdAsync<Workpackage>(id); // Calls service to fetch product by ID
                 return Ok(workPackage); // Returns 200 OK response if found
             }
             catch (KeyNotFoundException)
@@ -176,23 +166,56 @@ namespace PSMWebAPI.Controllers
 
         #region General Complain
 
+        [HttpDelete("general/{complainId}")]
+        public async Task<IActionResult> DeleteGeneralComplain(int complainId)
+        {
+            var existingComplain = await _workpackageRepository.GetByIdAsync<GeneralComplain>(complainId);
+            if (existingComplain == null)
+            {
+                return NotFound();
+            }
+            existingComplain.IsActive = false;
+            await _workpackageRepository.UpdateWorkpackageAsync<GeneralComplain>(existingComplain);
+            return NoContent();
+        }
+
         [HttpPost("general")]
         public async Task<IActionResult> AddGeneralComplain(GeneralComplainAddRequest request)
         {
-
-            var workPackage = new GeneralComplain
+            if (request == null)
             {
-                Subject = request.Name,
-                Detail = request.Detail,
-                Status = request.Status.Value, // Default status if not provided
-                IsPrivate = request.IsPrivate,
-                ClientId = request.ClientId
-            };
-  
+                return BadRequest("Request cannot be null");
+            }
+            var generalComplain = _mapper.Map<GeneralComplain>(request);
+            generalComplain.Status = request.Status ?? WorkpackageStatus.New; // Default status if not provided
 
-            var updatedWorkpackage = await _workpackageRepository.AddGeneralComplainAsync(workPackage); // Calls service to add a new product
-            return CreatedAtAction(nameof(GetById), new { id = updatedWorkpackage.WorkpackageId }, updatedWorkpackage);
+
+            var addedComplain = await _workpackageRepository.AddWorkpackageAsync<GeneralComplain>(generalComplain); // Calls service to add a new product
+            return CreatedAtAction(nameof(GetById), new { id = addedComplain.WorkpackageId }, addedComplain);
             // Returns 201 Created response with location header pointing to the new product
+        }
+
+        [HttpPut("general/{complainId}")]
+        public async Task<IActionResult> UpdateGeneralComplain(int complainId, GeneralComplainUpdateRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Request cannot be null");
+            }
+
+            var generalComplain = _mapper.Map<GeneralComplain>(request);
+            generalComplain.WorkpackageId = complainId; // Ensure the ID is set for the
+
+            var existingComplain = await _workpackageRepository.GetByIdAsync<GeneralComplain>(complainId);
+            if (existingComplain == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(generalComplain, existingComplain);
+
+            var updatedComplain = await _workpackageRepository.UpdateWorkpackageAsync<GeneralComplain>(existingComplain);
+            return Ok(updatedComplain);
         }
 
         [HttpGet("general")]
@@ -225,11 +248,33 @@ namespace PSMWebAPI.Controllers
         {
 
             var projectComplain = _mapper.Map<ProjectComplain>(request);
-
             projectComplain.Status = WorkpackageStatus.New; // Default status if not provided
 
-            var createdProjectComplain = await _workpackageRepository.AddProjectComplainAsync(projectComplain);
+            var createdProjectComplain = await _workpackageRepository.AddWorkpackageAsync<ProjectComplain>(projectComplain);
             return CreatedAtAction(nameof(GetProjectComplainsByProjectId), new { projectId = createdProjectComplain.ProjectId }, createdProjectComplain);
+        }
+
+        [HttpPut("projectcomplain/{complainId}")]
+        public async Task<IActionResult> UpdateProjectComplain(int complainId, ProjectComplainUpdateRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Request cannot be null");
+            }
+
+            var projectComplain = _mapper.Map<ProjectComplain>(request);
+            projectComplain.WorkpackageId = complainId; // Ensure the ID is set for the
+
+            var existingProjectComplain = await _workpackageRepository.GetByIdAsync<ProjectComplain>(complainId);
+            if (existingProjectComplain == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(projectComplain, existingProjectComplain);
+
+            var updatedComplain = await _workpackageRepository.UpdateWorkpackageAsync<ProjectComplain>(existingProjectComplain);
+            return Ok(updatedComplain);
         }
 
         [HttpGet("projectcomplain/{workPackageId}")]
@@ -244,6 +289,19 @@ namespace PSMWebAPI.Controllers
             {
                 return NotFound(); // Returns 404 Not Found if product does not exist
             }
+        }
+
+        [HttpDelete("projectcomplain/{complainId}")]
+        public async Task<IActionResult> DeleteProjectComplain(int complainId)
+        {
+            var existingComplain = await _workpackageRepository.GetByIdAsync<ProjectComplain>(complainId);
+            if (existingComplain == null)
+            {
+                return NotFound();
+            }
+            existingComplain.IsActive = false;
+            await _workpackageRepository.UpdateWorkpackageAsync<ProjectComplain>(existingComplain);
+            return NoContent();
         }
 
         #endregion

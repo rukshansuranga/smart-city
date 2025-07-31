@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-import { projectStatus, projectTypes } from "@/constants/index";
+import { ProjectStatus, ProjectType } from "@/enums/enum"; // Adjust the import path as necessary
 import { useEffect, useState } from "react";
 import {
   Button,
@@ -88,13 +88,15 @@ export default function SelectProjectForComplain() {
                       label="Select Project Type"
                       value={null}
                     />
-                    {projectTypes?.map((project) => (
-                      <Picker.Item
-                        key={project.value}
-                        label={project.label}
-                        value={project.value}
-                      />
-                    ))}
+                    {Object.keys(ProjectType)
+                      .filter((key) => isNaN(Number(key)))
+                      ?.map((key) => {
+                        const value =
+                          ProjectType[key as keyof typeof ProjectType];
+                        return (
+                          <Picker.Item key={value} label={key} value={value} />
+                        );
+                      })}
                   </Picker>
                 </View>
                 <View className="w-full">
@@ -112,13 +114,15 @@ export default function SelectProjectForComplain() {
                       label="Select Project Status"
                       value={null}
                     />
-                    {projectStatus?.map((project) => (
-                      <Picker.Item
-                        key={project.value}
-                        label={project.label}
-                        value={project.value}
-                      />
-                    ))}
+                    {Object.keys(ProjectStatus)
+                      .filter((key) => isNaN(Number(key)))
+                      ?.map((key) => {
+                        const value =
+                          ProjectStatus[key as keyof typeof ProjectStatus];
+                        return (
+                          <Picker.Item key={value} label={key} value={value} />
+                        );
+                      })}
                   </Picker>
                 </View>
                 <View className="w-full">
@@ -156,7 +160,7 @@ export default function SelectProjectForComplain() {
                     {projects?.map((project) => (
                       <Picker.Item
                         key={project.id}
-                        label={project.name}
+                        label={project.subject}
                         value={project.id}
                       />
                     ))}
@@ -216,7 +220,10 @@ export default function SelectProjectForComplain() {
                 <View className="flex-1 w-full justify-center items-center">
                   <View className="flex-1 w-full">
                     {modalType === "add" && (
-                      <ComplainAddModal project={selectedProject} />
+                      <ComplainAddModal
+                        project={selectedProject}
+                        closeModel={setModalVisible}
+                      />
                     )}
                     {modalType === "list" && (
                       <ComplainListModel project={selectedProject} />

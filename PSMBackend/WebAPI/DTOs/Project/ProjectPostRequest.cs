@@ -6,7 +6,7 @@ namespace PSMWebAPI.DTOs.Project;
 public class ProjectPostRequest
 {
 
-    public string Name { get; set; }
+    public string Subject { get; set; }
     public string Note { get; set; }
     public decimal BidAmount { get; set; }
     public int? ProjectId { get; set; }

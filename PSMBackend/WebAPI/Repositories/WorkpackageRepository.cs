@@ -25,11 +25,38 @@ public class WorkpackageRepository : IWorkpackageRepository
         return workPackage;
     }
 
-    public async Task<Workpackage> GetByIdAsync(int id)
+    public async Task<T> GetByIdAsync<T>(int id) where T : class
     {
         // Uses FindAsync to search for a product by its primary key (ID)
-        return await _context.Workpackages.FindAsync(id);
+        return await _context.Set<T>().FindAsync(id);
     }
+    
+    public async Task<T> AddWorkpackageAsync<T>(T workPackage) where T : class
+    {
+        _context.Set<T>().Add(workPackage);
+        await _context.SaveChangesAsync();
+        return workPackage;
+    }
+
+    public async Task<T> UpdateWorkpackageAsync<T>(T workpackage) where T : class
+    {
+        try
+        {
+            var prop = typeof(T).GetProperty("UpdatedAt");
+            if (prop != null && prop.CanWrite)
+            {
+                prop.SetValue(workpackage, PSMDateTime.Now);
+            }
+            _context.Set<T>().Update(workpackage);
+            await _context.SaveChangesAsync();
+            return workpackage;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
 
     public async Task<PageResponse<Workpackage>> GetWorkpackages(ComplainPaging complainPaging)
     {
@@ -49,9 +76,9 @@ public class WorkpackageRepository : IWorkpackageRepository
             // .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
             // .Count();
 
-            var qurery = _context.Workpackages.Include(t => t.TicketPackages).AsQueryable();
+            var qurery = _context.Workpackages.Include(t => t.TicketPackages).Where(s => s.IsActive == true).AsQueryable();
 
-            var statusList = new List<string>{"New","InProgress"};
+            var statusList = new List<string> { "New", "InProgress" };
             if (complainPaging.Status.HasValue)
             {
                 qurery = qurery.Where(s => statusList.Contains(s.Status.ToString()));
@@ -91,6 +118,7 @@ public class WorkpackageRepository : IWorkpackageRepository
     public async Task<IEnumerable<Workpackage>> GetWorkpackagesByTicketId(int ticketId)
     {
         var query = _context.Workpackages
+                        .Where(s => s.IsActive == true)
                         .Where(s => s.TicketPackages.Any(c => c.Ticket.TicketId == ticketId));
 
         var list = await query.ToListAsync();
@@ -114,29 +142,25 @@ public class WorkpackageRepository : IWorkpackageRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Workpackage> AddComplainAsync(LightPostComplain lightPostComplain)
-    {
-        await _context.Workpackages.AddAsync(lightPostComplain);
-        await _context.SaveChangesAsync();
-        return lightPostComplain;
-    }
+
 
     #region General Complain
 
-    public async Task<Workpackage> AddGeneralComplainAsync(GeneralComplain generalComplain)
-    {
-        await _context.Workpackages.AddAsync(generalComplain);
-        await _context.SaveChangesAsync();
-        return generalComplain;
-    }
-
     public async Task<IEnumerable<GeneralComplain>> GetGeneralComplain(GeneralComplainGetPagingRequest request)
     {
+        //TODO: Implement paging
+
+        // var query = _context.GeneralComplains.Include(x => x.Client).Include(x => x.Comments).Include(x => x.TicketPackages).ThenInclude(x => x.Ticket)
+        //     .Where(s => s.IsPrivate == request.IsPrivate)
+        //     .OrderBy(s => s.WorkpackageId)
+        //     .Skip((request.PageNumber - 1) * request.PageSize)
+        //     .Take(request.PageSize);
+
         var query = _context.GeneralComplains.Include(x => x.Client).Include(x => x.Comments).Include(x => x.TicketPackages).ThenInclude(x => x.Ticket)
             .Where(s => s.IsPrivate == request.IsPrivate)
-            .OrderBy(s => s.WorkpackageId)
-            .Skip((request.PageNumber - 1) * 10)
-            .Take(10);
+            .Where(s => s.IsActive == true)
+            .OrderBy(s => s.WorkpackageId);
+            
 
         return query;
     }
@@ -148,7 +172,8 @@ public class WorkpackageRepository : IWorkpackageRepository
 
     public async Task<IEnumerable<LightPostComplainDetail>> GetDetailLightPostComplintsByPostIdAndName(string postNo, string name)
     {
-        var complainsByPostNo = await _context.LightPostComplains.Include(c => c.Client).Include(t => t.TicketPackages).Where(x => x.LightPostNumber == postNo && x.Subject == name)
+        var complainsByPostNo = await _context.LightPostComplains.Include(c => c.Client).Include(t => t.TicketPackages)
+            .Where(x => x.IsActive == true && x.LightPostNumber == postNo && x.Subject == name)
             .Select(x => new LightPostComplainDetail { WorkpackageId = x.WorkpackageId, Subject = x.Subject, ClientName = x.Client.FirstName, ComplainDate = PSMDateTime.FormatDate(x.CreatedAt), Status = x.Status.ToString(), TicketList = x.TicketPackages.Select(y => new TicketResponse { Id = y.TicketId, Title = y.Ticket.Subject }).ToList() })
             .ToListAsync();
 
@@ -157,7 +182,10 @@ public class WorkpackageRepository : IWorkpackageRepository
 
     public async Task<IEnumerable<LightpostComplainSummary>> GetSummaryLightPostComplintsByPostId(string postNo)
     {
-        var complainsSummary = await _context.LightPostComplains.Where(x => "New,Open,Progress".Contains(x.Status.ToString()) && x.LightPostNumber == postNo).GroupBy(g => g.Subject).Select(x => new LightpostComplainSummary { Name = x.Key, Count = x.Count() }).ToListAsync();
+        var complainsSummary = await _context.LightPostComplains
+            .Where(x => x.IsActive == true && "New,Open,Progress".Contains(x.Status.ToString()) && x.LightPostNumber == postNo)
+            .GroupBy(g => g.Subject)
+            .Select(x => new LightpostComplainSummary { Name = x.Key, Count = x.Count() }).ToListAsync();
         return complainsSummary;
     }
 
@@ -177,20 +205,16 @@ public class WorkpackageRepository : IWorkpackageRepository
     #region Project Complain
     public async Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId)
     {
-        var complains = _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages).Where(x => x.ProjectId == projectId);
+        var complains = _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages)
+            .Where(x => x.IsActive == true && x.ProjectId == projectId);
         return complains;
     }
 
-    public async Task<ProjectComplain> AddProjectComplainAsync(ProjectComplain projectComplain)
-    {
-        await _context.ProjectComplains.AddAsync(projectComplain);
-        await _context.SaveChangesAsync();
-        return projectComplain;
-    }
 
     public async Task<ProjectComplain> GetProjectComplainByWorkpackageId(int workPackageId)
     {
-        return await _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages).FirstOrDefaultAsync(x => x.WorkpackageId == workPackageId);
+        return await _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages)
+            .FirstOrDefaultAsync(x => x.IsActive == true && x.WorkpackageId == workPackageId);
     }
     #endregion
 

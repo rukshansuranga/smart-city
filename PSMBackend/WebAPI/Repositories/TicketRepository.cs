@@ -1,8 +1,10 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using PSMDataAccess;
+using PSMModel.Enums;
 using PSMModel.Models;
 using PSMWebAPI.DTOs;
+using PSMWebAPI.DTOs.Ticket;
 
 namespace PSMWebAPI.Repositories;
 
@@ -107,5 +109,29 @@ public class TicketRepository : ITicketRepository
         await _context.SaveChangesAsync();
 
         return existingTicket;
+    }
+
+    public async Task<bool> StartWorkOnTicketAsync(int ticketId)
+    {
+        //change ticket status to InProgress
+        var ticket = await _context.Tickets.FindAsync(ticketId);
+        if (ticket == null) return false;
+
+        ticket.Status = TicketStatus.InProgress;
+        
+        //change the general complains status to InProgress
+        var generalComplains = await _context.GeneralComplains.Where(gc => gc.TicketPackages.Any(tp => tp.TicketId == ticketId)).ToListAsync();
+        if (generalComplains != null)
+        {
+            foreach (var generalComplain in generalComplains)
+            {
+                generalComplain.Status = WorkpackageStatus.InProgress;
+                //TODO: send notification to the user
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 }

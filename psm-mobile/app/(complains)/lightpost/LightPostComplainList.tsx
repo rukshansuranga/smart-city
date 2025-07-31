@@ -56,7 +56,7 @@ export default function LightPostComplainList() {
           body: JSON.stringify({
             lightPostNumber: selectedPostNo,
             clientId: 1,
-            name: id,
+            subject: id,
             detail: "",
           }),
         }
