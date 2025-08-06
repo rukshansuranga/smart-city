@@ -27,8 +27,42 @@ public class WorkpackageRepository : IWorkpackageRepository
 
     public async Task<T> GetByIdAsync<T>(int id) where T : class
     {
-        // Uses FindAsync to search for a product by its primary key (ID)
-        return await _context.Set<T>().FindAsync(id);
+        var x = typeof(T);
+        if (typeof(T) == typeof(ProjectComplain))
+        {
+            var entity = await _context.ProjectComplains
+                .Include(w => w.Client)
+                .Include(w => w.Project)
+                .FirstOrDefaultAsync(w => w.WorkpackageId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+        if (typeof(T) == typeof(GeneralComplain))
+        {
+            var entity = await _context.GeneralComplains
+                .Include(w => w.Client)
+                .FirstOrDefaultAsync(w => w.WorkpackageId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+        if (typeof(T) == typeof(LightPostComplain))
+        {
+            var entity = await _context.LightPostComplains
+                .Include(w => w.Client)
+                .Include(w => w.LightPost)
+                .FirstOrDefaultAsync(w => w.WorkpackageId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+        if (typeof(T) == typeof(Workpackage))
+        {
+            var entity = await _context.Workpackages
+                .Include(w => w.TicketPackages)
+                .FirstOrDefaultAsync(w => w.WorkpackageId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+        return null;
     }
     
     public async Task<T> AddWorkpackageAsync<T>(T workPackage) where T : class
@@ -76,12 +110,12 @@ public class WorkpackageRepository : IWorkpackageRepository
             // .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
             // .Count();
 
-            var qurery = _context.Workpackages.Include(t => t.TicketPackages).Where(s => s.IsActive == true).AsQueryable();
+            var qurery = _context.Workpackages.Include(t => t.TicketPackages).AsQueryable();
 
-            var statusList = new List<string> { "New", "InProgress" };
-            if (complainPaging.Status.HasValue)
+            var statusList = new List<int> { (int)WorkpackageStatus.New, (int)WorkpackageStatus.InProgress };
+            if (!string.IsNullOrEmpty(complainPaging.Status))
             {
-                qurery = qurery.Where(s => statusList.Contains(s.Status.ToString()));
+                qurery = qurery.Where(s => statusList.Contains((int)s.Status));
             }
 
             if (complainPaging.Duration > 0)

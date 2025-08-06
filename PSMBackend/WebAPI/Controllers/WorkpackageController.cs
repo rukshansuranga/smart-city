@@ -43,6 +43,21 @@ namespace PSMWebAPI.Controllers
             // Returns 201 Created response with location header pointing to the new product
         }
 
+
+        [HttpGet("Workpackage/{workPackageId}")]
+        public async Task<IActionResult> GetByWorkPackageId(int workPackageId)
+        {
+            try
+            {
+                var workpackage = await _workpackageRepository.GetByIdAsync<Workpackage>(workPackageId);
+                return Ok(workpackage); // Returns 200 OK response if found
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); // Returns 404 Not Found if product does not exist
+            }
+        }
+
         [HttpPost("lightPost")]
         public async Task<IActionResult> AddComplain(LightPostComplainRequest request)
         {
@@ -164,6 +179,21 @@ namespace PSMWebAPI.Controllers
             }
         }
 
+
+        [HttpGet("lightpostcomplain/{workPackageId}")]
+        public async Task<IActionResult> GetLightPostByWorkPackageId(int workPackageId)
+        {
+            try
+            {
+                var workpackage = await _workpackageRepository.GetByIdAsync<LightPostComplain>(workPackageId);
+                return Ok(workpackage); // Returns 200 OK response if found
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); // Returns 404 Not Found if product does not exist
+            }
+        }
+
         #region General Complain
 
         [HttpDelete("general/{complainId}")]
@@ -225,6 +255,20 @@ namespace PSMWebAPI.Controllers
             return Ok(generalComplains); // Returns 200 OK response with the list of work packages
         }
 
+        [HttpGet("generalcomplain/{workPackageId}")]
+        public async Task<IActionResult> GetGeneralComplainByWorkPackageId(int workPackageId)
+        {
+            try
+            {
+                var generalComplain = await _workpackageRepository.GetByIdAsync<GeneralComplain>(workPackageId);
+                return Ok(generalComplain); // Returns 200 OK response if found
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); // Returns 404 Not Found if product does not exist
+            }
+        }
+
         #endregion
 
         #region Project Complain
@@ -282,7 +326,7 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-                var projectComplain = await _workpackageRepository.GetProjectComplainByWorkpackageId(workPackageId);
+                var projectComplain = await _workpackageRepository.GetByIdAsync<ProjectComplain>(workPackageId);
                 return Ok(projectComplain); // Returns 200 OK response if found
             }
             catch (KeyNotFoundException)

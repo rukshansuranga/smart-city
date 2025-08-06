@@ -48,56 +48,62 @@ export default function TenderList() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-5">
-        {tenders.length > 0 ? tenders[1]?.project?.name : ""}
-      </div>
-      <div className="my-4 flex justify-end">
-        <Button type="button">
-          <Link href={`/tender/new/${projectId}`}>Create Tender</Link>
-        </Button>
-      </div>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableHeadCell>Name</TableHeadCell>
-            <TableHeadCell>Company</TableHeadCell>
-            <TableHeadCell>Bid Amount</TableHeadCell>
-            <TableHeadCell>Submitted Date</TableHeadCell>
-            <TableHeadCell>
-              <span className="sr-only">Edit</span>
-            </TableHeadCell>
-          </TableRow>
-        </TableHead>
-        <TableBody className="divide-y">
-          {tenders?.map((tender) => (
-            <TableRow
-              key={tender?.id}
-              className="bg-white dark:border-gray-700 dark:bg-gray-800"
-            >
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                {tender.name}
-              </TableCell>
-              <TableCell>{tender.company?.name}</TableCell>
-              <TableCell>{tender.bidAmount}</TableCell>
-              <TableCell>
-                {new Date(tender.submittedDate ?? "")
-                  .toISOString()
-                  .slice(0, 10)}
-              </TableCell>
-
-              <TableCell>
-                <Link
-                  href={`/tender/update/${projectId}/${tender.id}`}
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500 ml-2"
+    <>
+      {tenders.length === 0 ? (
+        <div className="flex justify-center items-center">No tenders found</div>
+      ) : (
+        <div className="container mx-auto p-4">
+          <div className="mb-5">
+            {tenders.length > 0 ? tenders[1]?.project?.subject : ""}
+          </div>
+          <div className="my-4 flex justify-end">
+            <Button type="button">
+              <Link href={`/tender/new/${projectId}`}>Create Tender</Link>
+            </Button>
+          </div>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeadCell>Name</TableHeadCell>
+                <TableHeadCell>Company</TableHeadCell>
+                <TableHeadCell>Bid Amount</TableHeadCell>
+                <TableHeadCell>Submitted Date</TableHeadCell>
+                <TableHeadCell>
+                  <span className="sr-only">Edit</span>
+                </TableHeadCell>
+              </TableRow>
+            </TableHead>
+            <TableBody className="divide-y">
+              {tenders?.map((tender) => (
+                <TableRow
+                  key={tender?.tenderId}
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
-                  Edit
-                </Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    {tender.subject}
+                  </TableCell>
+                  <TableCell>{tender.company?.name}</TableCell>
+                  <TableCell>{tender.bidAmount}</TableCell>
+                  <TableCell>
+                    {new Date(tender.submittedDate ?? "")
+                      .toISOString()
+                      .slice(0, 10)}
+                  </TableCell>
+
+                  <TableCell>
+                    <Link
+                      href={`/tender/update/${projectId}/${tender.tenderId}`}
+                      className="font-medium text-primary-600 hover:underline dark:text-primary-500 ml-2"
+                    >
+                      Edit
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </>
   );
 }

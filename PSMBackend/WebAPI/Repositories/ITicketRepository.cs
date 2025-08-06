@@ -14,5 +14,6 @@ public interface ITicketRepository
       Task<IEnumerable<Ticket>> GetTicketListByWorkPackageIdAsync(int workPackageId);
       Task<Ticket> UpdateTicketHistoryAsync(Ticket updatedTicket, int userId);
       Task<bool> StartWorkOnTicketAsync(int ticketId);
+      Task<IEnumerable<Ticket>> GetTicketListByUserIdAsync(int userId);
 
 }

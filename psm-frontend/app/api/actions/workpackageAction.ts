@@ -29,3 +29,10 @@ export async function manageMappingByTicketAndPackage(managePackage: {
 }) {
   return fetchWrapper.post(`workpackage/ticket`, managePackage);
 }
+
+export async function getWorkpackageById(
+  workpackageId: string,
+  type: string
+): Promise<Workpackage> {
+  return fetchWrapper.get(`workpackage/${type}/${workpackageId}`);
+}

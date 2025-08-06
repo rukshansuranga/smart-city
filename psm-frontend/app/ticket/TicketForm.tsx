@@ -19,22 +19,23 @@ import { useRouter } from "next/navigation";
 
 import { ticketStatusList } from "@/utility/Constants";
 import SelectField from "../components/forms/Select";
+import { TicketStatus, TicketType } from "@/enums";
 
 const schema = z.object({
-  title: z.string().min(1, "Title is required"),
+  subject: z.string().min(1, "Title is required"),
   detail: z.string().optional(),
   note: z.string().optional(),
   userId: z.string().min(1, "User is required"),
-  status: z.string(),
+  status: z.nativeEnum(TicketStatus),
 });
 
 export type FormData = {
   ticketId?: number;
-  title: string;
+  subject: string;
   detail?: string;
   note?: string;
   userId: string;
-  status: string;
+  status: TicketStatus;
 };
 
 export default function TicketForm({
@@ -63,9 +64,9 @@ export default function TicketForm({
       detail: ticket?.detail ?? "",
       note: ticket?.note ?? "",
       ticketId: ticket?.ticketId,
-      title: ticket?.title ?? "",
+      subject: ticket?.subject ?? "",
       userId: ticket?.userId?.toString() ?? "",
-      status: ticket?.status ?? "1", // Default status if not provided
+      status: ticket?.status ?? TicketStatus.Open, // Default status if not provided
     },
   });
 
@@ -74,7 +75,7 @@ export default function TicketForm({
       const data = await getUsers();
       const options = data.map((user) => ({
         value: user.userId.toString(),
-        text: user.name,
+        text: user.firstName,
       }));
 
       options.unshift({ value: "", text: "Select User" }); // Add a default option
@@ -90,7 +91,7 @@ export default function TicketForm({
   const onSubmit = async (data: FormData) => {
     console.log("submit", data, ticket);
 
-    const type = isInternal ? "Internal" : "External";
+    const type = isInternal ? TicketType.Internal : TicketType.External;
 
     try {
       if (ticket?.ticketId) {
@@ -122,10 +123,10 @@ export default function TicketForm({
           <div>
             <Input
               showlabel
-              label="Title"
-              type="title"
-              placeholder="Enter Title"
-              name="title"
+              label="Subject"
+              type="subject"
+              placeholder="Enter Subject"
+              name="subject"
               control={control}
             />
           </div>

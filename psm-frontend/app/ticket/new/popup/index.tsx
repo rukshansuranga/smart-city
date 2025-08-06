@@ -19,7 +19,7 @@ export default function CreateTicketForm({
       <TicketForm
         isInternal={false}
         handleClose={handleClose}
-        workpackageIdList={packages.map((pkg) => pkg.workPackageId!)}
+        workpackageIdList={packages.map((pkg) => pkg.workpackageId!)}
       />
       <div className="w-full mt-4">
         <table className="w-full bg-gray-200 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -35,9 +35,9 @@ export default function CreateTicketForm({
           </thead>
           <tbody>
             {packages.map((workpackage) => (
-              <tr key={workpackage.workPackageId}>
-                <td className="px-6 py-4">{workpackage.workPackageId}</td>
-                <td className="px-6 py-4">{workpackage.name}</td>
+              <tr key={workpackage.workpackageId}>
+                <td className="px-6 py-4">{workpackage.workpackageId}</td>
+                <td className="px-6 py-4">{workpackage.subject}</td>
               </tr>
             ))}
           </tbody>

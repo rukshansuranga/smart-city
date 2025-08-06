@@ -43,7 +43,7 @@ export default function WorkpackageAssigned({
       });
 
       const filterdWorkpackage = workpackages.filter(
-        (x) => x.workPackageId !== workpackageId
+        (x) => x.workpackageId !== workpackageId
       );
       setWorkpackages(filterdWorkpackage);
     } catch (error) {
@@ -58,18 +58,18 @@ export default function WorkpackageAssigned({
     if (isChecked) {
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: parseInt(workpackage.workPackageId!),
+        workpackageId: parseInt(workpackage.workpackageId!),
         action: "Add",
       });
       setWorkpackages((list) => [...list, workpackage]);
     } else {
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: parseInt(workpackage.workPackageId!),
+        workpackageId: parseInt(workpackage.workpackageId!),
         action: "Remove",
       });
       const filterd = workpackages.filter(
-        (w) => w.workPackageId !== workpackage?.workPackageId
+        (w) => w.workpackageId !== workpackage?.workpackageId
       );
       setWorkpackages(filterd);
     }
@@ -107,24 +107,24 @@ export default function WorkpackageAssigned({
           <tbody>
             {workpackages.map((workpackage) => (
               <tr
-                key={workpackage.workPackageId}
+                key={workpackage.workpackageId}
                 className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {workpackage.workPackageId}
+                  {workpackage.workpackageId}
                 </th>
-                <td className="px-6 py-4">{workpackage.name}</td>
+                <td className="px-6 py-4">{workpackage.subject}</td>
                 <td className="px-6 py-4">
-                  {new Date(workpackage.createdDate).toISOString().slice(0, 10)}
+                  {new Date(workpackage.createdAt).toISOString().slice(0, 10)}
                 </td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td>
                   <Button
                     onClick={() =>
-                      RemoveWorkpackage(parseInt(workpackage.workPackageId!))
+                      RemoveWorkpackage(parseInt(workpackage.workpackageId!))
                     }
                   >
                     Remove

@@ -17,6 +17,7 @@ import CreateTicketForm from "../../ticket/new/popup";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Spinner } from "flowbite-react";
+import { WorkpackageStatus } from "@/enums";
 
 export default function WorkpackageList({
   type,
@@ -34,10 +35,9 @@ export default function WorkpackageList({
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [statusList, setStatusList] = useState<string[]>([
-    "Created",
-    "Open",
-    "New",
+  const [statusList, setStatusList] = useState<WorkpackageStatus[]>([
+    WorkpackageStatus.New,
+    WorkpackageStatus.InProgress,
   ]);
 
   const [selectedWorkpackages, setSelectedWorkpackages] = useState<
@@ -87,7 +87,7 @@ export default function WorkpackageList({
     if (e.target.checked) {
       if (
         !selectedWorkpackages.find(
-          (wp) => wp.workPackageId === workpackage?.workPackageId
+          (wp) => wp.workpackageId === workpackage?.workpackageId
         )
       ) {
         setSelectedWorkpackages((prev) => [...prev, workpackage!]);
@@ -95,7 +95,7 @@ export default function WorkpackageList({
     } else {
       setSelectedWorkpackages(
         selectedWorkpackages.filter(
-          (wp) => wp.workPackageId !== workpackage?.workPackageId
+          (wp) => wp.workpackageId !== workpackage?.workpackageId
         )
       );
     }
@@ -104,7 +104,7 @@ export default function WorkpackageList({
   function openPopupModel(initWorkpackage: Workpackage, open: boolean) {
     if (
       !selectedWorkpackages.find(
-        (wp) => wp.workPackageId === initWorkpackage?.workPackageId
+        (wp) => wp.workpackageId === initWorkpackage?.workpackageId
       ) ||
       selectedWorkpackages.length === 0
     ) {
@@ -114,7 +114,7 @@ export default function WorkpackageList({
     setOpenModal(open);
   }
 
-  function statusChange(status: string) {
+  function statusChange(status: WorkpackageStatus) {
     let list = [];
     if (statusList.includes(status)) {
       list = statusList.filter((sta) => sta !== status);
@@ -123,7 +123,6 @@ export default function WorkpackageList({
       list = [...statusList, status];
       //setStatusList((prev) => [...prev, status]);
     }
-
     setStatusList(list);
     router.push(`?pageSize=${pageSize}&pageIndex=1&status=${list.join(",")}`);
   }
@@ -150,41 +149,28 @@ export default function WorkpackageList({
         <ButtonGroup className="gap-0.5">
           <Button
             className={`shadow-lg ${
-              statusList.includes("Created") ? "bg-green-700" : ""
+              statusList.includes(WorkpackageStatus.New) ? "bg-green-700" : ""
             } `}
-            onClick={() => statusChange("Created")}
+            onClick={() => statusChange(WorkpackageStatus.New)}
           >
-            Created
+            New
+          </Button>
+
+          <Button
+            className={`shadow-lg ${
+              statusList.includes(WorkpackageStatus.InProgress)
+                ? "bg-green-700"
+                : ""
+            } `}
+            onClick={() => statusChange(WorkpackageStatus.InProgress)}
+          >
+            In Progress
           </Button>
           <Button
             className={`shadow-lg ${
-              statusList.includes("Open") ? "bg-green-700" : ""
+              statusList.includes(WorkpackageStatus.Close) ? "bg-green-700" : ""
             } `}
-            onClick={() => statusChange("Open")}
-          >
-            Open
-          </Button>
-          <Button
-            className={`shadow-lg ${
-              statusList.includes("Pending") ? "bg-green-700" : ""
-            } `}
-            onClick={() => statusChange("Pending")}
-          >
-            Pending
-          </Button>
-          <Button
-            className={`shadow-lg ${
-              statusList.includes("Done") ? "bg-green-700" : ""
-            } `}
-            onClick={() => statusChange("Done")}
-          >
-            Done
-          </Button>
-          <Button
-            className={`shadow-lg ${
-              statusList.includes("Closed") ? "bg-green-700" : ""
-            } `}
-            onClick={() => statusChange("Closed")}
+            onClick={() => statusChange(WorkpackageStatus.Close)}
           >
             Closed
           </Button>
@@ -215,18 +201,18 @@ export default function WorkpackageList({
           <tbody>
             {data?.records.map((workpackage) => (
               <tr
-                key={workpackage.workPackageId}
+                key={workpackage.workpackageId}
                 className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {workpackage.workPackageId}
+                  {workpackage.workpackageId}
                 </th>
-                <td className="px-6 py-4">{workpackage.name}</td>
+                <td className="px-6 py-4">{workpackage.subject}</td>
                 <td className="px-6 py-4">
-                  {new Date(workpackage.createdDate).toISOString().slice(0, 10)}
+                  {new Date(workpackage.createdAt)?.toISOString()?.slice(0, 10)}
                 </td>
                 <td className="px-6 py-4">{workpackage.status}</td>
                 <td className="px-6 py-4">
@@ -235,8 +221,8 @@ export default function WorkpackageList({
                       id="accept"
                       onChange={(e) => addWorkpackage(workpackage, e)}
                       checked={selectedWorkpackages
-                        .map((x) => x.workPackageId)
-                        .includes(workpackage.workPackageId)}
+                        .map((x) => x.workpackageId)
+                        .includes(workpackage.workpackageId)}
                     />
                   )}
                 </td>
@@ -244,7 +230,7 @@ export default function WorkpackageList({
                   {workpackage.ticketPackages?.length > 0 ? (
                     <Button className="bg-green-400 hover:bg-green-600">
                       <Link
-                        href={`/ticket/workpackage/${workpackage.workPackageId}`}
+                        href={`/ticket/workpackage/${workpackage.workpackageId}`}
                       >
                         View Ticket
                       </Link>

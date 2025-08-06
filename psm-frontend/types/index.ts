@@ -1,23 +1,39 @@
-export type LightPostComplaint = {
+import {
+  ProjectStatus,
+  ProjectType,
+  TicketStatus,
+  TicketType,
+  WorkpackageStatus,
+} from "@/enums";
+
+export type LightPostComplain = {
   id?: string;
   lightPostNumber: string;
   userId: string;
   complainDate: string;
   resolveDate: string;
-  name: string;
+  subject: string;
   description: string;
   note: string;
   status: string;
 };
 
 export type Workpackage = {
-  workPackageId?: string;
-  name: string;
+  workpackageId?: string;
+  subject: string;
   detail: string;
-  createdDate: Date;
-  updatedDate: Date;
-  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: WorkpackageStatus;
   clientId: string;
+  client?: {
+    userId: string;
+    firstName: string;
+  };
+  project?: Project | null;
+  lightPostNumber?: string;
+  lightPost?: LightPost | null;
+  workpackageType: string;
   ticketId: string;
   ticketPackages: Ticket[];
 };
@@ -25,28 +41,30 @@ export type Workpackage = {
 export type TicketPckage = {
   id: number;
   ticketId: number;
-  workPackageId: number;
+  workpackageId: number;
+  workpackage?: Workpackage;
 };
 
 export type Ticket = {
   ticketId?: number;
-  title: string;
+  subject: string;
   detail?: string;
   note?: string;
   userId: string;
-  createdDate?: Date;
-  status?: string;
-  type?: string;
+  createdAt?: Date;
+  status?: TicketStatus;
+  type?: TicketType;
   user?: {
     userId: string;
-    name: string;
+    firstName: string;
   };
+  ticketPackages: TicketPckage[];
 };
 
 export type User = {
   userId: number;
-  name: string;
-  telNumber: string;
+  firstName: string;
+  mobile: string;
 };
 
 export type Option = {
@@ -61,9 +79,9 @@ export type Paging<T> = {
 
 export interface Project {
   id?: number;
-  name: string;
+  subject: string;
   description?: string;
-  type: string;
+  type: ProjectType;
   location?: string;
   specificationDocument?: string;
   estimatedCost?: number;
@@ -71,14 +89,14 @@ export interface Project {
   tenderClosingDate?: Date | null;
   latitude?: number;
   longitude?: number;
-  status: string;
+  status: ProjectStatus;
 }
 
 export type Tender = {
-  id?: number;
+  tenderId?: number;
   projectId: string;
   project?: Project;
-  name: string;
+  subject: string;
   note?: string;
   companyId: string;
   company?: Company;
@@ -91,4 +109,10 @@ export type Company = {
   name: string;
   address: string;
   //contactNumber: string;
+};
+
+export type LightPost = {
+  lightPostNumber: string;
+  location: string;
+  latitude: number;
 };

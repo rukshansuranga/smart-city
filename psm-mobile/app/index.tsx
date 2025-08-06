@@ -33,6 +33,11 @@ export default function Index() {
           <Text className="font-bold text-3xl">Notifications</Text>
         </Button>
       </View>
+      <View className="flex justify-center items-center bg-blue-300 py-6 w-3/4 rounded-xl">
+        <Button onPress={() => router.navigate("/editUser")}>
+          <Text className="font-bold text-3xl">Profile</Text>
+        </Button>
+      </View>
     </View>
   );
 }

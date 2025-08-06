@@ -22,9 +22,9 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <NavBar session={session} />
-        <main className="flex max-w-screen-2xl mx-auto px-5 pt-10 ">
+        <main className="flex max-w-screen-2xl mx-auto pt-10 ">
           <div className="w-1/6">
-            <SideBar />
+            <SideBar session={session} />
           </div>
           <div className="w-5/6">{children}</div>
         </main>

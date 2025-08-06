@@ -9,8 +9,8 @@ import {
 } from "flowbite-react";
 
 import { LuTicketPlus } from "react-icons/lu";
-import { RiContractLine } from "react-icons/ri";
 import Image from "next/image";
+import { Session } from "next-auth";
 
 // Use a React component for the PNG icon
 const TicketIcon = () => (
@@ -56,11 +56,23 @@ const GarbageComplainIcon = () => (
   />
 );
 
+const UserIcon = () => (
+  <Image src="/images/user.png" alt="User" width={30} height={30} />
+);
+
+const TenderIcon = () => (
+  <Image src="/images/bid.png" alt="Tender" width={30} height={30} />
+);
+
 const ProjectsIcon = () => (
   <Image src="/images/projects.png" alt="Projects" width={30} height={30} />
 );
 
-export function SideBar() {
+export interface HeaderProps {
+  session?: Session | null;
+}
+
+export function SideBar({ session }: HeaderProps) {
   return (
     <Sidebar aria-label="Default sidebar" className="w-52">
       <SidebarItems>
@@ -71,7 +83,7 @@ export function SideBar() {
           <SidebarCollapse icon={ComplainsIcon} label="Complains">
             <SidebarItem
               icon={StreetlampIcon}
-              href="/complain/LightPostComplint"
+              href="/complain/LightPostComplain"
             >
               Light Post
             </SidebarItem>
@@ -105,9 +117,14 @@ export function SideBar() {
           <SidebarItem href="/project" icon={ProjectsIcon}>
             Projects
           </SidebarItem>
-          <SidebarItem href="/tender" icon={RiContractLine}>
+          <SidebarItem href="/tender" icon={TenderIcon}>
             Tenders
           </SidebarItem>
+          {session?.roles?.includes("admin") && (
+            <SidebarItem href="/user" icon={UserIcon}>
+              User
+            </SidebarItem>
+          )}
         </SidebarItemGroup>
       </SidebarItems>
     </Sidebar>

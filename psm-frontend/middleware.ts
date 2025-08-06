@@ -19,7 +19,7 @@ export async function middleware(request: Request) {
       const requiredRoles = protectedRoutes[route];
       const hasRole = requiredRoles.some((role) => userRoles.includes(role));
       if (!hasRole) {
-        //return NextResponse.redirect(new URL("/login", request.url));
+        return NextResponse.redirect(new URL("/login", request.url));
       }
     }
   }

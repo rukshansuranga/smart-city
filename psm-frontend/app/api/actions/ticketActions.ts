@@ -6,7 +6,7 @@ export async function createTicket(
   ticket: Ticket | { workpackageIdList: string[] }
 ): Promise<Ticket> {
   //console.log("ticket action 52", ticket);
-  return fetchWrapper.post(`ticket`, ticket);
+  return fetchWrapper.post(`ticket/external`, ticket);
 }
 
 export async function createInternalTicket(ticket: Ticket): Promise<Ticket> {
@@ -36,4 +36,8 @@ export async function getTicketById(id: string): Promise<Ticket> {
 export async function updateTicket(ticket: Partial<Ticket>): Promise<Ticket> {
   console.log("ticket action 52", ticket);
   return fetchWrapper.put(`ticket/${ticket?.ticketId}`, ticket);
+}
+
+export async function getTicketsByUserId(id: string): Promise<Ticket[]> {
+  return fetchWrapper.get(`ticket/user/${id}`);
 }

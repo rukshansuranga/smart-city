@@ -133,5 +133,13 @@ namespace PSMWebAPI.Controllers
 
             return Ok(result);
         }
+   
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetTicketListByUserIdAsync(int userId)
+        {
+            var result = await _ticketRepository.GetTicketListByUserIdAsync(userId);
+            
+            return Ok(result);
+        }
     }
 }

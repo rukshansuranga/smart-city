@@ -48,11 +48,11 @@ export default async function TicketsByWorkpackagePage({
               >
                 {ticket.ticketId}
               </th>
-              <td className="px-6 py-4">{ticket.title}</td>
+              <td className="px-6 py-4">{ticket.subject}</td>
               <td className="px-6 py-4">
-                {new Date(ticket.createdDate!).toISOString().slice(0, 10)}
+                {new Date(ticket.createdAt!).toISOString().slice(0, 10)}
               </td>
-              <td className="px-6 py-4">{ticket.user?.name}</td>
+              <td className="px-6 py-4">{ticket.user?.firstName}</td>
               <td>
                 <Button>
                   <Link

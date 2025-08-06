@@ -21,6 +21,22 @@ export default function NavBar({ session }: HeaderProps) {
       <NavbarBrand as={Link} href="https://flowbite-react.com">
         <Logo />
       </NavbarBrand>
+      {session?.roles && (
+        <div className="flex space-x-4">
+          {session.roles
+            .filter(
+              (role) =>
+                role !== "offline_access" &&
+                role !== "default-roles-smartcity" &&
+                role !== "uma_authorization"
+            )
+            .map((role) => (
+              <span key={role} className="text-sm text-gray-600">
+                {role}
+              </span>
+            ))}
+        </div>
+      )}
 
       {session?.user ? (
         <div className="flex flex-row justify-between items-center">

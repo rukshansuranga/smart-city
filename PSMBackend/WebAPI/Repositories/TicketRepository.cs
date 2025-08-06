@@ -134,4 +134,15 @@ public class TicketRepository : ITicketRepository
 
         return true;
     }
+
+    public async Task<IEnumerable<Ticket>> GetTicketListByUserIdAsync(int userId)
+    {
+        var tickets = await _context.Tickets
+                                .Where(t => t.UserId == userId)
+                                .Include(t => t.TicketPackages).ThenInclude(tp => tp.Workpackage).ThenInclude(c => c.Client)
+                                .Include(t => t.User)
+                                .ToListAsync();
+
+        return tickets;
+    }
 }
