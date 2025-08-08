@@ -25,6 +25,7 @@ const schema = z.object({
 
 export default function EditUser() {
   const router = useRouter();
+
   const [selectedUser, setSelectedUser] = useState<User | null>({
     email: "",
     username: "",
@@ -35,6 +36,8 @@ export default function EditUser() {
   });
   const [adminToken, setAdminToken] = useState<string | null>(null);
   const { userInfo } = useAuthStore();
+
+  console.log("User Info:", userInfo);
 
   const {
     control,
@@ -70,7 +73,7 @@ export default function EditUser() {
     try {
       const token = await fetchAdminToken();
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_ADMIN_KEYCLOAK_URL}/users/${userId}`,
+        `${process.env.EXPO_PUBLIC_ADMIN_KEYCLOAK_URL}/users/${userInfo?.sub}`,
         {
           method: "PUT",
           headers: {
@@ -104,7 +107,7 @@ export default function EditUser() {
   };
 
   useEffect(() => {
-    fetchUser("kamal");
+    fetchUser(userInfo?.preferred_username);
     // Reset the form when the component mounts or when the user data changes
   }, []);
 
@@ -145,7 +148,7 @@ export default function EditUser() {
       );
       const newData = await response.json();
       setSelectedUser(newData);
-      console.log("Fetched user data:", newData[0]?.attributes, userName);
+      //console.log("Fetched user data:", newData[0]?.attributes, userName);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {

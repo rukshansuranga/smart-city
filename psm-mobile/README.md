@@ -110,6 +110,8 @@ This is a React Native mobile application for the PSM project.
 
 ## License
 
+eas init
+
 eas build -p android --profile development
 
 MIT

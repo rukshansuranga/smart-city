@@ -3,7 +3,7 @@ import "react-native-get-random-values";
 // prettier-ignore-end
 
 import "@/global.css";
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, useRouter } from "expo-router";
 
 import { useAuthStore } from "@/stores/authStore";
 // import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from "expo-auth-session";
@@ -13,7 +13,7 @@ import { Button } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 // Minimal custom header component
 
-function MinimalHeader({ options, route, logOut }) {
+function MinimalHeader({ options, route, logOut, userName }) {
   // Prefer options.title, then options.headerTitle, then route.name
   const title =
     options.title ||
@@ -21,10 +21,15 @@ function MinimalHeader({ options, route, logOut }) {
       ? options.headerTitle
       : undefined) ||
     (route && route.name ? route.name : "");
+  const router = useRouter();
   return (
-    <View className="flex-row items-center justify-between bg-blue-400 py-3 px-4">
+    <View className="flex-row items-center justify-between bg-blue-400 py-3 px-2">
       <Text className="text-white text-lg font-bold">{title}</Text>
+      {userName && (
+        <Text className="text-white text-lg font-bold">Hi, {userName}</Text>
+      )}
       <Button onPress={logOut}>Logout</Button>
+      <Button onPress={() => router.replace("/")}>Home</Button>
     </View>
   );
 }
@@ -32,6 +37,7 @@ function MinimalHeader({ options, route, logOut }) {
 export default function RootLayout() {
   const { isSignedIn, _hasHydrated, accessToken, idToken, userInfo, logOut } =
     useAuthStore();
+
   // Auth logic is handled in signIn.tsx
 
   // https://zustand.docs.pmnd.rs/integrations/persisting-store-data#how-can-i-check-if-my-store-has-been-hydrated
@@ -49,15 +55,17 @@ export default function RootLayout() {
     return null;
   }
 
-  // console.log("isSignedIn:", isSignedIn);
-  // console.log("access token:", accessToken);
-  // console.log("id token:", idToken);
-  // console.log("user info:", userInfo);
+  // Log app version and EAS buildId
+  // console.log("App Version:", Constants.expoConfig?.version);
+  // console.log("EAS Build ID:", Constants.eas?.buildId);
+  // console.log("EAS Object:", Constants.eas);
+  // console.log("auth", accessToken);
 
   async function handleLogout() {
     //console.log("isSignedIn:", isSignedIn);
     try {
       // const idToken = "authState.idToken";
+      //console.log("Logging out with idToken:", idToken);
       await fetch(
         `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/logout?id_token_hint=${idToken}`
       );
@@ -68,13 +76,19 @@ export default function RootLayout() {
     }
   }
 
+  console.log("userinfo:", userInfo);
+
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1">
         <Stack
           screenOptions={{
             header: (props) => (
-              <MinimalHeader {...props} logOut={handleLogout} />
+              <MinimalHeader
+                {...props}
+                logOut={handleLogout}
+                userName={userInfo?.given_name}
+              />
             ), // Use custom header
           }}
         >

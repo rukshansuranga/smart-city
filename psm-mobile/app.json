@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "SmartCity",
-    "slug": "psm-mobile",
-    "version": "4.0.1",
+    "slug": "smart-city",
+    "version": "4.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "smart-city",
@@ -18,7 +18,7 @@
       },
       "versionCode": 7,
       "edgeToEdgeEnabled": true,
-      "package": "com.rukshansuranga.psmmobile"
+      "package": "com.rukshansuranga.smartcity"
     },
     "web": {
       "bundler": "metro",
@@ -44,7 +44,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "48c9a7e9-4af7-4dd7-a796-3d688f53d567"
+        "projectId": "64d25936-36e1-46d6-8db7-b01c74df3ba5"
       }
     },
     "owner": "rukshansuranga"
