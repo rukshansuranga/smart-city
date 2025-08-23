@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace PSMWebAPI.Controllers
 {
-        [AllowAnonymous]
+    // ...removed [AllowAnonymous] to enforce authentication...
     [Route("api/[controller]")]
     [ApiController]
     public class RouteController : ControllerBase

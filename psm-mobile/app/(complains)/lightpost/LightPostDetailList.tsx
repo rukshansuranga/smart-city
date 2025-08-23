@@ -1,3 +1,4 @@
+import { getListPostsSpecificCategoryByPostNoAndName } from "@/api/lightPostAction";
 import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 
@@ -14,10 +15,10 @@ export default function LightPostDetailList({
     console.log(23);
     async function getComplains() {
       try {
-        const res = await fetch(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/Workpackage/lightPost/${postNo}/${name}`
+        const data = await getListPostsSpecificCategoryByPostNoAndName(
+          postNo,
+          name
         );
-        const data = await res.json();
         setActiveComplainList(data);
       } catch (error) {
         console.log("fetch active complains", error.message);
@@ -31,22 +32,31 @@ export default function LightPostDetailList({
 
   const renderList = ({ item }) => {
     return (
-      <View className="flex rounded-md overflow-hidden shadow-lg bg-blue-400 m-2 p-2">
-        <View className="flex-row">
-          <View className="w-1/3">
-            <Text className="font-medium text-xl">{item.clientName}</Text>
+      <View className="flex justify-center items-stretch rounded-xl shadow-lg bg-[#80ed99] m-2 p-3 border border-[#57cc99]">
+        <View className="flex-row w-full gap-2 mb-2">
+          <View className="flex-1">
+            <Text className="font-semibold text-base text-[#22577a]">
+              {item.clientName}
+            </Text>
           </View>
-          <View className="w-1/3">
-            <Text className="font-medium text-xl">{item.status}</Text>
+          <View className="flex-1">
+            <Text className="font-semibold text-base text-[#38a3a5]">
+              {item.status}
+            </Text>
           </View>
-          <View className="w-1/3">
-            <Text className="font-medium text-xl">{item.complainDate}</Text>
+          <View className="flex-1">
+            <Text className="font-semibold text-base text-[#22577a]">
+              {new Date(item.complainDate).toISOString().slice(5, 10)}
+            </Text>
           </View>
         </View>
-        <View className="flex-row justify-center">
+        <View className="flex-row flex-wrap justify-center gap-2">
           {item.ticketList.map((ticket) => (
-            <View key={ticket.id}>
-              <Text>{ticket.title}</Text>
+            <View
+              key={ticket.id}
+              className="bg-[#c7f9cc] px-2 py-1 rounded-lg border border-[#57cc99]"
+            >
+              <Text className="text-[#22577a] font-medium">{ticket.title}</Text>
             </View>
           ))}
         </View>
@@ -55,15 +65,20 @@ export default function LightPostDetailList({
   };
 
   return (
-    <View className="flex justify-between items-center py-4">
-      <View>
-        <Text className="font-bold text-2xl">Complain Details</Text>
+    <View className="flex justify-between items-center py-4 bg-[#c7f9cc]">
+      <View className="mb-4">
+        <Text className="font-bold text-2xl text-[#22577a]">
+          Complain Details
+        </Text>
       </View>
-      <FlatList
-        data={activeComplainList}
-        renderItem={renderList}
-        keyExtractor={(item) => item.workpackageId}
-      />
+      <View className="w-full">
+        <FlatList
+          data={activeComplainList}
+          renderItem={renderList}
+          keyExtractor={(item) => item.workpackageId}
+          contentContainerStyle={{ paddingBottom: 24 }}
+        />
+      </View>
     </View>
   );
 }

@@ -7,15 +7,21 @@ using PSMWebAPI.DTOs;
 using PSMWebAPI.DTOs.Request;
 using PSMWebAPI.DTOs.Response;
 using PSMWebAPI.Utils;
+using System.Security.Claims;
+using PSMWebAPI.DTOs.Workpackage;
+using PSMWebAPI.DTOs.Workpackage.LightPostComplain;
 
 namespace PSMWebAPI.Repositories;
 
 public class WorkpackageRepository : IWorkpackageRepository
 {
     private readonly ApplicationDbContext _context;
-    public WorkpackageRepository(ApplicationDbContext context)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public WorkpackageRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Workpackage> AddWorkpackageAsync(Workpackage workPackage)
@@ -64,14 +70,26 @@ public class WorkpackageRepository : IWorkpackageRepository
 
         return null;
     }
-    
     public async Task<T> AddWorkpackageAsync<T>(T workPackage) where T : class
     {
-        _context.Set<T>().Add(workPackage);
-        await _context.SaveChangesAsync();
-        return workPackage;
-    }
+        try
+        {
+            // var prop = typeof(T).GetProperty("CreatedAt");
+            // if (prop != null && prop.CanWrite)
+            // {
+            //     prop.SetValue(workPackage, PSMDateTime.Now);
+            // }
 
+            _context.Set<T>().Add(workPackage);
+            await _context.SaveChangesAsync();
+            return workPackage;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error setting CreatedAt property: " + ex.Message);
+        }
+
+    }
     public async Task<T> UpdateWorkpackageAsync<T>(T workpackage) where T : class
     {
         try
@@ -90,25 +108,15 @@ public class WorkpackageRepository : IWorkpackageRepository
             throw ex;
         }
     }
-
-
     public async Task<PageResponse<Workpackage>> GetWorkpackages(ComplainPaging complainPaging)
     {
         try
         {
-            // var query = _context.Workpackages
-            // .Where(s => complainPaging.Status.Contains(s.Status))
-            // .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
-            // .OrderBy(s => s.WorkpackageId)
-            // .Skip((complainPaging.PageIndex - 1) * complainPaging.PageSize)
-            // .Take(complainPaging.PageSize);
+            var user = _httpContextAccessor.HttpContext?.User;
 
-            // var list = await query.ToListAsync();
+            var userId = user?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            // var count = _context.Workpackages
-            // .Where(s => complainPaging.Status.Contains(s.Status))
-            // .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
-            // .Count();
+            var isAdmin = AuthenticationHelper.IsUserInRole(user, "admin");
 
             var qurery = _context.Workpackages.Include(t => t.TicketPackages).AsQueryable();
 
@@ -123,23 +131,30 @@ public class WorkpackageRepository : IWorkpackageRepository
                 qurery = qurery.Where(s => s.CreatedAt >= PSMDateTime.Now.PlusDays(-complainPaging.Duration));
             }
 
-            if (!string.IsNullOrEmpty(complainPaging.Type))
+            if (complainPaging.Type.HasValue)
             {
-                qurery = qurery.Where(s => s.WorkpackageType == complainPaging.Type);
+                qurery = qurery.Where(s => s.WorkpackageType == complainPaging.Type.Value.ToString());
+            }
+
+            if(complainPaging.TicketWorkpackageType.HasValue)
+            {
+                qurery = qurery.Where(s => s.WorkpackageType == complainPaging.TicketWorkpackageType.Value.ToString());
+            }
+
+            if (!isAdmin)
+            {
+                qurery = qurery.Where(s => s.CreatedBy == userId);
             }
 
             var count = await qurery.CountAsync();
+
+            //var sql = qurery.ToQueryString();
 
             var list = await qurery
                 .OrderByDescending(s => s.WorkpackageId)
                 .Skip((complainPaging.PageIndex - 1) * complainPaging.PageSize)
                 .Take(complainPaging.PageSize)
                 .ToListAsync();
-
-            // var count = _context.Workpackages
-            //     .Where(s => complainPaging.Status.Contains(s.Status))
-            //     .Where(s => s.CreatedDate >= PSMDateTime.Now.PlusDays(-complainPaging.Duration))
-            //     .Count();
 
             return new PageResponse<Workpackage> { Records = list, TotalItems = count };
         }
@@ -148,13 +163,14 @@ public class WorkpackageRepository : IWorkpackageRepository
             throw new ArgumentException("Invalid paging parameters: " + ex.Message);
         }
     }
-
     public async Task<IEnumerable<Workpackage>> GetWorkpackagesByTicketId(int ticketId)
     {
+
+
         var query = _context.Workpackages
                         .Where(s => s.IsActive == true)
                         .Where(s => s.TicketPackages.Any(c => c.Ticket.TicketId == ticketId));
-
+                        
         var list = await query.ToListAsync();
 
         return list;
@@ -176,25 +192,22 @@ public class WorkpackageRepository : IWorkpackageRepository
         await _context.SaveChangesAsync();
     }
 
-
-
     #region General Complain
 
     public async Task<IEnumerable<GeneralComplain>> GetGeneralComplain(GeneralComplainGetPagingRequest request)
     {
-        //TODO: Implement paging
-
-        // var query = _context.GeneralComplains.Include(x => x.Client).Include(x => x.Comments).Include(x => x.TicketPackages).ThenInclude(x => x.Ticket)
-        //     .Where(s => s.IsPrivate == request.IsPrivate)
-        //     .OrderBy(s => s.WorkpackageId)
-        //     .Skip((request.PageNumber - 1) * request.PageSize)
-        //     .Take(request.PageSize);
+        var clientId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         var query = _context.GeneralComplains.Include(x => x.Client).Include(x => x.Comments).Include(x => x.TicketPackages).ThenInclude(x => x.Ticket)
             .Where(s => s.IsPrivate == request.IsPrivate)
-            .Where(s => s.IsActive == true)
-            .OrderBy(s => s.WorkpackageId);
-            
+            .Where(s => s.IsActive == true);
+
+        if(request.IsPrivate)
+        {
+            query = query.Where(s => s.ClientId == clientId);
+        }
+
+        query = query.OrderBy(s => s.WorkpackageId);
 
         return query;
     }
@@ -204,11 +217,20 @@ public class WorkpackageRepository : IWorkpackageRepository
     #region Light Post Complain
 
 
-    public async Task<IEnumerable<LightPostComplainDetail>> GetDetailLightPostComplintsByPostIdAndName(string postNo, string name)
+    public async Task<IEnumerable<LightPostComplainDetail>> GetDetailLightPostComplintsByPostIdAndName(string postNo, string name, string FirstName)
     {
         var complainsByPostNo = await _context.LightPostComplains.Include(c => c.Client).Include(t => t.TicketPackages)
             .Where(x => x.IsActive == true && x.LightPostNumber == postNo && x.Subject == name)
-            .Select(x => new LightPostComplainDetail { WorkpackageId = x.WorkpackageId, Subject = x.Subject, ClientName = x.Client.FirstName, ComplainDate = PSMDateTime.FormatDate(x.CreatedAt), Status = x.Status.ToString(), TicketList = x.TicketPackages.Select(y => new TicketResponse { Id = y.TicketId, Title = y.Ticket.Subject }).ToList() })
+            .Select(x => new LightPostComplainDetail
+            {
+                WorkpackageId = x.WorkpackageId,
+                Subject = x.Subject,
+                ClientId = x.ClientId,
+                ClientName = x.Client.FirstName,
+                ComplainDate = x.CreatedAt,
+                Status = x.Status.ToString(),
+                TicketList = x.TicketPackages.Select(y => new TicketResponse { Id = y.TicketId, Title = y.Ticket.Subject }).ToList()
+            })
             .ToListAsync();
 
         return complainsByPostNo;
@@ -231,12 +253,43 @@ public class WorkpackageRepository : IWorkpackageRepository
         return nearPostList;
     }
 
+    public async Task<IEnumerable<LightPostComplain>> GetLightPostActiveWorkpackagesByMe(string postNo)
+    {
+        var clientId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var activeComplainByMe = await _context.LightPostComplains
+            .Where(x => x.LightPostNumber == postNo && x.ClientId == clientId && (x.Status == WorkpackageStatus.New || x.Status == WorkpackageStatus.InProgress))
+            .ToListAsync();
+        return activeComplainByMe;
+    }
 
+    public async Task<IEnumerable<ActiveLightPostMarkers>> GetActiveLightPostList()
+    {
+        var list = await _context.LightPostComplains
+            .Include(lp => lp.LightPost)
+            .Where(x => x.IsActive == true && x.Status == WorkpackageStatus.New && x.WorkpackageType == WorkpackageType.LightPostComplain.ToString())
+            .GroupBy(x => x.LightPostNumber)
+            .Select(g => new ActiveLightPostMarkers { LightPostNumber = g.Key, LightPost = g.FirstOrDefault().LightPost, Complains = g.ToList() })
+            .ToListAsync();
 
+        return list;
+    }
+
+    public async Task<IEnumerable<ActiveLightPostMarkers>> GetActiveAndAssignedLightPostList()
+    {
+        var list = await _context.LightPostComplains
+            .Include(lp => lp.LightPost)
+            .Where(x => x.IsActive == true && (x.Status == WorkpackageStatus.New || x.Status == WorkpackageStatus.Assigned) && x.WorkpackageType == WorkpackageType.LightPostComplain.ToString())
+            .GroupBy(x => x.LightPostNumber)
+            .Select(g => new ActiveLightPostMarkers { LightPostNumber = g.Key, LightPost = g.FirstOrDefault().LightPost, Complains = g.ToList() })
+            .ToListAsync();
+
+        return list;
+    }
 
     #endregion
 
     #region Project Complain
+
     public async Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId)
     {
         var complains = _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages)
@@ -244,12 +297,14 @@ public class WorkpackageRepository : IWorkpackageRepository
         return complains;
     }
 
-
     public async Task<ProjectComplain> GetProjectComplainByWorkpackageId(int workPackageId)
     {
         return await _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages)
             .FirstOrDefaultAsync(x => x.IsActive == true && x.WorkpackageId == workPackageId);
     }
+
+
+
     #endregion
 
 

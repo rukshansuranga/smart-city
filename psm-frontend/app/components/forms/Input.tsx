@@ -15,6 +15,7 @@ type Props<T extends FieldValues> = {
   required?: boolean;
   control: Control<T>;
   defaultValue?: T;
+  value?: string | number | null;
 } & UseControllerProps<T>;
 
 const FormField = <T extends FieldValues>(props: Props<T>) => {
@@ -46,6 +47,7 @@ const FormField = <T extends FieldValues>(props: Props<T>) => {
               : e.target.value;
           field.onChange(fieldValue);
         }}
+        value={props.value ?? field.value}
       />
       <HelperText>{fieldState.error?.message}</HelperText>
     </div>

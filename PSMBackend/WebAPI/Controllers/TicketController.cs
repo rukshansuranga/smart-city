@@ -11,10 +11,11 @@ using PSMWebAPI.DTOs.Ticket;
 
 namespace PSMWebAPI.Controllers
 {
-    [AllowAnonymous]
+    // ...removed [AllowAnonymous] to enforce authentication...
     [Route("api/[controller]")]
     [ApiController]
     public class TicketController : ControllerBase
+    // ...existing code...
     {
         private readonly ITicketRepository _ticketRepository;
         private readonly IMapper _mapper;
@@ -33,7 +34,7 @@ namespace PSMWebAPI.Controllers
             {
                 workPackageList.Add(new TicketPackage
                 {
-                    WorkpackageId = workPackageId
+                    WorkpackageId = workPackageId,
                 });
             }
 
@@ -102,19 +103,15 @@ namespace PSMWebAPI.Controllers
         {
             var response = await _ticketRepository.GetPagingAsync(paging); // Calls service to fetch product by ID
             return Ok(response); // Returns 200 OK response if found
-
         }
 
         [HttpPut("{ticketId}")]
         public async Task<IActionResult> Update(int ticketId, TicketUpdateRequest request)
         {
-
-            request.TicketId = ticketId;
-
             var ticket = _mapper.Map<Ticket>(request);
             ticket.TicketId = ticketId;
 
-            var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId.Value);
+            var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId);
 
             //var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
 
@@ -133,13 +130,52 @@ namespace PSMWebAPI.Controllers
 
             return Ok(result);
         }
-   
+
+
+        [HttpGet("resolve/{ticketId}")]
+        public async Task<IActionResult> ResolveTicket(int ticketId)
+        {
+            var result = await _ticketRepository.ResolvedOnTicketAsync(ticketId);
+            if (!result) return NotFound();
+
+            return Ok(result);
+        }
+
+        [HttpGet("close/{ticketId}")]
+        public async Task<IActionResult> CloseTicket(int ticketId)
+        {
+            var result = await _ticketRepository.CloseOnTicketAsync(ticketId);
+            if (!result) return NotFound();
+
+            return Ok(result);
+        }
+
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetTicketListByUserIdAsync(int userId)
+        public async Task<IActionResult> GetTicketListByUserIdAsync(string userId)
         {
             var result = await _ticketRepository.GetTicketListByUserIdAsync(userId);
-            
             return Ok(result);
+        }
+
+        [HttpGet("resolve")]
+        public async Task<IActionResult> GetResolvedTickets()
+        {
+            var result = await _ticketRepository.GetResolvedTicketsAsync();
+            return Ok(result);
+        }
+
+        [HttpPost("addworkpackages")]
+        public async Task<IActionResult> AddWorkPackages(UpdateTicketPayload updateTicket)
+        {
+            await _ticketRepository.AddWorkpackagesAsync(updateTicket.TicketId, updateTicket.WorkpackageIds);
+            return Ok();
+        }
+
+        [HttpPost("removeworkpackages")]
+        public async Task<IActionResult> RemoveWorkPackages(UpdateTicketPayload updateTicket)
+        {
+            await _ticketRepository.RemoveWorkpackagesAsync(updateTicket.TicketId, updateTicket.WorkpackageIds);
+            return Ok();
         }
     }
 }

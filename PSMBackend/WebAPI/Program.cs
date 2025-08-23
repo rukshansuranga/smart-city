@@ -22,16 +22,24 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 });
 
-//builder.Services.AddControllers();
-
 builder.Services.AddCors();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenWithAuth(builder.Configuration);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o => o.UseNodaTime()));
+// Register DbContext with dynamic connection string
+builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+{
+    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+    var httpContext = httpContextAccessor.HttpContext;
+    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (httpContext != null && httpContext.Items.ContainsKey("DynamicConnectionString"))
+    {
+        connectionString = httpContext.Items["DynamicConnectionString"] as string ?? connectionString;
+    }
+    options.UseNpgsql(connectionString, o => o.UseNodaTime());
+});
 
 // Register repositories and services
 builder.Services.AddScoped<IWorkpackageRepository, WorkpackageRepository>();
@@ -44,9 +52,17 @@ builder.Services.AddScoped<IGarbageRepository, GarbageRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ITenderRepository, TenderRepository>();
 builder.Services.AddScoped<IMiscRepository, MiscRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ITicketActivityRepository, TicketActivityRepository>();
 
 // builder.Services.AddHostedService<RideSimulationService>();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -65,12 +81,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 builder.Services.AddAutoMapper(typeof(ProjectProfile));
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-//AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-//app.MapDefaultEndpoints();
 
 app.MapGet("users/me", (ClaimsPrincipal claimsPrincipal) =>
 {
@@ -93,35 +108,30 @@ app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 // turn on PII logging
 Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Middleware to extract council value and set connection string
+app.Use(async (context, next) =>
+{
+    var accessToken = context.Request.Headers["Authorization"].FirstOrDefault();
+    var user = context.User;
+    string councilValue = user?.Claims?.FirstOrDefault(c => c.Type == "council")?.Value;
+    if (!string.IsNullOrEmpty(councilValue))
+    {
+        var config = context.RequestServices.GetRequiredService<IConfiguration>();
+        string connStrName = $"{councilValue}Connection";
+        string dynamicConnStr = config.GetConnectionString(connStrName) ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(dynamicConnStr))
+        {
+            context.Items["DynamicConnectionString"] = dynamicConnStr;
+        }
+    }
+    await next();
+});
 
 app.MapControllers();
-
 app.Run();
 
-// static void ApplyMigrations(WebApplication app)
-//         {
-//             using (var scope = app.Services.CreateScope())
-//             {
-//                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-//                 // Check and apply pending migrations
-//                 var pendingMigrations = dbContext.Database.GetPendingMigrations();
-//                 if (pendingMigrations.Any())
-//                 {
-//                     Console.WriteLine("Applying pending migrations...");
-//                     dbContext.Database.Migrate();
-//                     Console.WriteLine("Migrations applied successfully.");
-//                 }
-//                 else
-//                 {
-//                     Console.WriteLine("No pending migrations found.");
-//                 }
-//             }
-//         }
 
 

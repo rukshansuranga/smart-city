@@ -1,4 +1,5 @@
 import { getWorkpackagePaging } from "@/app/api/actions/workpackageAction";
+import { TicketWorkpackageType, WorkpackageStatus } from "@/enums";
 import { Paging, Workpackage } from "@/types";
 import {
   Button,
@@ -14,12 +15,14 @@ const itemsPerPage = 8;
 export default function WorkpackageList({
   selectedWorkpackages,
   handleWorkpackageClick,
+  ticketWorkpackageType,
 }: {
   selectedWorkpackages: Workpackage[];
   handleWorkpackageClick: (
     workpackage: Workpackage,
     isChecked: boolean
   ) => void;
+  ticketWorkpackageType: TicketWorkpackageType;
 }) {
   const [data, setData] = useState<Paging<Workpackage>>({
     records: [],
@@ -28,7 +31,10 @@ export default function WorkpackageList({
 
   const [pageIndex, setPageIndex] = useState<number>(1);
 
-  const [statusList, setStatusList] = useState<string[]>(["Created", "Open"]);
+  const [statusList, setStatusList] = useState<WorkpackageStatus[]>([
+    WorkpackageStatus.New,
+    WorkpackageStatus.InProgress,
+  ]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -47,11 +53,15 @@ export default function WorkpackageList({
   const fetchData = async () => {
     try {
       setLoading(true);
+
+      console.log(45666, ticketWorkpackageType);
+
       const result = await getWorkpackagePaging({
         status: statusList.join(","),
         pageSize: itemsPerPage.toString(),
         pageIndex: pageIndex.toString(),
         duration: "60",
+        ticketWorkpackageType: TicketWorkpackageType[ticketWorkpackageType],
       });
 
       setData(result);
@@ -62,12 +72,14 @@ export default function WorkpackageList({
     }
   };
 
-  function statusChange(status: string) {
+  function statusChange(status: WorkpackageStatus) {
+    let list = [];
     if (statusList.includes(status)) {
-      setStatusList(statusList.filter((sta) => sta !== status));
+      list = statusList.filter((sta) => sta !== status);
     } else {
-      setStatusList((prev) => [...prev, status]);
+      list = [...statusList, status];
     }
+    setStatusList(list);
   }
 
   if (loading) {
@@ -85,41 +97,30 @@ export default function WorkpackageList({
           <ButtonGroup className="gap-0.5">
             <Button
               className={`shadow-lg ${
-                statusList.includes("Created") ? "bg-green-700" : ""
+                statusList.includes(WorkpackageStatus.New) ? "bg-green-700" : ""
               } `}
-              onClick={() => statusChange("Created")}
+              onClick={() => statusChange(WorkpackageStatus.New)}
             >
-              Created
+              New
+            </Button>
+
+            <Button
+              className={`shadow-lg ${
+                statusList.includes(WorkpackageStatus.InProgress)
+                  ? "bg-green-700"
+                  : ""
+              } `}
+              onClick={() => statusChange(WorkpackageStatus.InProgress)}
+            >
+              In Progress
             </Button>
             <Button
               className={`shadow-lg ${
-                statusList.includes("Open") ? "bg-green-700" : ""
+                statusList.includes(WorkpackageStatus.Close)
+                  ? "bg-green-700"
+                  : ""
               } `}
-              onClick={() => statusChange("Open")}
-            >
-              Open
-            </Button>
-            <Button
-              className={`shadow-lg ${
-                statusList.includes("Pending") ? "bg-green-700" : ""
-              } `}
-              onClick={() => statusChange("Pending")}
-            >
-              Pending
-            </Button>
-            <Button
-              className={`shadow-lg ${
-                statusList.includes("Done") ? "bg-green-700" : ""
-              } `}
-              onClick={() => statusChange("Done")}
-            >
-              Done
-            </Button>
-            <Button
-              className={`shadow-lg ${
-                statusList.includes("Closed") ? "bg-green-700" : ""
-              } `}
-              onClick={() => statusChange("Closed")}
+              onClick={() => statusChange(WorkpackageStatus.Close)}
             >
               Closed
             </Button>
@@ -163,7 +164,9 @@ export default function WorkpackageList({
                         .toISOString()
                         .slice(0, 10)}
                     </td>
-                    <td className="px-6 py-4">{workpackage.status}</td>
+                    <td className="px-6 py-4">
+                      {WorkpackageStatus[workpackage.status]}
+                    </td>
                     <td className="px-6 py-4">
                       <Checkbox
                         id="accept"

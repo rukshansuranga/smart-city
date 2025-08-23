@@ -4,9 +4,10 @@ import Input from "@/app/components/forms/Input";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 
-import { Ticket, Option } from "@/types";
-import { useEffect, useState } from "react";
+import { Ticket, Option, Workpackage } from "@/types";
+import { useEffect, useMemo, useState } from "react";
 
 import { getUsers } from "@/app/api/actions/userActions";
 import { Button } from "flowbite-react";
@@ -17,57 +18,79 @@ import {
 } from "@/app/api/actions/ticketActions";
 import { useRouter } from "next/navigation";
 
-import { ticketStatusList } from "@/utility/Constants";
 import SelectField from "../components/forms/Select";
-import { TicketStatus, TicketType } from "@/enums";
+import {
+  TicketPriority,
+  TicketStatus,
+  TicketType,
+  TicketWorkpackageType,
+} from "@/enums";
+import DateField from "../components/forms/DateField";
 
 const schema = z.object({
   subject: z.string().min(1, "Title is required"),
   detail: z.string().optional(),
   note: z.string().optional(),
   userId: z.string().min(1, "User is required"),
-  status: z.nativeEnum(TicketStatus),
+  status: z.number().int().min(0, "Status is required"),
+  estimate: z.number().int().min(0, "Estimate is required"),
+  dueDate: z.union([z.string(), z.date()]).optional(),
+  priority: z.coerce.number().int().optional(),
 });
 
-export type FormData = {
-  ticketId?: number;
-  subject: string;
-  detail?: string;
-  note?: string;
-  userId: string;
-  status: TicketStatus;
-};
-
 export default function TicketForm({
+  ticketWorkpackageType,
   ticket,
   isInternal,
-  workpackageIdList,
+  workpackageList,
+  initialValue,
   handleClose,
 }: {
+  ticketWorkpackageType?: TicketWorkpackageType;
   ticket?: Ticket;
   isInternal: boolean;
-  workpackageIdList?: string[];
+  workpackageList?: Workpackage[];
+  initialValue?: { subject: string; detail: string; note?: string };
   handleClose?: () => void;
 }) {
   const [allUsers, setAllUsers] = useState<Option[]>([]);
+  const { data: session } = useSession();
 
   const router = useRouter();
+
+  const defaultValues = useMemo(
+    () => ({
+      detail: ticket?.ticketId
+        ? ticket.detail
+        : workpackageList?.length === 1
+        ? workpackageList[0].detail
+        : initialValue?.detail,
+      note: ticket?.note ?? "",
+      ticketId: ticket?.ticketId,
+      subject: ticket?.ticketId
+        ? ticket.subject
+        : workpackageList?.length === 1
+        ? workpackageList[0].subject
+        : initialValue?.subject,
+      userId: ticket?.userId?.toString() ?? "",
+      status: ticket?.status ?? TicketStatus.Open,
+      estimate: ticket?.estimate ?? 60,
+      priority: ticket?.priority ?? 0,
+      dueDate: ticket?.dueDate ? new Date(ticket.dueDate) : new Date(),
+    }),
+    [ticket, workpackageList]
+  );
+
+  console.log("defaultValues", defaultValues, initialValue);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<Ticket>({
     resolver: zodResolver(schema),
     mode: "onChange",
-    values: {
-      detail: ticket?.detail ?? "",
-      note: ticket?.note ?? "",
-      ticketId: ticket?.ticketId,
-      subject: ticket?.subject ?? "",
-      userId: ticket?.userId?.toString() ?? "",
-      status: ticket?.status ?? TicketStatus.Open, // Default status if not provided
-    },
+    values: defaultValues,
   });
 
   useEffect(() => {
@@ -86,22 +109,49 @@ export default function TicketForm({
     getAllUsers();
   }, []);
 
-  // useEffect(() => {}, [allUsers]);
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: Ticket) => {
     console.log("submit", data, ticket);
 
     const type = isInternal ? TicketType.Internal : TicketType.External;
 
+    const dueDateString =
+      data.dueDate instanceof Date
+        ? data.dueDate.toISOString().slice(0, 10)
+        : data.dueDate;
+
+    const payload = {
+      ...data,
+      dueDate: dueDateString,
+      createdBy: session?.user?.id,
+      // priority:
+      //   typeof data.priority === "string"
+      //     ? Number(data.priority)
+      //     : data.priority,
+    };
+
     try {
       if (ticket?.ticketId) {
         console.log("updating ticket", data);
-        await updateTicket({ ...data, ticketId: ticket.ticketId, type: type });
+        await updateTicket({
+          ...payload,
+          ticketId: ticket.ticketId,
+          type: type,
+        });
       } else {
         if (isInternal) {
-          await createInternalTicket({ ...data, type: type });
+          console.log("creating external ticket", data);
+          await createInternalTicket({
+            ...payload,
+            type: type,
+          });
         } else {
-          await createTicket({ ...data, type: type, workpackageIdList });
+          console.log("creating external ticket", data);
+          await createTicket({
+            ...payload,
+            type: type,
+            WorkpackageIdList: workpackageList.map((pkg) => pkg.workpackageId!),
+            ticketWorkpackageType: ticketWorkpackageType,
+          });
         }
       }
       if (handleClose) {
@@ -114,7 +164,15 @@ export default function TicketForm({
     }
   };
 
-  console.log("errors", errors);
+  console.log(
+    "priority options",
+    Object.entries(TicketPriority)
+      .filter(([, value]) => typeof value === "number")
+      .map(([key, value]) => ({
+        value,
+        text: key.replace(/([A-Z])/g, " $1").trim(),
+      }))
+  );
 
   return (
     <div>
@@ -164,12 +222,65 @@ export default function TicketForm({
             </div>
 
             <div className="w-1/2">
+              {ticket?.ticketId ? (
+                <SelectField
+                  showlabel
+                  label="Status"
+                  name="status"
+                  control={control}
+                  options={Object.entries(TicketStatus)
+                    .filter(([, value]) => typeof value === "number")
+                    .map(([key, value]) => ({
+                      value,
+                      text: key.replace(/([A-Z])/g, " $1").trim(),
+                    }))}
+                />
+              ) : (
+                <Input
+                  showlabel
+                  label="Status"
+                  type="status"
+                  name="status"
+                  value={TicketStatus[TicketStatus.Open]}
+                  control={control}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <div className="w-1/3">
               <SelectField
                 showlabel
-                label="Status"
-                name="status"
+                label="Priority"
+                name="priority"
                 control={control}
-                options={ticketStatusList}
+                options={Object.entries(TicketPriority)
+                  .filter(([, value]) => typeof value === "number")
+                  .map(([key, value]) => ({
+                    value,
+                    text: key.replace(/([A-Z])/g, " $1").trim(),
+                  }))}
+              />
+            </div>
+            <div className="w-1/3">
+              {" "}
+              <Input
+                showlabel
+                label="Estimate (Min)"
+                type="number"
+                placeholder="Enter estimate"
+                name="estimate"
+                control={control}
+              />
+            </div>
+            <div className="w-1/3">
+              <DateField
+                showlabel
+                label="Due Date"
+                placeholder="Select due date"
+                name="dueDate"
+                control={control}
               />
             </div>
           </div>

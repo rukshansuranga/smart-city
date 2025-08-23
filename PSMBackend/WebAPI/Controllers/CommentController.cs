@@ -8,7 +8,7 @@ using PSMWebAPI.Utils;
 
 namespace PSMWebAPI.Controllers
 {
-        [AllowAnonymous]
+    // ...removed [AllowAnonymous] to enforce authentication...
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -23,7 +23,7 @@ namespace PSMWebAPI.Controllers
         {
             var comment = new Comment
             {
-                Text = request.Comment,
+                Text = request.text,
                 WorkpackageId = request.WorkPackageId,
                 IsPrivate = request.IsPrivate,
                 Type = request.Type,

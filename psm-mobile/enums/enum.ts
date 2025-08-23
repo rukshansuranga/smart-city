@@ -16,3 +16,19 @@ export enum ProjectType {
   Building = 1,
   Irrigation = 2,
 }
+
+export enum NotificationStatus {
+  Created,
+  Sent,
+  Delivered,
+  Failed,
+  ReSent,
+  Rated,
+  Completed,
+}
+
+export enum NotificationType {
+  Info,
+  Warning,
+  Rating,
+}

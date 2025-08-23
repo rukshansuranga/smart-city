@@ -14,7 +14,7 @@ using PSMDataAccess;
 namespace PSMDataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250730055848_init")]
+    [Migration("20250822111401_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -29,11 +29,8 @@ namespace PSMDataAccess.Migrations
 
             modelBuilder.Entity("PSMModel.Models.Client", b =>
                 {
-                    b.Property<int>("ClientId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ClientId"));
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
 
                     b.Property<string>("AddressLine1")
                         .HasColumnType("text");
@@ -42,7 +39,6 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<LocalDateTime>("CreatedAt")
@@ -50,14 +46,10 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Email")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
@@ -69,14 +61,13 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Mobile")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("ClientId");
 
@@ -85,30 +76,22 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            ClientId = 1,
+                            ClientId = "1",
                             AddressLine1 = "123 Main St",
                             AddressLine2 = "Apt 4B",
                             City = "Colombo",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
-                            Email = "jeewan@example.com",
-                            FirstName = "Jeewan",
-                            IsActive = true,
-                            LastName = "Perera",
-                            Mobile = "0714789562"
+                            CreatedBy = "1",
+                            IsActive = true
                         },
                         new
                         {
-                            ClientId = 2,
+                            ClientId = "2",
                             AddressLine1 = "456 Lake Rd",
                             City = "Kandy",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
-                            Email = "lakshitha@example.com",
-                            FirstName = "Lakshitha",
-                            IsActive = true,
-                            LastName = "Fernando",
-                            Mobile = "07777894562"
+                            CreatedBy = "1",
+                            IsActive = true
                         });
                 });
 
@@ -120,16 +103,16 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CommentId"));
 
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
 
                     b.Property<LocalDateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -149,11 +132,11 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<int>("WorkpackageId")
                         .HasColumnType("integer");
@@ -193,8 +176,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -212,8 +195,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("CompanyId");
 
@@ -226,7 +209,7 @@ namespace PSMDataAccess.Migrations
                             AddressLine1 = "123 Main St",
                             City = "Colombo",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Mobile = "0771234567",
                             Name = "Maga"
@@ -237,7 +220,7 @@ namespace PSMDataAccess.Migrations
                             AddressLine1 = "123 Main St",
                             City = "Gampaha",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Mobile = "0779876543",
                             Name = "Access Construction"
@@ -257,8 +240,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Day")
                         .IsRequired()
@@ -284,8 +267,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("GCSheduleId");
 
@@ -415,15 +398,103 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             LightPostNumber = "LP001",
-                            Latitude = 6.9271000000000003,
-                            Longitude = 79.861199999999997
+                            Latitude = 7.0259340000000003,
+                            Longitude = 80.026858000000004
                         },
                         new
                         {
                             LightPostNumber = "LP002",
-                            Latitude = 6.9272,
-                            Longitude = 79.8613
+                            Latitude = 7.027679,
+                            Longitude = 80.027620999999996
+                        },
+                        new
+                        {
+                            LightPostNumber = "LP003",
+                            Latitude = 7.0308330000000003,
+                            Longitude = 80.028531999999998
+                        },
+                        new
+                        {
+                            LightPostNumber = "LP004",
+                            Latitude = 7.0330199999999996,
+                            Longitude = 80.027282
+                        },
+                        new
+                        {
+                            LightPostNumber = "LP005",
+                            Latitude = 7.0348280000000001,
+                            Longitude = 80.025925999999998
                         });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("WorkpackageId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("WorkpackageId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Project", b =>
@@ -446,8 +517,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -500,8 +571,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -514,7 +585,7 @@ namespace PSMDataAccess.Migrations
                             AwadedTenderId = 1,
                             City = "Weliveriya",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Description = "Description for Project Alpha",
                             EndDate = new NodaTime.LocalDate(2023, 12, 31),
                             EstimatedCost = 1000000m,
@@ -537,7 +608,7 @@ namespace PSMDataAccess.Migrations
                             AwadedTenderId = 2,
                             City = "Ambaraluwa",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Description = "Weliveriya road project",
                             EndDate = new NodaTime.LocalDate(2023, 12, 31),
                             EstimatedCost = 1000000m,
@@ -566,8 +637,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -584,8 +655,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("RegionNo");
 
@@ -596,7 +667,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RegionNo = "R001",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Name = "Weliveriya South",
                             Note = "This is a region in Gampaha district."
@@ -605,7 +676,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RegionNo = "R002",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Name = "Weliveriya North",
                             Note = "This is a region in Gampaha district."
@@ -625,8 +696,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<int>("Driver")
                         .HasColumnType("integer");
@@ -659,8 +730,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("VehicalNo")
                         .IsRequired()
@@ -679,7 +750,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RideId = 1,
                             CreatedAt = new NodaTime.LocalDateTime(2025, 7, 10, 12, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Driver = 0,
                             DriverNo = 1,
                             IsActive = true,
@@ -727,8 +798,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<float>("Distance")
                         .HasColumnType("real");
@@ -745,8 +816,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("RouteNo");
 
@@ -757,7 +828,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RouteNo = "R001",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Distance = 0f,
                             IsActive = true,
                             Name = "Noth Root"
@@ -766,7 +837,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RouteNo = "R002",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Distance = 0f,
                             IsActive = true,
                             Name = "South Root"
@@ -786,8 +857,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -811,8 +882,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("RoutePointId");
 
@@ -825,7 +896,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RoutePointId = 1,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Latitude = 80.026488999999998,
                             Longitude = 7.0249980000000001,
@@ -836,7 +907,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RoutePointId = 2,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Latitude = 80.022924000000003,
                             Longitude = 7.0254649999999996,
@@ -847,7 +918,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RoutePointId = 3,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Latitude = 80.021614,
                             Longitude = 7.0225910000000002,
@@ -858,7 +929,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RoutePointId = 4,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Latitude = 80.023321999999993,
                             Longitude = 7.0228789999999996,
@@ -869,7 +940,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RoutePointId = 5,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Latitude = 80.026511999999997,
                             Longitude = 7.0212519999999996,
@@ -880,7 +951,7 @@ namespace PSMDataAccess.Migrations
                         {
                             RoutePointId = 6,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Latitude = 80.026774000000003,
                             Longitude = 7.0229679999999997,
@@ -908,8 +979,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -932,8 +1003,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("TenderId");
 
@@ -950,7 +1021,7 @@ namespace PSMDataAccess.Migrations
                             BidAmount = 500000m,
                             CompanyId = 1,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 10, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Note = "This is a tender for Project A",
                             ProjectId = 1,
@@ -963,7 +1034,7 @@ namespace PSMDataAccess.Migrations
                             BidAmount = 300000m,
                             CompanyId = 1,
                             CreatedAt = new NodaTime.LocalDateTime(2023, 10, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Note = "This is a tender for Project A",
                             ProjectId = 1,
@@ -988,8 +1059,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Detail")
                         .HasColumnType("text");
@@ -1018,17 +1089,20 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("TicketWorkpackageType")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("Type")
                         .HasColumnType("integer");
 
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.HasKey("TicketId");
 
@@ -1041,50 +1115,99 @@ namespace PSMDataAccess.Migrations
                         {
                             TicketId = 1,
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Estimation = 0,
                             IsActive = true,
                             Status = 0,
                             Subject = "Fix Light Post LP001",
                             Type = 1,
-                            UserId = 1
+                            UserId = "1"
                         },
                         new
                         {
                             TicketId = 2,
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 2,
+                            CreatedBy = "2",
                             Estimation = 0,
                             IsActive = true,
                             Status = 0,
                             Subject = "Fix Light Post LP001 2",
                             Type = 1,
-                            UserId = 2
+                            UserId = "2"
                         },
                         new
                         {
                             TicketId = 3,
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 2,
+                            CreatedBy = "2",
                             Estimation = 0,
                             IsActive = true,
                             Status = 0,
                             Subject = "Fix Light Post LP001 3",
                             Type = 1,
-                            UserId = 2
+                            UserId = "2"
                         },
                         new
                         {
                             TicketId = 4,
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 2,
+                            CreatedBy = "2",
                             Estimation = 0,
                             IsActive = true,
                             Status = 0,
                             Subject = "Fix Light Post LP001 4",
                             Type = 1,
-                            UserId = 2
+                            UserId = "2"
                         });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.TicketActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Transition")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TicketActivities");
                 });
 
             modelBuilder.Entity("PSMModel.Models.TicketHistory", b =>
@@ -1095,18 +1218,17 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketHistoryId"));
 
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ChangedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NewValue")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("OldValue")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PropertyName")
@@ -1174,11 +1296,8 @@ namespace PSMDataAccess.Migrations
 
             modelBuilder.Entity("PSMModel.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<string>("AddressLine1")
                         .HasColumnType("text");
@@ -1195,8 +1314,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -1220,8 +1339,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("UserType")
                         .IsRequired()
@@ -1239,7 +1358,7 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = 1,
+                            UserId = "1",
                             City = "Colombo",
                             CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Email = "admin@example.com",
@@ -1250,7 +1369,7 @@ namespace PSMDataAccess.Migrations
                         },
                         new
                         {
-                            UserId = 2,
+                            UserId = "2",
                             City = "Galle",
                             CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Email = "kamal@example.com",
@@ -1261,7 +1380,7 @@ namespace PSMDataAccess.Migrations
                         },
                         new
                         {
-                            UserId = 3,
+                            UserId = "3",
                             City = "Kandy",
                             CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Email = "kumara@example.com",
@@ -1286,8 +1405,8 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -1305,8 +1424,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Year")
                         .IsRequired()
@@ -1322,7 +1441,7 @@ namespace PSMDataAccess.Migrations
                             VehicalNo = "T01",
                             Brand = "John Dear",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Model = "T66",
                             RegistrationNo = "GA1234",
@@ -1333,7 +1452,7 @@ namespace PSMDataAccess.Migrations
                             VehicalNo = "T02",
                             Brand = "Toyota",
                             CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             IsActive = true,
                             Model = "Truch",
                             RegistrationNo = "CAG3456",
@@ -1349,16 +1468,16 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkpackageId"));
 
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
 
                     b.Property<LocalDateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Detail")
                         .HasColumnType("text");
@@ -1368,6 +1487,24 @@ namespace PSMDataAccess.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
+                    b.Property<int>("MyProperty")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("RatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("RatingReview")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sentiment")
+                        .HasColumnType("text");
+
                     b.Property<int?>("Status")
                         .HasColumnType("integer");
 
@@ -1375,11 +1512,14 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Summary")
+                        .HasColumnType("text");
+
                     b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("WorkpackageType")
                         .IsRequired()
@@ -1400,11 +1540,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 1,
-                            ClientId = 2,
+                            ClientId = "2",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Detail for Work Package 1",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Work Package 1",
                             UpdatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
@@ -1413,12 +1554,13 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 2,
-                            ClientId = 2,
+                            ClientId = "2",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 7, 1, 10, 0),
-                            CreatedBy = 2,
+                            CreatedBy = "2",
                             Detail = "Detail for Work Package 2",
                             IsActive = true,
-                            Status = 1,
+                            MyProperty = 0,
+                            Status = 2,
                             Subject = "Work Package 2",
                             UpdatedAt = new NodaTime.LocalDateTime(2025, 7, 1, 10, 0),
                             WorkpackageType = "Workpackage"
@@ -1426,12 +1568,13 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 3,
-                            ClientId = 2,
+                            ClientId = "2",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 7, 10, 9, 30),
-                            CreatedBy = 3,
+                            CreatedBy = "3",
                             Detail = "Detail for Work Package 3",
                             IsActive = true,
-                            Status = 1,
+                            MyProperty = 0,
+                            Status = 2,
                             Subject = "Work Package 3",
                             UpdatedAt = new NodaTime.LocalDateTime(2025, 7, 10, 9, 30),
                             WorkpackageType = "Workpackage"
@@ -1439,11 +1582,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 4,
-                            ClientId = 2,
+                            ClientId = "2",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 7, 15, 8, 0),
-                            CreatedBy = 4,
+                            CreatedBy = "4",
                             Detail = "Detail for Work Package 4",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Work Package 4",
                             UpdatedAt = new NodaTime.LocalDateTime(2025, 7, 15, 8, 0),
@@ -1452,11 +1596,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 5,
-                            ClientId = 2,
+                            ClientId = "2",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 7, 20, 11, 45),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Detail for Work Package 5",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Work Package 5",
                             UpdatedAt = new NodaTime.LocalDateTime(2025, 7, 20, 11, 45),
@@ -1479,10 +1624,10 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = 4,
+                            UserId = "4",
                             City = "Colombo",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             FirstName = "Upul",
                             IsActive = true,
                             LastName = "Perera",
@@ -1492,10 +1637,10 @@ namespace PSMDataAccess.Migrations
                         },
                         new
                         {
-                            UserId = 5,
+                            UserId = "5",
                             City = "Galle",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             FirstName = "Shantha",
                             IsActive = true,
                             LastName = "Fernando",
@@ -1529,11 +1674,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 12,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "General Complain 1 description",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "General Complain 1",
                             IsPrivate = false
@@ -1548,17 +1694,20 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.HasIndex("LightPostNumber");
+
                     b.HasDiscriminator().HasValue("LightPostComplain");
 
                     b.HasData(
                         new
                         {
                             WorkpackageId = 21,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Light post not working at Main St.",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Light Post Issue",
                             LightPostNumber = "LP001"
@@ -1566,11 +1715,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 22,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Light post LP001 is not working 2",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Light Post Issue 2",
                             LightPostNumber = "LP001"
@@ -1578,11 +1728,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 23,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Light post LP001 is not working 3",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Light Post Issue 3",
                             LightPostNumber = "LP001"
@@ -1590,11 +1741,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 24,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Light post LP002 is not working 4",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Light Post Issue 4",
                             LightPostNumber = "LP002"
@@ -1602,11 +1754,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 25,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Light post LP002 is not working 5",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Light Post Issue 5",
                             LightPostNumber = "LP002"
@@ -1628,11 +1781,12 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 31,
-                            ClientId = 1,
+                            ClientId = "1",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            CreatedBy = 1,
+                            CreatedBy = "1",
                             Detail = "Project Complain 1 description",
                             IsActive = true,
+                            MyProperty = 0,
                             Status = 0,
                             Subject = "Project Complain 1",
                             ProjectId = 1
@@ -1640,12 +1794,13 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             WorkpackageId = 32,
-                            ClientId = 2,
+                            ClientId = "2",
                             CreatedAt = new NodaTime.LocalDateTime(2025, 6, 20, 10, 0),
-                            CreatedBy = 2,
+                            CreatedBy = "2",
                             Detail = "Project Complain 2 description",
                             IsActive = true,
-                            Status = 1,
+                            MyProperty = 0,
+                            Status = 2,
                             Subject = "Project Complain 2",
                             ProjectId = 2
                         });
@@ -1683,6 +1838,21 @@ namespace PSMDataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Region");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Notification", b =>
+                {
+                    b.HasOne("PSMModel.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId");
+
+                    b.HasOne("PSMModel.Models.Workpackage", "Workpackage")
+                        .WithMany()
+                        .HasForeignKey("WorkpackageId");
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("Workpackage");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Ride", b =>
@@ -1754,6 +1924,23 @@ namespace PSMDataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PSMModel.Models.TicketActivity", b =>
+                {
+                    b.HasOne("PSMModel.Models.Ticket", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PSMModel.Models.TicketHistory", b =>
                 {
                     b.HasOne("PSMModel.Models.Ticket", "Ticket")
@@ -1793,6 +1980,17 @@ namespace PSMDataAccess.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("PSMModel.Models.LightPostComplain", b =>
+                {
+                    b.HasOne("PSMModel.Models.LightPost", "LightPost")
+                        .WithMany()
+                        .HasForeignKey("LightPostNumber")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LightPost");
+                });
+
             modelBuilder.Entity("PSMModel.Models.ProjectComplain", b =>
                 {
                     b.HasOne("PSMModel.Models.Project", "Project")
@@ -1816,6 +2014,8 @@ namespace PSMDataAccess.Migrations
 
             modelBuilder.Entity("PSMModel.Models.Ticket", b =>
                 {
+                    b.Navigation("Activities");
+
                     b.Navigation("TicketPackages");
                 });
 

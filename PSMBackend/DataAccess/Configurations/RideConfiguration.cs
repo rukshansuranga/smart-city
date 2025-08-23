@@ -22,7 +22,7 @@ public class RideConfiguration : IEntityTypeConfiguration<Ride>
                 VehicalNo = "T01",
                 RegionNo = "R001",
                 CreatedAt = new LocalDateTime(2025, 7, 10, 12, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             }
         );

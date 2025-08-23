@@ -1,11 +1,11 @@
 "use server";
 import { fetchWrapper } from "@/lib/fetchWrapper";
-import { Paging, Ticket } from "@/types";
+import { Paging, Ticket, UpdateTicketPayload } from "@/types";
 
 export async function createTicket(
   ticket: Ticket | { workpackageIdList: string[] }
 ): Promise<Ticket> {
-  //console.log("ticket action 52", ticket);
+  console.log("ticket creation action", ticket);
   return fetchWrapper.post(`ticket/external`, ticket);
 }
 
@@ -40,4 +40,34 @@ export async function updateTicket(ticket: Partial<Ticket>): Promise<Ticket> {
 
 export async function getTicketsByUserId(id: string): Promise<Ticket[]> {
   return fetchWrapper.get(`ticket/user/${id}`);
+}
+
+export async function startTicket(ticketId: string): Promise<boolean> {
+  return fetchWrapper.get(`ticket/start/${ticketId}`);
+}
+
+export async function resolveTicket(ticketId: string): Promise<boolean> {
+  return fetchWrapper.get(`ticket/resolve/${ticketId}`);
+}
+
+export async function closeTicket(ticketId: string): Promise<boolean> {
+  return fetchWrapper.get(`ticket/close/${ticketId}`);
+}
+
+export async function getResolvedTickets(): Promise<Ticket[]> {
+  return fetchWrapper.get(`ticket/resolve`);
+}
+
+export async function addWorkpackagesToTicket(
+  updateTicketPayload: UpdateTicketPayload
+): Promise<void> {
+  //console.log("ticket action 52", ticket);
+  return fetchWrapper.post(`ticket/addworkpackages`, updateTicketPayload);
+}
+
+export async function removeWorkpackagesFromTicket(
+  updateTicketPayload: UpdateTicketPayload
+): Promise<void> {
+  //console.log("ticket action 52", ticket);
+  return fetchWrapper.post(`ticket/removeworkpackages`, updateTicketPayload);
 }

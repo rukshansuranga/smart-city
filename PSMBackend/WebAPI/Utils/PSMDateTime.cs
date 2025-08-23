@@ -18,8 +18,4 @@ public class PSMDateTime
         }
     }
 
-    public static string FormatDate(LocalDateTime date)
-    {
-        return $"{date.Year}-{date.Month}-{date.Day}";
-    }
 }

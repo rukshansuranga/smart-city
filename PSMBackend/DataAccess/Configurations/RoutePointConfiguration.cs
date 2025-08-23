@@ -18,7 +18,7 @@ public class RoutePointConfiguration : IEntityTypeConfiguration<RoutePoint>
                 Latitude = 80.026489,
                 RouteNo = "R001",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new RoutePoint
@@ -29,7 +29,7 @@ public class RoutePointConfiguration : IEntityTypeConfiguration<RoutePoint>
                 Latitude = 80.022924,
                 RouteNo = "R001",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new RoutePoint
@@ -40,7 +40,7 @@ public class RoutePointConfiguration : IEntityTypeConfiguration<RoutePoint>
                 Latitude = 80.021614,
                 RouteNo = "R001",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new RoutePoint
@@ -51,7 +51,7 @@ public class RoutePointConfiguration : IEntityTypeConfiguration<RoutePoint>
                 Latitude = 80.023322,
                 RouteNo = "R001",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new RoutePoint
@@ -62,7 +62,7 @@ public class RoutePointConfiguration : IEntityTypeConfiguration<RoutePoint>
                 Latitude = 80.026512,
                 RouteNo = "R001",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new RoutePoint
@@ -73,7 +73,7 @@ public class RoutePointConfiguration : IEntityTypeConfiguration<RoutePoint>
                 Latitude = 80.026774,
                 RouteNo = "R001",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             }
         );

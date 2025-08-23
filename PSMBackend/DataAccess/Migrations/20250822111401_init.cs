@@ -20,19 +20,17 @@ namespace PSMDataAccess.Migrations
                 name: "Clients",
                 columns: table => new
                 {
-                    ClientId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    ClientId = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
-                    Mobile = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: true),
+                    Mobile = table.Column<string>(type: "text", nullable: true),
                     AddressLine1 = table.Column<string>(type: "text", nullable: true),
                     AddressLine2 = table.Column<string>(type: "text", nullable: true),
-                    City = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -53,8 +51,8 @@ namespace PSMDataAccess.Migrations
                     Mobile = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -99,8 +97,8 @@ namespace PSMDataAccess.Migrations
                     TenderClosingDate = table.Column<LocalDate>(type: "date", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -117,8 +115,8 @@ namespace PSMDataAccess.Migrations
                     Note = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -135,8 +133,8 @@ namespace PSMDataAccess.Migrations
                     Distance = table.Column<float>(type: "real", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -148,8 +146,7 @@ namespace PSMDataAccess.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     Mobile = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: true),
@@ -162,8 +159,8 @@ namespace PSMDataAccess.Migrations
                     ExpireDate = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -182,8 +179,8 @@ namespace PSMDataAccess.Migrations
                     Year = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -205,8 +202,8 @@ namespace PSMDataAccess.Migrations
                     CompanyId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -234,8 +231,15 @@ namespace PSMDataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Subject = table.Column<string>(type: "text", nullable: false),
                     Detail = table.Column<string>(type: "text", nullable: true),
+                    Rating = table.Column<double>(type: "double precision", nullable: true),
+                    RatedBy = table.Column<string>(type: "text", nullable: true),
+                    RatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
+                    RatingReview = table.Column<string>(type: "text", nullable: true),
+                    Sentiment = table.Column<string>(type: "text", nullable: true),
+                    Summary = table.Column<string>(type: "text", nullable: true),
+                    MyProperty = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: true),
-                    ClientId = table.Column<int>(type: "integer", nullable: true),
+                    ClientId = table.Column<string>(type: "text", nullable: true),
                     WorkpackageType = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
                     GarbagePointNo = table.Column<string>(type: "text", nullable: true),
                     IsPrivate = table.Column<bool>(type: "boolean", nullable: true),
@@ -243,8 +247,8 @@ namespace PSMDataAccess.Migrations
                     ProjectId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -255,6 +259,12 @@ namespace PSMDataAccess.Migrations
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "ClientId");
+                    table.ForeignKey(
+                        name: "FK_Workpackages_LightPosts_LightPostNumber",
+                        column: x => x.LightPostNumber,
+                        principalTable: "LightPosts",
+                        principalColumn: "LightPostNumber",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Workpackages_Projects_ProjectId",
                         column: x => x.ProjectId,
@@ -275,8 +285,8 @@ namespace PSMDataAccess.Migrations
                     RegionNo = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -302,8 +312,8 @@ namespace PSMDataAccess.Migrations
                     RouteNo = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -328,15 +338,16 @@ namespace PSMDataAccess.Migrations
                     Note = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: true),
                     Type = table.Column<int>(type: "integer", nullable: true),
+                    TicketWorkpackageType = table.Column<int>(type: "integer", nullable: true),
                     Estimation = table.Column<int>(type: "integer", nullable: false),
                     Priority = table.Column<int>(type: "integer", nullable: true),
                     DueDate = table.Column<LocalDate>(type: "date", nullable: true),
                     Attachments = table.Column<List<string>>(type: "text[]", nullable: true),
-                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -365,8 +376,8 @@ namespace PSMDataAccess.Migrations
                     RegionNo = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -395,13 +406,13 @@ namespace PSMDataAccess.Migrations
                     Text = table.Column<string>(type: "text", nullable: false),
                     WorkpackageId = table.Column<int>(type: "integer", nullable: false),
                     IsPrivate = table.Column<bool>(type: "boolean", nullable: true),
-                    ClientId = table.Column<int>(type: "integer", nullable: true),
-                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    ClientId = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
                     Type = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -426,6 +437,77 @@ namespace PSMDataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Subject = table.Column<string>(type: "text", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    ClientId = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    TicketId = table.Column<int>(type: "integer", nullable: true),
+                    WorkpackageId = table.Column<int>(type: "integer", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    Error = table.Column<string>(type: "text", nullable: true),
+                    RetryCount = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "TicketId");
+                    table.ForeignKey(
+                        name: "FK_Notifications_Workpackages_WorkpackageId",
+                        column: x => x.WorkpackageId,
+                        principalTable: "Workpackages",
+                        principalColumn: "WorkpackageId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketActivities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TicketId = table.Column<int>(type: "integer", nullable: false),
+                    Transition = table.Column<int>(type: "integer", nullable: true),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<LocalDateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketActivities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketActivities_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "TicketId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TicketActivities_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TicketHistories",
                 columns: table => new
                 {
@@ -433,10 +515,10 @@ namespace PSMDataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TicketId = table.Column<int>(type: "integer", nullable: false),
                     PropertyName = table.Column<string>(type: "text", nullable: false),
-                    OldValue = table.Column<string>(type: "text", nullable: false),
-                    NewValue = table.Column<string>(type: "text", nullable: false),
+                    OldValue = table.Column<string>(type: "text", nullable: true),
+                    NewValue = table.Column<string>(type: "text", nullable: true),
                     ChangedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ChangedBy = table.Column<int>(type: "integer", nullable: false)
+                    ChangedBy = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -499,11 +581,11 @@ namespace PSMDataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Clients",
-                columns: new[] { "ClientId", "AddressLine1", "AddressLine2", "City", "CreatedAt", "CreatedBy", "Email", "FirstName", "IsActive", "LastName", "Mobile", "UpdatedAt", "UpdatedBy" },
+                columns: new[] { "ClientId", "AddressLine1", "AddressLine2", "City", "CreatedAt", "CreatedBy", "FirstName", "IsActive", "LastName", "Mobile", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, "123 Main St", "Apt 4B", "Colombo", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "jeewan@example.com", "Jeewan", true, "Perera", "0714789562", null, null },
-                    { 2, "456 Lake Rd", null, "Kandy", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "lakshitha@example.com", "Lakshitha", true, "Fernando", "07777894562", null, null }
+                    { "1", "123 Main St", "Apt 4B", "Colombo", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", null, true, null, null, null, null },
+                    { "2", "456 Lake Rd", null, "Kandy", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", null, true, null, null, null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -511,8 +593,8 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "CompanyId", "AddressLine1", "AddressLine2", "City", "CreatedAt", "CreatedBy", "IsActive", "Mobile", "Name", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, "123 Main St", null, "Colombo", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, true, "0771234567", "Maga", null, null },
-                    { 2, "123 Main St", null, "Gampaha", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, true, "0779876543", "Access Construction", null, null }
+                    { 1, "123 Main St", null, "Colombo", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", true, "0771234567", "Maga", null, null },
+                    { 2, "123 Main St", null, "Gampaha", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", true, "0779876543", "Access Construction", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -520,8 +602,11 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "LightPostNumber", "Latitude", "Longitude" },
                 values: new object[,]
                 {
-                    { "LP001", 6.9271000000000003, 79.861199999999997 },
-                    { "LP002", 6.9272, 79.8613 }
+                    { "LP001", 7.0259340000000003, 80.026858000000004 },
+                    { "LP002", 7.027679, 80.027620999999996 },
+                    { "LP003", 7.0308330000000003, 80.028531999999998 },
+                    { "LP004", 7.0330199999999996, 80.027282 },
+                    { "LP005", 7.0348280000000001, 80.025925999999998 }
                 });
 
             migrationBuilder.InsertData(
@@ -529,8 +614,8 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "Id", "AwadedTenderId", "City", "CreatedAt", "CreatedBy", "Description", "EndDate", "EstimatedCost", "IsActive", "Latitude", "Location", "LocationNote", "Longitude", "SpecificationDocument", "StartDate", "Status", "Subject", "TenderClosingDate", "TenderOpeningDate", "Type", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, 1, "Weliveriya", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, "Description for Project Alpha", new NodaTime.LocalDate(2023, 12, 31), 1000000m, true, 34.052199999999999, "Location A", "Note for Location A", -118.2437, "specification_alpha.pdf", new NodaTime.LocalDate(2023, 1, 1), 0, "Project Alpha", new NodaTime.LocalDate(2023, 1, 30), new NodaTime.LocalDate(2023, 1, 15), 0, null, null },
-                    { 2, 2, "Ambaraluwa", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, "Weliveriya road project", new NodaTime.LocalDate(2023, 12, 31), 1000000m, true, 34.052199999999999, "Location A", "Note for Location A", -118.2437, "specification_alpha.pdf", new NodaTime.LocalDate(2023, 1, 1), 0, "Weliveriya road project", new NodaTime.LocalDate(2023, 1, 30), new NodaTime.LocalDate(2023, 1, 15), 0, null, null }
+                    { 1, 1, "Weliveriya", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", "Description for Project Alpha", new NodaTime.LocalDate(2023, 12, 31), 1000000m, true, 34.052199999999999, "Location A", "Note for Location A", -118.2437, "specification_alpha.pdf", new NodaTime.LocalDate(2023, 1, 1), 0, "Project Alpha", new NodaTime.LocalDate(2023, 1, 30), new NodaTime.LocalDate(2023, 1, 15), 0, null, null },
+                    { 2, 2, "Ambaraluwa", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", "Weliveriya road project", new NodaTime.LocalDate(2023, 12, 31), 1000000m, true, 34.052199999999999, "Location A", "Note for Location A", -118.2437, "specification_alpha.pdf", new NodaTime.LocalDate(2023, 1, 1), 0, "Weliveriya road project", new NodaTime.LocalDate(2023, 1, 30), new NodaTime.LocalDate(2023, 1, 15), 0, null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -538,8 +623,8 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "RegionNo", "CreatedAt", "CreatedBy", "IsActive", "Name", "Note", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { "R001", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, "Weliveriya South", "This is a region in Gampaha district.", null, null },
-                    { "R002", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, "Weliveriya North", "This is a region in Gampaha district.", null, null }
+                    { "R001", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, "Weliveriya South", "This is a region in Gampaha district.", null, null },
+                    { "R002", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, "Weliveriya North", "This is a region in Gampaha district.", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -547,8 +632,8 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "RouteNo", "CreatedAt", "CreatedBy", "Distance", "IsActive", "Name", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { "R001", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, 0f, true, "Noth Root", null, null },
-                    { "R002", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, 0f, true, "South Root", null, null }
+                    { "R001", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", 0f, true, "Noth Root", null, null },
+                    { "R002", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", 0f, true, "South Root", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -556,9 +641,9 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "UserId", "AddressLine1", "AddressLine2", "City", "CreatedBy", "Email", "FirstName", "IsActive", "LastName", "Mobile", "UpdatedAt", "UpdatedBy", "UserType" },
                 values: new object[,]
                 {
-                    { 1, null, null, "Colombo", null, "admin@example.com", "Admin", true, "User", "0777582696", null, null, "User" },
-                    { 2, null, null, "Galle", null, "kamal@example.com", "Kamal", true, "Perera", "0147894562", null, null, "User" },
-                    { 3, null, null, "Kandy", null, "kumara@example.com", "Kumara", true, "Fernando", "0117654321", null, null, "User" }
+                    { "1", null, null, "Colombo", null, "admin@example.com", "Admin", true, "User", "0777582696", null, null, "User" },
+                    { "2", null, null, "Galle", null, "kamal@example.com", "Kamal", true, "Perera", "0147894562", null, null, "User" },
+                    { "3", null, null, "Kandy", null, "kumara@example.com", "Kumara", true, "Fernando", "0117654321", null, null, "User" }
                 });
 
             migrationBuilder.InsertData(
@@ -566,8 +651,8 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "UserId", "AddressLine1", "AddressLine2", "City", "CreatedAt", "CreatedBy", "Email", "ExpireDate", "FirstName", "IsActive", "LastName", "LicenseNo", "Mobile", "UpdatedAt", "UpdatedBy", "UserType" },
                 values: new object[,]
                 {
-                    { 4, null, null, "Colombo", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, null, new NodaTime.LocalDateTime(2027, 6, 19, 14, 14), "Upul", true, "Perera", "2345", "0777582365", null, null, "Driver" },
-                    { 5, null, null, "Galle", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, null, new NodaTime.LocalDateTime(2028, 6, 19, 14, 14), "Shantha", true, "Fernando", "2345", "0147894492", null, null, "Driver" }
+                    { "4", null, null, "Colombo", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", null, new NodaTime.LocalDateTime(2027, 6, 19, 14, 14), "Upul", true, "Perera", "2345", "0777582365", null, null, "Driver" },
+                    { "5", null, null, "Galle", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", null, new NodaTime.LocalDateTime(2028, 6, 19, 14, 14), "Shantha", true, "Fernando", "2345", "0147894492", null, null, "Driver" }
                 });
 
             migrationBuilder.InsertData(
@@ -575,8 +660,8 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "VehicalNo", "Brand", "CreatedAt", "CreatedBy", "IsActive", "Model", "RegistrationNo", "UpdatedAt", "UpdatedBy", "Year" },
                 values: new object[,]
                 {
-                    { "T01", "John Dear", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, "T66", "GA1234", null, null, "1998" },
-                    { "T02", "Toyota", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, "Truch", "CAG3456", null, null, "2024" }
+                    { "T01", "John Dear", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, "T66", "GA1234", null, null, "1998" },
+                    { "T02", "Toyota", new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, "Truch", "CAG3456", null, null, "2024" }
                 });
 
             migrationBuilder.InsertData(
@@ -599,19 +684,19 @@ namespace PSMDataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Rides",
                 columns: new[] { "RideId", "CreatedAt", "CreatedBy", "Driver", "DriverNo", "EndTime", "IsActive", "Notes", "RegionNo", "StartTime", "Type", "UpdatedAt", "UpdatedBy", "VehicalNo" },
-                values: new object[] { 1, new NodaTime.LocalDateTime(2025, 7, 10, 12, 0), 1, 0, 1, null, true, null, "R001", new NodaTime.LocalDateTime(2025, 7, 10, 13, 0), "Paper Collection", null, null, "T01" });
+                values: new object[] { 1, new NodaTime.LocalDateTime(2025, 7, 10, 12, 0), "1", 0, 1, null, true, null, "R001", new NodaTime.LocalDateTime(2025, 7, 10, 13, 0), "Paper Collection", null, null, "T01" });
 
             migrationBuilder.InsertData(
                 table: "RoutePoints",
                 columns: new[] { "RoutePointId", "CreatedAt", "CreatedBy", "IsActive", "Latitude", "Longitude", "PointName", "RouteNo", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, 80.026488999999998, 7.0249980000000001, "maduma bankara vidyalaya", "R001", null, null },
-                    { 2, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, 80.022924000000003, 7.0254649999999996, "gala gawa", "R001", null, null },
-                    { 3, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, 80.021614, 7.0225910000000002, "Sewa Piyasa", "R001", null, null },
-                    { 4, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, 80.023321999999993, 7.0228789999999996, "jayamal oil", "R001", null, null },
-                    { 5, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, 80.026511999999997, 7.0212519999999996, "bathiya home", "R001", null, null },
-                    { 6, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), 1, true, 80.026774000000003, 7.0229679999999997, "grace health", "R001", null, null }
+                    { 1, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, 80.026488999999998, 7.0249980000000001, "maduma bankara vidyalaya", "R001", null, null },
+                    { 2, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, 80.022924000000003, 7.0254649999999996, "gala gawa", "R001", null, null },
+                    { 3, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, 80.021614, 7.0225910000000002, "Sewa Piyasa", "R001", null, null },
+                    { 4, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, 80.023321999999993, 7.0228789999999996, "jayamal oil", "R001", null, null },
+                    { 5, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, 80.026511999999997, 7.0212519999999996, "bathiya home", "R001", null, null },
+                    { 6, new NodaTime.LocalDateTime(2023, 1, 1, 9, 0), "1", true, 80.026774000000003, 7.0229679999999997, "grace health", "R001", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -619,57 +704,57 @@ namespace PSMDataAccess.Migrations
                 columns: new[] { "TenderId", "BidAmount", "CompanyId", "CreatedAt", "CreatedBy", "IsActive", "Note", "ProjectId", "Subject", "SubmittedDate", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, 500000m, 1, new NodaTime.LocalDateTime(2023, 10, 1, 9, 0), 1, true, "This is a tender for Project A", 1, "Tender for Project A", new NodaTime.LocalDateTime(2023, 10, 1, 10, 0), null, null },
-                    { 2, 300000m, 1, new NodaTime.LocalDateTime(2023, 10, 1, 9, 0), 1, true, "This is a tender for Project A", 1, "Tender for Road Construction", new NodaTime.LocalDateTime(2023, 10, 1, 10, 0), null, null }
+                    { 1, 500000m, 1, new NodaTime.LocalDateTime(2023, 10, 1, 9, 0), "1", true, "This is a tender for Project A", 1, "Tender for Project A", new NodaTime.LocalDateTime(2023, 10, 1, 10, 0), null, null },
+                    { 2, 300000m, 1, new NodaTime.LocalDateTime(2023, 10, 1, 9, 0), "1", true, "This is a tender for Project A", 1, "Tender for Road Construction", new NodaTime.LocalDateTime(2023, 10, 1, 10, 0), null, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Tickets",
-                columns: new[] { "TicketId", "Attachments", "CreatedAt", "CreatedBy", "Detail", "DueDate", "Estimation", "IsActive", "Note", "Priority", "Status", "Subject", "Type", "UpdatedAt", "UpdatedBy", "UserId" },
+                columns: new[] { "TicketId", "Attachments", "CreatedAt", "CreatedBy", "Detail", "DueDate", "Estimation", "IsActive", "Note", "Priority", "Status", "Subject", "TicketWorkpackageType", "Type", "UpdatedAt", "UpdatedBy", "UserId" },
                 values: new object[,]
                 {
-                    { 1, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, null, null, 0, true, null, null, 0, "Fix Light Post LP001", 1, null, null, 1 },
-                    { 2, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 2, null, null, 0, true, null, null, 0, "Fix Light Post LP001 2", 1, null, null, 2 },
-                    { 3, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 2, null, null, 0, true, null, null, 0, "Fix Light Post LP001 3", 1, null, null, 2 },
-                    { 4, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 2, null, null, 0, true, null, null, 0, "Fix Light Post LP001 4", 1, null, null, 2 }
+                    { 1, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", null, null, 0, true, null, null, 0, "Fix Light Post LP001", null, 1, null, null, "1" },
+                    { 2, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "2", null, null, 0, true, null, null, 0, "Fix Light Post LP001 2", null, 1, null, null, "2" },
+                    { 3, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "2", null, null, 0, true, null, null, 0, "Fix Light Post LP001 3", null, 1, null, null, "2" },
+                    { 4, null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "2", null, null, 0, true, null, null, 0, "Fix Light Post LP001 4", null, 1, null, null, "2" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Workpackages",
-                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "Status", "Subject", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
+                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "MyProperty", "RatedAt", "RatedBy", "Rating", "RatingReview", "Sentiment", "Status", "Subject", "Summary", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
                 values: new object[,]
                 {
-                    { 1, 2, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "Detail for Work Package 1", true, 0, "Work Package 1", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), null, "Workpackage" },
-                    { 2, 2, new NodaTime.LocalDateTime(2025, 7, 1, 10, 0), 2, "Detail for Work Package 2", true, 1, "Work Package 2", new NodaTime.LocalDateTime(2025, 7, 1, 10, 0), null, "Workpackage" },
-                    { 3, 2, new NodaTime.LocalDateTime(2025, 7, 10, 9, 30), 3, "Detail for Work Package 3", true, 1, "Work Package 3", new NodaTime.LocalDateTime(2025, 7, 10, 9, 30), null, "Workpackage" },
-                    { 4, 2, new NodaTime.LocalDateTime(2025, 7, 15, 8, 0), 4, "Detail for Work Package 4", true, 0, "Work Package 4", new NodaTime.LocalDateTime(2025, 7, 15, 8, 0), null, "Workpackage" },
-                    { 5, 2, new NodaTime.LocalDateTime(2025, 7, 20, 11, 45), 1, "Detail for Work Package 5", true, 0, "Work Package 5", new NodaTime.LocalDateTime(2025, 7, 20, 11, 45), null, "Workpackage" }
+                    { 1, "2", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", "Detail for Work Package 1", true, 0, null, null, null, null, null, 0, "Work Package 1", null, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), null, "Workpackage" },
+                    { 2, "2", new NodaTime.LocalDateTime(2025, 7, 1, 10, 0), "2", "Detail for Work Package 2", true, 0, null, null, null, null, null, 2, "Work Package 2", null, new NodaTime.LocalDateTime(2025, 7, 1, 10, 0), null, "Workpackage" },
+                    { 3, "2", new NodaTime.LocalDateTime(2025, 7, 10, 9, 30), "3", "Detail for Work Package 3", true, 0, null, null, null, null, null, 2, "Work Package 3", null, new NodaTime.LocalDateTime(2025, 7, 10, 9, 30), null, "Workpackage" },
+                    { 4, "2", new NodaTime.LocalDateTime(2025, 7, 15, 8, 0), "4", "Detail for Work Package 4", true, 0, null, null, null, null, null, 0, "Work Package 4", null, new NodaTime.LocalDateTime(2025, 7, 15, 8, 0), null, "Workpackage" },
+                    { 5, "2", new NodaTime.LocalDateTime(2025, 7, 20, 11, 45), "1", "Detail for Work Package 5", true, 0, null, null, null, null, null, 0, "Work Package 5", null, new NodaTime.LocalDateTime(2025, 7, 20, 11, 45), null, "Workpackage" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Workpackages",
-                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "IsPrivate", "Status", "Subject", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
-                values: new object[] { 12, 1, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "General Complain 1 description", true, false, 0, "General Complain 1", null, null, "GeneralComplain" });
+                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "IsPrivate", "MyProperty", "RatedAt", "RatedBy", "Rating", "RatingReview", "Sentiment", "Status", "Subject", "Summary", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
+                values: new object[] { 12, "1", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", "General Complain 1 description", true, false, 0, null, null, null, null, null, 0, "General Complain 1", null, null, null, "GeneralComplain" });
 
             migrationBuilder.InsertData(
                 table: "Workpackages",
-                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "LightPostNumber", "Status", "Subject", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
+                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "LightPostNumber", "MyProperty", "RatedAt", "RatedBy", "Rating", "RatingReview", "Sentiment", "Status", "Subject", "Summary", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
                 values: new object[,]
                 {
-                    { 21, 1, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "Light post not working at Main St.", true, "LP001", 0, "Light Post Issue", null, null, "LightPostComplain" },
-                    { 22, 1, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "Light post LP001 is not working 2", true, "LP001", 0, "Light Post Issue 2", null, null, "LightPostComplain" },
-                    { 23, 1, new NodaTime.LocalDateTime(2025, 6, 20, 14, 14), 1, "Light post LP001 is not working 3", true, "LP001", 0, "Light Post Issue 3", null, null, "LightPostComplain" },
-                    { 24, 1, new NodaTime.LocalDateTime(2025, 6, 20, 14, 14), 1, "Light post LP002 is not working 4", true, "LP002", 0, "Light Post Issue 4", null, null, "LightPostComplain" },
-                    { 25, 1, new NodaTime.LocalDateTime(2025, 6, 20, 14, 14), 1, "Light post LP002 is not working 5", true, "LP002", 0, "Light Post Issue 5", null, null, "LightPostComplain" }
+                    { 21, "1", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", "Light post not working at Main St.", true, "LP001", 0, null, null, null, null, null, 0, "Light Post Issue", null, null, null, "LightPostComplain" },
+                    { 22, "1", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", "Light post LP001 is not working 2", true, "LP001", 0, null, null, null, null, null, 0, "Light Post Issue 2", null, null, null, "LightPostComplain" },
+                    { 23, "1", new NodaTime.LocalDateTime(2025, 6, 20, 14, 14), "1", "Light post LP001 is not working 3", true, "LP001", 0, null, null, null, null, null, 0, "Light Post Issue 3", null, null, null, "LightPostComplain" },
+                    { 24, "1", new NodaTime.LocalDateTime(2025, 6, 20, 14, 14), "1", "Light post LP002 is not working 4", true, "LP002", 0, null, null, null, null, null, 0, "Light Post Issue 4", null, null, null, "LightPostComplain" },
+                    { 25, "1", new NodaTime.LocalDateTime(2025, 6, 20, 14, 14), "1", "Light post LP002 is not working 5", true, "LP002", 0, null, null, null, null, null, 0, "Light Post Issue 5", null, null, null, "LightPostComplain" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Workpackages",
-                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "ProjectId", "Status", "Subject", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
+                columns: new[] { "WorkpackageId", "ClientId", "CreatedAt", "CreatedBy", "Detail", "IsActive", "MyProperty", "ProjectId", "RatedAt", "RatedBy", "Rating", "RatingReview", "Sentiment", "Status", "Subject", "Summary", "UpdatedAt", "UpdatedBy", "WorkpackageType" },
                 values: new object[,]
                 {
-                    { 31, 1, new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), 1, "Project Complain 1 description", true, 1, 0, "Project Complain 1", null, null, "ProjectComplain" },
-                    { 32, 2, new NodaTime.LocalDateTime(2025, 6, 20, 10, 0), 2, "Project Complain 2 description", true, 2, 1, "Project Complain 2", null, null, "ProjectComplain" }
+                    { 31, "1", new NodaTime.LocalDateTime(2025, 6, 19, 14, 14), "1", "Project Complain 1 description", true, 0, 1, null, null, null, null, null, 0, "Project Complain 1", null, null, null, "ProjectComplain" },
+                    { 32, "2", new NodaTime.LocalDateTime(2025, 6, 20, 10, 0), "2", "Project Complain 2 description", true, 0, 2, null, null, null, null, null, 2, "Project Complain 2", null, null, null, "ProjectComplain" }
                 });
 
             migrationBuilder.InsertData(
@@ -704,6 +789,16 @@ namespace PSMDataAccess.Migrations
                 column: "RegionNo");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notifications_TicketId",
+                table: "Notifications",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_WorkpackageId",
+                table: "Notifications",
+                column: "WorkpackageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RidePoints_RideId",
                 table: "RidePoints",
                 column: "RideId");
@@ -734,6 +829,16 @@ namespace PSMDataAccess.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TicketActivities_TicketId",
+                table: "TicketActivities",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketActivities_UserId",
+                table: "TicketActivities",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TicketHistories_TicketId",
                 table: "TicketHistories",
                 column: "TicketId");
@@ -759,6 +864,11 @@ namespace PSMDataAccess.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Workpackages_LightPostNumber",
+                table: "Workpackages",
+                column: "LightPostNumber");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Workpackages_ProjectId",
                 table: "Workpackages",
                 column: "ProjectId");
@@ -774,7 +884,7 @@ namespace PSMDataAccess.Migrations
                 name: "GCShedules");
 
             migrationBuilder.DropTable(
-                name: "LightPosts");
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "RidePoints");
@@ -784,6 +894,9 @@ namespace PSMDataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tenders");
+
+            migrationBuilder.DropTable(
+                name: "TicketActivities");
 
             migrationBuilder.DropTable(
                 name: "TicketHistories");
@@ -817,6 +930,9 @@ namespace PSMDataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clients");
+
+            migrationBuilder.DropTable(
+                name: "LightPosts");
 
             migrationBuilder.DropTable(
                 name: "Projects");

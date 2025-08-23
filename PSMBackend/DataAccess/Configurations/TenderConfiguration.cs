@@ -21,7 +21,7 @@ public class TenderConfiguration : IEntityTypeConfiguration<Tender>
                 ProjectId = 1,
                 CompanyId = 1,
                 CreatedAt = new LocalDateTime(2023, 10, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new Tender
@@ -34,7 +34,7 @@ public class TenderConfiguration : IEntityTypeConfiguration<Tender>
                 ProjectId = 1,
                 CompanyId = 1,
                 CreatedAt = new LocalDateTime(2023, 10, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             }
         );

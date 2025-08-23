@@ -4,14 +4,17 @@ import {
   manageMappingByTicketAndPackage,
 } from "@/app/api/actions/workpackageAction";
 import { Workpackage } from "@/types";
-import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import WorkpackageList from "./WorkpackageList";
+import { TicketWorkpackageType, WorkpackageStatus } from "@/enums";
+import { Button, Spinner } from "flowbite-react";
 
 export default function WorkpackageAssigned({
   ticketId,
+  ticketWorkpackageType,
 }: {
   ticketId: number;
+  ticketWorkpackageType: TicketWorkpackageType;
 }) {
   const [workpackages, setWorkpackages] = useState<Workpackage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -21,6 +24,7 @@ export default function WorkpackageAssigned({
       try {
         setLoading(true);
         const data = await getWorkpackageByTicketId(ticketId);
+
         setWorkpackages(data);
       } catch (error) {
         console.error("Error fetching workpackages:", error);
@@ -75,6 +79,8 @@ export default function WorkpackageAssigned({
     }
   }
 
+  console.log("All workpackages:", workpackages);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -120,7 +126,9 @@ export default function WorkpackageAssigned({
                 <td className="px-6 py-4">
                   {new Date(workpackage.createdAt).toISOString().slice(0, 10)}
                 </td>
-                <td className="px-6 py-4">{workpackage.status}</td>
+                <td className="px-6 py-4">
+                  {WorkpackageStatus[workpackage.status]}
+                </td>
                 <td>
                   <Button
                     onClick={() =>
@@ -139,6 +147,7 @@ export default function WorkpackageAssigned({
         <WorkpackageList
           selectedWorkpackages={workpackages}
           handleWorkpackageClick={handleWorkpackageClick}
+          ticketWorkpackageType={ticketWorkpackageType}
         />
       </div>
     </div>

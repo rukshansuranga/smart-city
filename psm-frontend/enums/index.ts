@@ -22,11 +22,18 @@ export enum TicketStatus {
 }
 export enum WorkpackageStatus {
   New = 0,
-  InProgress = 1,
-  Close = 2,
+  Assigned = 1,
+  InProgress = 2,
+  Closed = 3,
 }
 
 export enum TicketType {
   Internal = 0,
   External = 1,
+}
+
+export enum TicketWorkpackageType {
+  GeneralComplain = 0,
+  LightPostComplain = 1,
+  ProjectComplain = 2,
 }

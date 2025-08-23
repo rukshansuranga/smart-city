@@ -17,7 +17,7 @@ import CreateTicketForm from "../../ticket/new/popup";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Spinner } from "flowbite-react";
-import { WorkpackageStatus } from "@/enums";
+import { TicketWorkpackageType, WorkpackageStatus } from "@/enums";
 
 export default function WorkpackageList({
   type,
@@ -43,11 +43,24 @@ export default function WorkpackageList({
   const [selectedWorkpackages, setSelectedWorkpackages] = useState<
     Workpackage[]
   >([]);
+  const [ticketWorkpackageType, setTicketWorkpackageType] = useState<
+    TicketWorkpackageType | undefined
+  >(undefined);
 
   const searchParams = useSearchParams();
   const pageIndex = searchParams.get("pageIndex") ?? "1";
 
   const [openModal, setOpenModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (type) {
+      setTicketWorkpackageType(
+        TicketWorkpackageType[type as keyof typeof TicketWorkpackageType]
+      );
+    }
+  }, [type]);
+
+  console.log("Ticket Workpackage Type:", ticketWorkpackageType);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +73,6 @@ export default function WorkpackageList({
           type: type,
           duration: "60",
         });
-
         console.log("Fetched workpackage data:", result);
 
         setData(result);
@@ -73,12 +85,6 @@ export default function WorkpackageList({
 
     fetchData();
   }, [searchParams]);
-
-  // useEffect(() => {
-  //   router.push(
-  //     `?pageSize=${pageSize}&pageIndex=1&status=${statusList.join(",")}`
-  //   );
-  // }, [statusList]);
 
   function addWorkpackage(
     workpackage: Workpackage | undefined,
@@ -134,14 +140,6 @@ export default function WorkpackageList({
       </div>
     );
   }
-
-  // if (data.records.length === 0) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <h1 className="text-2xl font-bold">No Workpackages Found</h1>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex-col">
@@ -214,7 +212,9 @@ export default function WorkpackageList({
                 <td className="px-6 py-4">
                   {new Date(workpackage.createdAt)?.toISOString()?.slice(0, 10)}
                 </td>
-                <td className="px-6 py-4">{workpackage.status}</td>
+                <td className="px-6 py-4">
+                  {WorkpackageStatus[workpackage.status]}
+                </td>
                 <td className="px-6 py-4">
                   {workpackage.ticketPackages?.length > 0 ? null : (
                     <Checkbox
@@ -268,6 +268,7 @@ export default function WorkpackageList({
           <CreateTicketForm
             open={setOpenModal}
             packages={selectedWorkpackages}
+            ticketWorkpackageType={ticketWorkpackageType!}
           />
         </ModalBody>
       </Modal>

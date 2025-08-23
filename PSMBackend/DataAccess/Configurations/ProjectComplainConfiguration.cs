@@ -18,10 +18,10 @@ public class ProjectComplainConfiguration : IEntityTypeConfiguration<ProjectComp
                 Subject = "Project Complain 1",
                 Detail = "Project Complain 1 description",
                 Status = WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 ProjectId = 1,
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new ProjectComplain
@@ -30,10 +30,10 @@ public class ProjectComplainConfiguration : IEntityTypeConfiguration<ProjectComp
                 Subject = "Project Complain 2",
                 Detail = "Project Complain 2 description",
                 Status = WorkpackageStatus.InProgress,
-                ClientId = 2,
+                ClientId = "2",
                 ProjectId = 2,
                 CreatedAt = new LocalDateTime(2025, 6, 20, 10, 0, 0),
-                CreatedBy = 2,
+                CreatedBy = "2",
                 IsActive = true
             }
             // new ProjectComplain

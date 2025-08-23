@@ -3,6 +3,7 @@ import "./globals.css";
 import NavBar from "./nav/NavBar";
 import { SideBar } from "./sidebar";
 import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,13 +22,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <NavBar session={session} />
-        <main className="flex max-w-screen-2xl mx-auto pt-10 ">
-          <div className="w-1/6">
-            <SideBar session={session} />
-          </div>
-          <div className="w-5/6">{children}</div>
-        </main>
+        <SessionProvider session={session}>
+          <NavBar session={session} />
+          <main className="flex max-w-screen-2xl mx-auto pt-10 ">
+            <div className="w-1/6">
+              <SideBar session={session} />
+            </div>
+            <div className="w-5/6">{children}</div>
+          </main>
+        </SessionProvider>
       </body>
     </html>
   );

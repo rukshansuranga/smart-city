@@ -31,7 +31,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
                 TenderClosingDate = new LocalDate(2023, 1, 30),
                 AwadedTenderId = 1,
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new Project
@@ -53,7 +53,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
                 TenderOpeningDate = new LocalDate(2023, 1, 15),
                 TenderClosingDate = new LocalDate(2023, 1, 30),
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 AwadedTenderId = 2,
                 IsActive = true
             }

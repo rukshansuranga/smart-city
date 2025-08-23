@@ -5,7 +5,6 @@ using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers
 {
-        [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -21,7 +20,13 @@ namespace PSMWebAPI.Controllers
         
         public async Task<IActionResult> GetUsers()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             var users = await _userRepository.GetUsers();
+            
             return Ok(users); // Returns 200 OK response with the list of work packages
         }
 

@@ -13,7 +13,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasData(
             new User
             {
-                UserId = 1,
+                UserId = "1",
                 FirstName = "Admin",
                 LastName = "User",
                 Mobile = "0777582696",
@@ -22,7 +22,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             },
             new User
             {
-                UserId = 2,
+                UserId = "2",
                 FirstName = "Kamal",
                 LastName = "Perera",
                 Mobile = "0147894562",
@@ -31,7 +31,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             },
             new User
             {
-                UserId = 3,
+                UserId = "3",
                 FirstName = "Kumara",
                 LastName = "Fernando",
                 Mobile = "0117654321",

@@ -34,27 +34,49 @@ export default function ComplainAddModal({ project, closeModel }) {
     }
   }
   return (
-    <View className="flex-1 w-full justify-center mx-4 gap-2">
+    <View className="flex-1 w-full justify-center items-center bg-[#c7f9cc] px-4 py-6 rounded-xl gap-4">
       <View className="w-full">
         <TextInput
-          label="complain"
+          label="Complain"
           value={complainText}
           onChangeText={setComplainText}
+          style={{
+            backgroundColor: "#80ed99",
+            color: "#22577a",
+            borderRadius: 8,
+            fontWeight: "bold",
+          }}
+          underlineColor="#38a3a5"
+          activeUnderlineColor="#38a3a5"
         />
       </View>
-      <View className="w-full h-36 bg-red-400">
+      <View className="w-full h-36">
         <TextInput
           className="h-full"
-          label="description"
+          label="Description"
           value={description}
           onChangeText={setDescription}
           multiline
           editable
-          numberOfLines={4} // Initial height for 4 lines
+          numberOfLines={4}
+          style={{
+            backgroundColor: "#80ed99",
+            color: "#22577a",
+            borderRadius: 8,
+            fontWeight: "bold",
+            height: "100%",
+          }}
+          underlineColor="#38a3a5"
+          activeUnderlineColor="#38a3a5"
         />
       </View>
-      <View className="mt-4">
-        <Button onPress={addComplainHandler} mode="contained">
+      <View className="mt-4 w-full">
+        <Button
+          onPress={addComplainHandler}
+          mode="contained"
+          style={{ backgroundColor: "#38a3a5", borderRadius: 8 }}
+          labelStyle={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}
+        >
           Add Complain
         </Button>
       </View>

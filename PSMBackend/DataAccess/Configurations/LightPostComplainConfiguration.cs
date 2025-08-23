@@ -18,10 +18,10 @@ public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPost
                 Subject = "Light Post Issue",
                 Detail = "Light post not working at Main St.",
                 Status = WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 LightPostNumber = "LP001",
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new LightPostComplain
@@ -30,10 +30,10 @@ public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPost
                 Subject = "Light Post Issue 2",
                 Detail = "Light post LP001 is not working 2",
                 Status = WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 LightPostNumber = "LP001",
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new LightPostComplain
@@ -42,10 +42,10 @@ public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPost
                 Subject = "Light Post Issue 3",
                 Detail = "Light post LP001 is not working 3",
                 Status = WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 LightPostNumber = "LP001",
                 CreatedAt = new LocalDateTime(2025, 6, 20, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new LightPostComplain
@@ -54,10 +54,10 @@ public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPost
                 Subject = "Light Post Issue 4",
                 Detail = "Light post LP002 is not working 4",
                 Status = WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 LightPostNumber = "LP002",
                 CreatedAt = new LocalDateTime(2025, 6, 20, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new LightPostComplain
@@ -66,10 +66,10 @@ public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPost
                 Subject = "Light Post Issue 5",
                 Detail = "Light post LP002 is not working 5",
                 Status = WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 LightPostNumber = "LP002",
                 CreatedAt = new LocalDateTime(2025, 6, 20, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             }
         );

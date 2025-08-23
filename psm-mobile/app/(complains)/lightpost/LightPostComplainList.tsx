@@ -1,12 +1,18 @@
 import { complainMap } from "@/constants";
 
-import { createRef, useState } from "react";
+import {
+  addLightPostComplainAsync,
+  GetActiveListPostComplainsByMe,
+  getNearLightPosts,
+} from "@/api/lightPostAction";
+import { useAuthStore } from "@/stores/authStore";
+import { createRef, useEffect, useState } from "react";
 import { Alert, Modal, StyleSheet, View } from "react-native";
 import GooglePlacesTextInput, {
   Place,
 } from "react-native-google-places-textinput";
 import MapView, { Marker } from "react-native-maps";
-import { Button, IconButton, MD3Colors, Text } from "react-native-paper";
+import { Button, IconButton, Text } from "react-native-paper";
 import LightPostContainer from "./LightPostContainer";
 import SelectList from "./SelectList";
 
@@ -22,7 +28,9 @@ export default function LightPostComplainList() {
   const [addingComplain, setAddingComplain] = useState(false);
 
   const [selectedPostNo, setSelectedPostNo] = useState(null);
+  const [myComplains, setMyComplains] = useState([]);
   const mapRef = createRef();
+  const { userInfo } = useAuthStore();
 
   const [nearPoles, setNearPoles] = useState([
     {
@@ -45,23 +53,13 @@ export default function LightPostComplainList() {
   async function addComplain(id) {
     console.log("add", id);
     try {
-      const res = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/lightPost`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            lightPostNumber: selectedPostNo,
-            clientId: 1,
-            subject: id,
-            detail: "",
-          }),
-        }
-      );
-      const data = await res.json();
+      await addLightPostComplainAsync({
+        lightPostNumber: selectedPostNo,
+        clientId: userInfo.sub,
+        subject: id,
+        detail: "",
+      });
+      await fetchActiveComplainsByMe();
 
       setAddingComplain(false);
     } catch (error) {
@@ -69,19 +67,21 @@ export default function LightPostComplainList() {
     }
   }
 
-  console.log("adding complain", addingComplain);
-
-  // const userAddress = "";
+  async function fetchActiveComplainsByMe() {
+    try {
+      const activeList = await GetActiveListPostComplainsByMe(selectedPostNo);
+      console.log("my list", activeList, selectedPostNo);
+      setMyComplains(activeList);
+    } catch (error) {
+      console.log("fetch active complains", error.message);
+    }
+  }
 
   const handlePlaceSelect = async (place: Place) => {
+    console.log("Selected place:", place);
     try {
-      const data = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/lightPost/near?latitude=${place.details?.location?.latitude}&longitude=${place.details?.location?.longitude}`
-      );
-
-      const poleList = await data.json();
-
-      console.log({ poleList });
+      const poleList = await getNearLightPosts(place);
+      console.log("Near light posts data:", poleList);
       setNearPoles(poleList);
       mapRef.current.animateToRegion({
         latitude: place.details?.location?.latitude,
@@ -90,11 +90,15 @@ export default function LightPostComplainList() {
         longitudeDelta: 0.034,
       });
     } catch (error) {
-      console.log("error", error);
+      console.log("error1", error);
     }
   };
 
-  console.log("Selected placexx:", process.env.EXPO_PUBLIC_BACKEND_URL);
+  useEffect(() => {
+    if (selectedPostNo) {
+      fetchActiveComplainsByMe();
+    }
+  }, [selectedPostNo]);
 
   return (
     <View className="flex-1 gap-2   p-1">
@@ -130,25 +134,36 @@ export default function LightPostComplainList() {
         }}
       >
         {addingComplain ? (
-          <View className="flex-1 justify-center items-center">
-            <View className="w-4/5  p-4 bg-slate-200 rounded-2xl items-center elevation-sm gap-4">
-              <Text className="font-bold text-2xl">Add List</Text>
-              <View className="flex w-full gap-2">
-                <SelectList list={complainMap} onPress={addComplain} />
+          <View className="flex-1 justify-center items-center bg-[#57cc99]/80">
+            <View className="w-4/5 py-6 px-4 bg-[#f6fff8] rounded-2xl items-center elevation-sm gap-4 relative">
+              <Text className="font-bold text-2xl text-[#22577a] self-start">
+                Add Complain
+              </Text>
+              <View className="flex w-full mt-3 gap-2">
+                <SelectList
+                  list={complainMap}
+                  onPress={addComplain}
+                  myList={myComplains}
+                />
               </View>
 
-              <IconButton
-                icon="close"
-                iconColor={MD3Colors.primary10}
-                size={30}
-                mode="contained"
-                onPress={() => setAddingComplain((prev) => !prev)}
-              />
+              <View
+                style={{ position: "absolute", top: 2, right: 8, zIndex: 10 }}
+              >
+                <IconButton
+                  icon="close"
+                  className="bg-[#57cc99]"
+                  size={18}
+                  mode="contained"
+                  onPress={() => setAddingComplain((prev) => !prev)}
+                />
+              </View>
             </View>
           </View>
         ) : (
-          <View className="flex-1 justify-center items-center">
-            <View className="w-4/5  p-4 bg-slate-200 rounded-2xl items-center elevation-sm gap-4">
+          <View className="flex-1 justify-center items-center bg-[#57cc99]/80">
+            <View className="w-4/5 p-4 bg-[#f6fff8] rounded-2xl items-center elevation-sm gap-4 relative">
+              <Text className="font-bold text-2xl text-[#22577a] self-start"></Text>
               <View className="w-full">
                 {selectedPostNo && (
                   <LightPostContainer postNo={selectedPostNo} />
@@ -159,17 +174,39 @@ export default function LightPostComplainList() {
                 icon="plus"
                 mode="contained"
                 onPress={() => setAddingComplain(true)}
+                style={{
+                  backgroundColor: "#38a3a5",
+                  borderRadius: 8,
+                  paddingHorizontal: 16,
+                  paddingVertical: 6,
+                }}
+                labelStyle={{
+                  color: "#fff",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                }}
               >
-                Add Complain
+                Complain
               </Button>
 
-              <IconButton
+              {/* <IconButton
                 icon="close"
                 iconColor={MD3Colors.primary10}
                 size={30}
                 mode="contained"
                 onPress={() => setModalVisible(!modalVisible)}
-              />
+              /> */}
+              <View
+                style={{ position: "absolute", top: 2, right: 8, zIndex: 10 }}
+              >
+                <IconButton
+                  icon="close"
+                  className="bg-[#57cc99]"
+                  size={18}
+                  mode="contained"
+                  onPress={() => setModalVisible(!modalVisible)}
+                />
+              </View>
             </View>
           </View>
         )}
@@ -182,41 +219,5 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
-  },
-  modalComplainListView: {
-    margin: 20,
-    width: "80%",
-    height: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    opacity: 0.8,
-  },
-  modalAddComplainView: {
-    margin: 20,
-    width: "80%",
-    height: "40%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "space-around",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    opacity: 0.8,
   },
 });

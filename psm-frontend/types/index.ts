@@ -3,6 +3,7 @@ import {
   ProjectType,
   TicketStatus,
   TicketType,
+  TicketWorkpackageType,
   WorkpackageStatus,
 } from "@/enums";
 
@@ -16,6 +17,7 @@ export type LightPostComplain = {
   description: string;
   note: string;
   status: string;
+  isIncluded?: boolean;
 };
 
 export type Workpackage = {
@@ -52,13 +54,18 @@ export type Ticket = {
   note?: string;
   userId: string;
   createdAt?: Date;
-  status?: TicketStatus;
+  status: TicketStatus;
   type?: TicketType;
+  estimate: number;
+  priority?: number;
+  dueDate?: Date | string;
   user?: {
     userId: string;
     firstName: string;
   };
-  ticketPackages: TicketPckage[];
+  ticketPackages?: TicketPckage[];
+  packages?: Workpackage[];
+  ticketWorkpackageType?: TicketWorkpackageType;
 };
 
 export type User = {
@@ -115,4 +122,19 @@ export type LightPost = {
   lightPostNumber: string;
   location: string;
   latitude: number;
+  longitude: number;
+};
+
+type LightPostComplainWithChecked = LightPostComplain & { isChecked?: boolean };
+
+export type ActiveLightPostMarker = {
+  lightPostNumber: string;
+  lightPost: LightPost;
+  complains: LightPostComplainWithChecked[];
+  isIncluded?: boolean; // Indicates if the light post is included in the cart
+};
+
+export type UpdateTicketPayload = {
+  ticketId: number;
+  workpackageIds: number[];
 };

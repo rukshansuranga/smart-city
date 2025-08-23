@@ -114,4 +114,10 @@ eas init
 
 eas build -p android --profile development
 
+ngrok
+ngrok http http://localhost:5000
+
+color schems - cool waters
+#22577a, #38a3a5, #57cc99, #80ed99, #c7f9cc
+
 MIT

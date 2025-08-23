@@ -18,10 +18,10 @@ public class GeneralComplainConfiguration : IEntityTypeConfiguration<GeneralComp
                 Subject = "General Complain 1",
                 Detail = "General Complain 1 description",
                 Status = PSMModel.Enums.WorkpackageStatus.New,
-                ClientId = 1,
+                ClientId = "1",
                 IsPrivate = false,
                 CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             });
     }

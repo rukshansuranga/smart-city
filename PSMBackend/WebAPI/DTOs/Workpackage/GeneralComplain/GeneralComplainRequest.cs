@@ -9,5 +9,5 @@ public class GeneralComplainAddRequest
     public string Detail { get; set; }
     public WorkpackageStatus? Status { get; set; }
     public bool IsPrivate { get; set; }
-    public int ClientId { get; set; }
+    public string ClientId { get; set; }
 }

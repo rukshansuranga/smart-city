@@ -19,7 +19,7 @@ public void Configure(EntityTypeBuilder<Vehical> builder)
                 RegistrationNo = "GA1234",
                 Year = "1998",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new Vehical
@@ -30,7 +30,7 @@ public void Configure(EntityTypeBuilder<Vehical> builder)
                 RegistrationNo = "CAG3456",
                 Year = "2024",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             }
         );

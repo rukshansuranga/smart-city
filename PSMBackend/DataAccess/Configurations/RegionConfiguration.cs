@@ -16,7 +16,7 @@ public class RegionConfiguration : IEntityTypeConfiguration<Region>
                 Name = "Weliveriya South",
                 Note = "This is a region in Gampaha district.",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             },
             new Region
@@ -25,7 +25,7 @@ public class RegionConfiguration : IEntityTypeConfiguration<Region>
                 Name = "Weliveriya North",
                 Note = "This is a region in Gampaha district.",
                 CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
-                CreatedBy = 1,
+                CreatedBy = "1",
                 IsActive = true
             }
         );

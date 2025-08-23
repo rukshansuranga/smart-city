@@ -1,3 +1,4 @@
+import { postClient } from "@/api/clientAction";
 import { useAuthStore } from "@/stores/authStore";
 import {
   makeRedirectUri,
@@ -6,33 +7,22 @@ import {
 } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
+
 import { Button } from "react-native-paper";
 
 WebBrowser.maybeCompleteAuthSession();
 
-// Endpoint
-// const discovery = {
-//   authorizationEndpoint:
-//     "https://smartcity-identity-ecesd5fya0buajfs.southeastasia-01.azurewebsites.net/realms/smartcity/protocol/openid-connect/auth",
-//   tokenEndpoint:
-//     "https://smartcity-identity-ecesd5fya0buajfs.southeastasia-01.azurewebsites.net/realms/smartcity/protocol/openid-connect/token",
-//   revocationEndpoint:
-//     "https://smartcity-identity-ecesd5fya0buajfs.southeastasia-01.azurewebsites.net/realms/smartcity/protocol/openid-connect/revoke",
-// };
-
 export default function SignIn() {
   const { logIn } = useAuthStore();
+
   const redirectUri = makeRedirectUri({
     scheme: "smart-city",
     path: "signIn",
   });
 
-  //console.log("Redirect URI:", redirectUri);
-
   const discovery = useAutoDiscovery(process.env.EXPO_PUBLIC_KEYCLOAK_URL);
 
-  // Standard login request
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID,
@@ -42,7 +32,6 @@ export default function SignIn() {
     discovery
   );
 
-  // Registration request (kc_action=register)
   const [registerRequest, registerResponse, promptRegisterAsync] =
     useAuthRequest(
       {
@@ -58,9 +47,107 @@ export default function SignIn() {
     );
 
   useEffect(() => {
-    console.log("Login effect");
+    console.log("[DEBUG] useEffect triggered. response:", response);
+    console.log("[DEBUG] request:", request);
+    console.log("[DEBUG] redirectUri:", redirectUri);
+    let isMounted = true;
+    console.log("[DEBUG] SignIn component mounted.");
     const getToken = async ({ code, codeVerifier, redirectUri }) => {
-      console.log("get token", code, codeVerifier, redirectUri);
+      console.log("[DEBUG] getToken called with:", {
+        code,
+        codeVerifier,
+        redirectUri,
+      });
+      try {
+        const formData = {
+          grant_type: "authorization_code",
+          client_id: process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID,
+          code: code,
+          code_verifier: codeVerifier,
+          redirect_uri: redirectUri,
+        };
+        const formBody = [];
+        for (const property in formData) {
+          const encodedKey = encodeURIComponent(property);
+          const encodedValue = encodeURIComponent(formData[property]);
+          formBody.push(encodedKey + "=" + encodedValue);
+        }
+        console.log("[DEBUG] Token request body:", formBody.join("&"));
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/token`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formBody.join("&"),
+          }
+        );
+        console.log("[DEBUG] tokenResponse.ok:", response.ok);
+        if (response.ok) {
+          const payload = await response.json();
+
+          console.log("[DEBUG] Token payload:", payload);
+          const userInfoResponse = await fetch(
+            `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/userinfo`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${payload.access_token}`,
+                Accept: "application/json",
+              },
+            }
+          );
+          console.log("[DEBUG] userInfoResponse.ok:", userInfoResponse.ok);
+          const userInfo = await userInfoResponse.json();
+          console.log("[DEBUG] userInfo:", userInfo);
+          console.log("User ID (sub):", userInfo.sub); // <-- This is the user ID
+          logIn({
+            accessToken: payload.access_token,
+            idToken: payload.id_token,
+            userInfo: userInfo,
+          });
+          console.log("[DEBUG] logIn called.");
+        }
+      } catch (e) {
+        console.warn("[DEBUG] getToken error:", e);
+      }
+    };
+    console.log("[DEBUG] Auth response:", response);
+    if (response?.type === "success") {
+      // Handle successful login here
+      const { code } = response.params;
+      console.log("[DEBUG] Auth code received:", code, request?.codeVerifier);
+      getToken({
+        code,
+        codeVerifier: request?.codeVerifier,
+        redirectUri,
+      });
+      // [DEBUG] logIn is already called inside getToken
+    } else {
+      console.log("[DEBUG] response is not success or undefined.");
+    }
+    return () => {
+      isMounted = false;
+      console.log("[DEBUG] SignIn component unmounted.");
+    };
+  }, [response]);
+
+  function handleLogin() {
+    console.log("[DEBUG] handleLogin called. promptAsync:", promptAsync);
+
+    promptAsync();
+  }
+
+  function handleRegister() {
+    promptRegisterAsync();
+  }
+
+  //Handle registration response (same as login)
+  useEffect(() => {
+    console.log("registerResponse", registerResponse);
+    const getToken = async ({ code, codeVerifier, redirectUri }) => {
       try {
         const formData = {
           grant_type: "authorization_code",
@@ -76,7 +163,7 @@ export default function SignIn() {
           formBody.push(encodedKey + "=" + encodedValue);
         }
 
-        const response = await fetch(
+        const tokenResponse = await fetch(
           `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/token`,
           {
             method: "POST",
@@ -87,10 +174,9 @@ export default function SignIn() {
             body: formBody.join("&"),
           }
         );
-        if (response.ok) {
-          const payload = await response.json();
-          console.log("access tokenxxx:", payload.access_token);
-          console.log("user infoxxx:", payload.userinfo);
+        if (tokenResponse.ok) {
+          const payload = await tokenResponse.json();
+
           const userInfoResponse = await fetch(
             `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/userinfo`,
             {
@@ -103,8 +189,15 @@ export default function SignIn() {
           );
 
           const userInfo = await userInfoResponse.json();
+          alert("userinfo " + JSON.stringify(userInfo));
+          await postClient({
+            clientId: userInfo.sub,
+            firstName: userInfo.given_name,
+            lastName: userInfo.family_name,
+            mobile: userInfo.mobile,
+          });
 
-          console.log("User ID (sub):", userInfo.sub); // <-- This is the user ID
+          alert("logging in user: " + userInfo.sub); // <-- This is the user ID
 
           logIn({
             accessToken: payload.access_token,
@@ -116,100 +209,8 @@ export default function SignIn() {
         console.warn(e);
       }
     };
-    console.log("Auth response:", response);
-    if (response?.type === "success") {
-      // Handle successful login here
 
-      const { code } = response.params;
-      console.log("Auth code:", code, request?.codeVerifier);
-      getToken({
-        code,
-        codeVerifier: request?.codeVerifier,
-        redirectUri,
-      });
-      console.log("Auth code:", code);
-    }
-  }, [response]);
-
-  function handleLogin() {
-    promptAsync();
-  }
-
-  function handleRegister() {
-    promptRegisterAsync();
-  }
-
-  console.log("redirectUri:", redirectUri);
-  // async function handleSignUp() {
-  //   // Build the registration URL for Keycloak
-  //   const registrationUrl = `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/auth?client_id=${encodeURIComponent(process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID ?? "")}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20profile&kc_action=register&prompt=create`;
-  //   await WebBrowser.openAuthSessionAsync(registrationUrl, redirectUri);
-  // }
-
-  const getToken = async ({ code, codeVerifier, redirectUri }) => {
-    console.log("get token", code, codeVerifier, redirectUri);
-    try {
-      const formData = {
-        grant_type: "authorization_code",
-        client_id: process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID,
-        code: code,
-        code_verifier: codeVerifier,
-        redirect_uri: redirectUri,
-      };
-      const formBody = [];
-      for (const property in formData) {
-        const encodedKey = encodeURIComponent(property);
-        const encodedValue = encodeURIComponent(formData[property]);
-        formBody.push(encodedKey + "=" + encodedValue);
-      }
-
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/token`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: formBody.join("&"),
-        }
-      );
-      if (response.ok) {
-        const payload = await response.json();
-        console.log("access tokenxxx:", payload.access_token);
-        console.log("user infoxxx:", payload.userinfo);
-        const userInfoResponse = await fetch(
-          `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/userinfo`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${payload.access_token}`,
-              Accept: "application/json",
-            },
-          }
-        );
-
-        const userInfo = await userInfoResponse.json();
-
-        console.log("User ID (sub):", userInfo.sub); // <-- This is the user ID
-
-        logIn({
-          accessToken: payload.access_token,
-          idToken: payload.id_token,
-          userInfo: userInfo,
-        });
-      }
-    } catch (e) {
-      console.warn(e);
-    }
-  };
-
-  // Handle registration response (same as login)
-  useEffect(() => {
-    console.log("Auth response:", registerResponse);
     if (registerResponse?.type === "success") {
-      // Handle successful login here
-
       const { code } = registerResponse.params;
       console.log("Auth code:", code, registerRequest?.codeVerifier);
       getToken({
@@ -217,21 +218,69 @@ export default function SignIn() {
         codeVerifier: registerRequest?.codeVerifier,
         redirectUri,
       });
-      console.log("Auth code:", code);
     }
   }, [registerResponse]);
 
-  console.log("Register Response:", registerResponse);
+  const getUserInfor = async (accessToken) => {
+    try {
+      const userResponse = await fetch(
+        `${process.env.EXPO_PUBLIC_KEYCLOAK_URL}/protocol/openid-connect/userinfo`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (userResponse.ok) {
+        const userInfo = await userResponse.json();
+        console.log("User ID (sub):", userInfo.sub); // <-- This is the user ID
+        return userInfo;
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+  };
 
   return (
-    <View className="justify-center flex-1 p-4">
-      <View className="flex-row justify-center gap-4 mt-4">
-        <Button mode="contained" onPress={handleLogin}>
-          Sign In
-        </Button>
-        <Button mode="contained" onPress={handleRegister}>
-          Sign Up
-        </Button>
+    <View className="flex-1 justify-center items-center bg-[#c7f9cc] px-4">
+      <View className="w-full flex flex-col gap-4">
+        <View className="w-full rounded-xl shadow-md h-16 bg-[#22577a] flex justify-center items-center">
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "transparent",
+              borderRadius: 12,
+            }}
+            contentStyle={{ height: "100%" }}
+          >
+            <Text className="font-bold text-xl text-center w-full text-white">
+              Sign In
+            </Text>
+          </Button>
+        </View>
+        <View className="w-full rounded-xl shadow-md h-16 bg-[#38a3a5] flex justify-center items-center">
+          <Button
+            mode="contained"
+            onPress={handleRegister}
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "transparent",
+              borderRadius: 12,
+            }}
+            contentStyle={{ height: "100%" }}
+          >
+            <Text className="font-bold text-xl text-center w-full text-white">
+              Sign Up
+            </Text>
+          </Button>
+        </View>
       </View>
     </View>
   );

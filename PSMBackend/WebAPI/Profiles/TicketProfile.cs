@@ -13,8 +13,10 @@ public class TicketProfile : Profile
         CreateMap<TicketPostRequest, Ticket>().ReverseMap();
 
         CreateMap<TicketUpdateRequest, Ticket>()
-            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
 
-        CreateMap<Ticket, Ticket>().ReverseMap();
+        CreateMap<Ticket, Ticket>().ReverseMap()
+        .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
     }
 }
+    

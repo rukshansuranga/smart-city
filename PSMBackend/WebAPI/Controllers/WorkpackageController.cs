@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using PSMModel.Enums;
 using PSMModel.Models;
 using PSMWebAPI.DTOs;
 using PSMWebAPI.DTOs.Request;
+using PSMWebAPI.DTOs.Workpackage;
 using PSMWebAPI.DTOs.Workpackage.GeneralComplain;
 using PSMWebAPI.DTOs.Workpackage.ProjectComplain;
 using PSMWebAPI.Repositories;
@@ -14,7 +16,7 @@ using PSMWebAPI.Utils;
 
 namespace PSMWebAPI.Controllers
 {
-    [AllowAnonymous]
+    // [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class WorkpackageController : ControllerBase
@@ -57,6 +59,8 @@ namespace PSMWebAPI.Controllers
                 return NotFound(); // Returns 404 Not Found if product does not exist
             }
         }
+
+        
 
         [HttpPost("lightPost")]
         public async Task<IActionResult> AddComplain(LightPostComplainRequest request)
@@ -169,8 +173,7 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-
-                var complainsByPostNo = await _workpackageRepository.GetDetailLightPostComplintsByPostIdAndName(postNo, name);
+                var complainsByPostNo = await _workpackageRepository.GetDetailLightPostComplintsByPostIdAndName(postNo, name, "");
                 return Ok(complainsByPostNo);
             }
             catch (KeyNotFoundException)
@@ -193,6 +196,28 @@ namespace PSMWebAPI.Controllers
                 return NotFound(); // Returns 404 Not Found if product does not exist
             }
         }
+
+        [HttpGet("lightpost/me/{postNo}")]
+        public async Task<IActionResult> GetLightPostByWorkPackageId(string postNo)
+        {
+            
+                var myActiveComplains = await _workpackageRepository.GetLightPostActiveWorkpackagesByMe(postNo);
+                return Ok(myActiveComplains); // Returns 200 OK response if found
+        }
+
+        [HttpGet("lightpost/active")]
+        public async Task<IActionResult> GetActiveLightPostMarkers()
+        {
+            var activeMarkers = await _workpackageRepository.GetActiveLightPostList();
+            return Ok(activeMarkers);
+        } 
+
+        [HttpGet("lightpost/assigned")]
+        public async Task<IActionResult> GetActiveAndAssignedLightPostMarkers()
+        {
+            var activeMarkers = await _workpackageRepository.GetActiveAndAssignedLightPostList();
+            return Ok(activeMarkers);
+        }  
 
         #region General Complain
 
@@ -250,7 +275,7 @@ namespace PSMWebAPI.Controllers
 
         [HttpGet("general")]
         public async Task<IActionResult> GetGeneralComplainsPaging([FromQuery] GeneralComplainGetPagingRequest complainPaging)
-        {
+         {
             var generalComplains = await _workpackageRepository.GetGeneralComplain(complainPaging);
             return Ok(generalComplains); // Returns 200 OK response with the list of work packages
         }

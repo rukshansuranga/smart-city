@@ -1,4 +1,6 @@
-import { Label, HelperText, Datepicker } from "flowbite-react";
+import { Label, HelperText } from "flowbite-react";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Control,
   FieldValues,
@@ -27,17 +29,19 @@ const DateField = <T extends FieldValues>(props: Props<T>) => {
           {props.required && <span className="text-red-600">*</span>}
         </div>
       )}
-      {/* <TextInput
-        {...props}
-        {...field}
-        type={props.type || "text"}
-        placeholder={props.placeholder}
-        className={props.className}
-        color={
-          fieldState.error ? "failure" : !fieldState.isDirty ? "" : "success"
+      <ReactDatePicker
+        className={
+          "w-full px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:outline-none " +
+          (props.className || "")
         }
-      /> */}
-      <Datepicker {...props} {...field} />
+        selected={field.value}
+        onChange={(date) => field.onChange(date)}
+        placeholderText={props.placeholder}
+        portalId="root-portal"
+        dateFormat="yyyy-MM-dd"
+        showPopperArrow={false}
+        // Pass any additional props as needed
+      />
       <HelperText>{fieldState.error?.message}</HelperText>
     </div>
   );

@@ -1,7 +1,8 @@
 "use server";
 
+import { TicketWorkpackageType } from "@/enums";
 import { fetchWrapper } from "@/lib/fetchWrapper";
-import { Paging, Workpackage } from "@/types";
+import { ActiveLightPostMarker, Paging, Workpackage } from "@/types";
 
 export async function getWorkpackagePaging(complainPaging: {
   status: string;
@@ -9,10 +10,10 @@ export async function getWorkpackagePaging(complainPaging: {
   pageIndex: string;
   duration: string;
   type?: string;
+  ticketWorkpackageType?: string;
 }): Promise<Paging<Workpackage>> {
-  console.log(34, complainPaging);
   const queryString = new URLSearchParams(complainPaging).toString();
-  console.log("getWorkpackagePaging queryString:", queryString);
+
   return fetchWrapper.get(`workpackage?${queryString}`);
 }
 
@@ -35,4 +36,14 @@ export async function getWorkpackageById(
   type: string
 ): Promise<Workpackage> {
   return fetchWrapper.get(`workpackage/${type}/${workpackageId}`);
+}
+
+export async function getActiveLightPost(): Promise<ActiveLightPostMarker[]> {
+  return fetchWrapper.get(`workpackage/lightpost/active`);
+}
+
+export async function getActiveAndAssignedLightPost(): Promise<
+  ActiveLightPostMarker[]
+> {
+  return fetchWrapper.get(`workpackage/lightpost/assigned`);
 }

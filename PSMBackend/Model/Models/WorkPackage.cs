@@ -12,9 +12,16 @@ public class Workpackage :BaseEntity
     public int WorkpackageId { get; set; }
     public string Subject { get; set; }
     public string? Detail { get; set; }
+    public double? Rating { get; set; }
+    public string? RatedBy { get; set; }
+    public LocalDateTime? RatedAt { get; set; }
+    public string? RatingReview { get; set; }
+    public string? Sentiment { get; set; }
+    public string? Summary { get; set; }
+    public int MyProperty { get; set; }
     public WorkpackageStatus? Status { get; set; }
     [ForeignKey("Client")]
-    public int? ClientId { get; set; }
+    public string? ClientId { get; set; }
     public Client? Client { get; set; }
     public string WorkpackageType { get; set; }
     public List<TicketPackage>? TicketPackages { get; set; }

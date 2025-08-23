@@ -21,7 +21,8 @@ public class WorkpackageProfile : Profile
 
         CreateMap<ProjectComplain, ProjectComplain>().ReverseMap()
             .ForMember(dest => dest.WorkpackageType, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
 
         //general complain
         CreateMap<GeneralComplainAddRequest, GeneralComplain>().ReverseMap();
@@ -31,19 +32,22 @@ public class WorkpackageProfile : Profile
 
         CreateMap<GeneralComplain, GeneralComplain>().ReverseMap()
             .ForMember(dest => dest.WorkpackageType, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
 
         //light post complain
         CreateMap<LightPostComplainRequest, LightPostComplain>().ReverseMap();
 
         CreateMap<LightPostComplain, LightPostComplain>().ReverseMap()
             .ForMember(dest => dest.WorkpackageType, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
 
         //workpackage
         CreateMap<WorkpackageRequest, Workpackage>().ReverseMap();
+        
         CreateMap<Workpackage, Workpackage>().ReverseMap()
-            .ForMember(dest => dest.WorkpackageType, opt => opt.Ignore());
-
+            .ForMember(dest => dest.WorkpackageType, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow)); 
     }
 }

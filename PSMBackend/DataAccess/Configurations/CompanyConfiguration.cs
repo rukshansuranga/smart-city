@@ -21,7 +21,7 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
                 Mobile = "0771234567",
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
                 UpdatedAt = null,
-                CreatedBy = 1,
+                CreatedBy = "1",
                 UpdatedBy = null,
                 IsActive = true
             },
@@ -35,7 +35,7 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
                 Mobile = "0779876543",
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
                 UpdatedAt = null,
-                CreatedBy = 1,
+                CreatedBy = "1",
                 UpdatedBy = null,
                 IsActive = true
             }

@@ -2,13 +2,16 @@
 
 import { Workpackage } from "@/types";
 import TicketForm from "../../TicketForm";
+import { TicketWorkpackageType } from "@/enums";
 
 export default function CreateTicketForm({
   open,
   packages,
+  ticketWorkpackageType,
 }: {
   open: (open: boolean) => void;
   packages: Workpackage[];
+  ticketWorkpackageType: TicketWorkpackageType;
 }) {
   function handleClose() {
     open(false);
@@ -17,9 +20,10 @@ export default function CreateTicketForm({
   return (
     <div className="flex-col">
       <TicketForm
+        ticketWorkpackageType={ticketWorkpackageType}
         isInternal={false}
         handleClose={handleClose}
-        workpackageIdList={packages.map((pkg) => pkg.workpackageId!)}
+        workpackageList={packages}
       />
       <div className="w-full mt-4">
         <table className="w-full bg-gray-200 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

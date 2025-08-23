@@ -1,16 +1,29 @@
 "use client";
-import { getTicketsByUserId } from "@/app/api/actions/ticketActions";
+import {
+  getTicketsByUserId,
+  resolveTicket,
+  startTicket,
+} from "@/app/api/actions/ticketActions";
 import ComplainDetail from "@/app/components/complain/ComplainDetail";
 import { TicketStatus, TicketType } from "@/enums";
-import { Ticket } from "@/types";
-import { Badge, Popover } from "flowbite-react";
+import { Ticket, Workpackage } from "@/types";
+import {
+  Badge,
+  Button,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Popover,
+} from "flowbite-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ComplainDetailContainer from "../components/ComplainDetailContainer";
+import { useSession } from "next-auth/react";
 
 export default function UserBoard() {
   const { userId } = useParams();
+  const { data: session, status } = useSession();
   const [columns, setColumns] = useState({
     [TicketStatus[TicketStatus.Open]]: {
       name: "Open",
@@ -31,11 +44,16 @@ export default function UserBoard() {
     // },
   });
 
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
   const [newTask, setNewTask] = useState("");
   const [activeColumn, setActiveColumn] = useState(
     TicketStatus[TicketStatus.Open]
   );
   const [draggedItem, setDraggedItem] = useState(null);
+
+  const [selectedWorkpackage, setSelectedWorkpackage] =
+    useState<Workpackage | null>(null);
 
   useEffect(() => {
     fetchTicketsByUserId(userId);
@@ -87,7 +105,7 @@ export default function UserBoard() {
     e.preventDefault();
   };
 
-  const handleDrop = (e, columnId) => {
+  const handleDrop = async (e, columnId) => {
     e.preventDefault();
     if (!draggedItem) return;
     const { columnId: sourceColumnId, item } = draggedItem;
@@ -95,10 +113,23 @@ export default function UserBoard() {
     if (sourceColumnId === columnId) return;
 
     const updatedColumns = { ...columns };
+
     updatedColumns[sourceColumnId].items = updatedColumns[
       sourceColumnId
-    ].items.filter((i) => i.id !== item.id);
+    ].items.filter((i) => i.ticketId !== item?.ticketId);
+
     updatedColumns[columnId].items.push(item);
+
+    if (columnId === TicketStatus[TicketStatus.InProgress]) {
+      // If the item is dropped in the "In Progress" column, start the ticket
+      await startTicket(item?.ticketId);
+    }
+
+    if (columnId === TicketStatus[TicketStatus.Resolved]) {
+      // If the item is dropped in the "Resolved" column, resolve the ticket
+      await resolveTicket(item?.ticketId);
+    }
+
     setColumns(updatedColumns);
     setDraggedItem(null);
   };
@@ -122,6 +153,16 @@ export default function UserBoard() {
     },
   };
 
+  console.log("column", columns);
+
+  function handleWorkpackage(workpackage) {
+    console.log("Workpackage clicked:", workpackage);
+    setSelectedWorkpackage(workpackage);
+    setOpenModal(true);
+  }
+
+  console.log("modal status:", openModal);
+
   return (
     <>
       <div className="p-6 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-800 flex items-center justify-center">
@@ -129,6 +170,7 @@ export default function UserBoard() {
           <h1 className="text-6xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-rose-400">
             User's Tickets
           </h1>
+
           <div className="mb-8 flex w-full max-w-lg shadow-lg rounded-lg overflow-hidden">
             <input
               type="text"
@@ -210,27 +252,18 @@ export default function UserBoard() {
                           <div className="flex flex-wrap gap-2 roun">
                             {item.ticketPackages.length > 0 &&
                               item.ticketPackages.map((pack) => (
-                                <span key={pack.workpackageId}>
-                                  <Popover
-                                    aria-labelledby="default-popover"
-                                    content={
-                                      <div className="w-xl">
-                                        <ComplainDetailContainer
-                                          workpackage={pack.workpackage!}
-                                        />
-                                      </div>
-                                    }
-                                  >
-                                    <Badge
-                                      style={{
-                                        borderRadius: "10px",
-                                      }}
-                                      size="sm"
-                                    >
-                                      {pack.workpackageId}
-                                    </Badge>
-                                  </Popover>
-                                </span>
+                                <Badge
+                                  onClick={() =>
+                                    handleWorkpackage(pack.workpackage)
+                                  }
+                                  key={pack?.workpackageId}
+                                  style={{
+                                    borderRadius: "10px",
+                                  }}
+                                  size="sm"
+                                >
+                                  {pack?.workpackageId}
+                                </Badge>
                               ))}
                           </div>
                         </div>
@@ -243,6 +276,17 @@ export default function UserBoard() {
           </div>
         </div>
       </div>
+      <Modal dismissible show={openModal} onClose={() => setOpenModal(false)}>
+        <ModalHeader>
+          Workpackage -{" "}
+          <span className="bg-green-300 rounded-4xl p-2">
+            {selectedWorkpackage?.workpackageId}
+          </span>
+        </ModalHeader>
+        <ModalBody>
+          <ComplainDetailContainer workpackage={selectedWorkpackage} />
+        </ModalBody>
+      </Modal>
     </>
   );
 }

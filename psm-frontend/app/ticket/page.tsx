@@ -14,7 +14,7 @@ export default async function TicketList({
     pageSize,
   });
 
-  console.log("response11", response?.records, response?.totalItems);
+  //console.log("response11", response?.records, response?.totalItems);
 
   return (
     <div className="flex-col ">

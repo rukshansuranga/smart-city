@@ -12,6 +12,8 @@ export default async function TicketsByWorkpackagePage({
 
   const ticketList = await getTicketListByWorkpackageId(id);
 
+  //console.log("ticketList", ticketList);
+
   if (ticketList.length === 1) {
     return <ManageTicket ticket={ticketList[0]} />;
   }

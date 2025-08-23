@@ -18,7 +18,12 @@
       },
       "versionCode": 7,
       "edgeToEdgeEnabled": true,
-      "package": "com.rukshansuranga.smartcity"
+      "package": "com.rukshansuranga.smartcity",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBO2E_KAoN9H3bmeXlS9Np20qGmtlg-qbc"
+        }
+      }
     },
     "web": {
       "bundler": "metro",

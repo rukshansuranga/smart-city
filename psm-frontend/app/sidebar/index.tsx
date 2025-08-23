@@ -68,6 +68,10 @@ const ProjectsIcon = () => (
   <Image src="/images/projects.png" alt="Projects" width={30} height={30} />
 );
 
+const BoardIcon = () => (
+  <Image src="/images/board.png" alt="Board" width={30} height={30} />
+);
+
 export interface HeaderProps {
   session?: Session | null;
 }
@@ -80,6 +84,14 @@ export function SideBar({ session }: HeaderProps) {
           <SidebarItem href="dashboard" icon={DashboardIcon} labelColor="dark">
             Dashboard
           </SidebarItem>
+          <SidebarItem
+            href={`board/${session?.user?.id}`}
+            icon={BoardIcon}
+            labelColor="dark"
+          >
+            Board
+          </SidebarItem>
+
           <SidebarCollapse icon={ComplainsIcon} label="Complains">
             <SidebarItem
               icon={StreetlampIcon}
@@ -113,13 +125,22 @@ export function SideBar({ session }: HeaderProps) {
             <SidebarItem href="/ticket/new" icon={LuTicketPlus}>
               New Ticket
             </SidebarItem>
+            <SidebarItem href="/ticket/resolved" icon={LuTicketPlus}>
+              Resolved
+            </SidebarItem>
           </SidebarCollapse>
-          <SidebarItem href="/project" icon={ProjectsIcon}>
-            Projects
-          </SidebarItem>
-          <SidebarItem href="/tender" icon={TenderIcon}>
-            Tenders
-          </SidebarItem>
+          {session?.roles?.includes("admin") && (
+            <SidebarItem href="/project" icon={ProjectsIcon}>
+              Projects
+            </SidebarItem>
+          )}
+
+          {session?.roles?.includes("admin") && (
+            <SidebarItem href="/tender" icon={TenderIcon}>
+              Tenders
+            </SidebarItem>
+          )}
+
           {session?.roles?.includes("admin") && (
             <SidebarItem href="/user" icon={UserIcon}>
               User

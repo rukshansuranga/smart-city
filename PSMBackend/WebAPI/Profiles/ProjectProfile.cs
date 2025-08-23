@@ -18,7 +18,8 @@ public class ProjectProfile : Profile
         // .ForMember(dest => dest.BirthMonth, opt => opt.MapFrom(src => src.Birthday.Month))
         // .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.Birthday.Day))
         // .ForMember(dest => dest.OccupationName, opt => opt.Ignore())
-            
-        CreateMap<Project, Project>().ReverseMap();
+
+        CreateMap<Project, Project>().ReverseMap()
+        .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
     }
 }

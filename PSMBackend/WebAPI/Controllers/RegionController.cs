@@ -5,7 +5,7 @@ using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers
 {
-        [AllowAnonymous]
+    // ...removed [AllowAnonymous] to enforce authentication...
     [Route("api/[controller]")]
     [ApiController]
     public class RegionController : ControllerBase
