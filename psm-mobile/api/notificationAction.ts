@@ -6,7 +6,7 @@ export async function readNotification(notificationId: number): Promise<void> {
 }
 
 export async function addRating(rating: {
-  workpackageId: number;
+  complainId: number;
   rating: number;
   note: string;
   clientId: string;

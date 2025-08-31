@@ -29,19 +29,22 @@ const DateField = <T extends FieldValues>(props: Props<T>) => {
           {props.required && <span className="text-red-600">*</span>}
         </div>
       )}
-      <ReactDatePicker
-        className={
-          "w-full px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:outline-none " +
-          (props.className || "")
-        }
-        selected={field.value}
-        onChange={(date) => field.onChange(date)}
-        placeholderText={props.placeholder}
-        portalId="root-portal"
-        dateFormat="yyyy-MM-dd"
-        showPopperArrow={false}
-        // Pass any additional props as needed
-      />
+      <div className="w-full">
+        <ReactDatePicker
+          className={
+            "w-full px-3 py-2 rounded border border-gray-300 focus:border-blue-500 focus:outline-none " +
+            (props.className || "")
+          }
+          wrapperClassName="w-full"
+          selected={field.value}
+          onChange={(date) => field.onChange(date)}
+          placeholderText={props.placeholder}
+          portalId="root-portal"
+          dateFormat="yyyy-MM-dd"
+          showPopperArrow={false}
+          // Pass any additional props as needed
+        />
+      </div>
       <HelperText>{fieldState.error?.message}</HelperText>
     </div>
   );

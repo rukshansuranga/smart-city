@@ -48,7 +48,7 @@ export default function LightPostSummaryList({
       <View className="flex flex-col gap-3">
         {activeComplainSummaryList?.map((complain) => (
           <Pressable
-            key={complain.workpackageId}
+            key={complain.complainId}
             onPress={() => selectComplainSummary(complain.name)}
           >
             <View

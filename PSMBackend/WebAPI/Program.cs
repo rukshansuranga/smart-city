@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
@@ -15,6 +16,9 @@ using PSMWebAPI.Services;
 using PSMWebAPI.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Register type converter for nullable LocalDate (handles null values in multipart form data)
+TypeDescriptor.AddAttributes(typeof(LocalDate?), new TypeConverterAttribute(typeof(NullableLocalDateTypeConverter)));
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -42,7 +46,7 @@ builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =
 });
 
 // Register repositories and services
-builder.Services.AddScoped<IWorkpackageRepository, WorkpackageRepository>();
+builder.Services.AddScoped<IComplainRepository, ComplainRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -55,6 +59,13 @@ builder.Services.AddScoped<IMiscRepository, MiscRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ITicketActivityRepository, TicketActivityRepository>();
+
+// Configure Keycloak Client Credentials
+builder.Services.Configure<KeycloakClientCredentialsOptions>(
+    builder.Configuration.GetSection("keycloak:ClientCredentials"));
+
+// Register Keycloak Token Service
+builder.Services.AddHttpClient<IKeycloakTokenService, KeycloakTokenService>();
 
 // builder.Services.AddHostedService<RideSimulationService>();
 builder.Services.AddAuthorization(options =>

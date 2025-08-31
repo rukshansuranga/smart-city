@@ -8,16 +8,16 @@ namespace PSMWebAPI.Repositories;
 public interface ITicketRepository
 {
       Task<IEnumerable<Ticket>> GetResolvedTicketsAsync();
-      Task<Ticket> AddAsync(Ticket ticket);
-      Task<Ticket> UpdateAsync(Ticket ticket);
-      Task<Ticket> GetByIdAsync(int id);
-      Task<PageResponse<Ticket>> GetPagingAsync(TicketPaging paging);
-      Task<IEnumerable<Ticket>> GetTicketListByWorkPackageIdAsync(int workPackageId);
+      Task<T> AddAsync<T>(T ticket) where T : Ticket;
+      Task<T> UpdateAsync<T>(T ticket) where T : Ticket;
+      Task<T> GetByIdAsync<T>(int id) where T : Ticket;
+      Task<PageResponse<T>> GetPagingAsync<T>(TicketPaging paging) where T : Ticket;
+      Task<IEnumerable<ComplainTicket>> GetTicketListByComplainIdAsync(int ComplainId);
       Task<Ticket> UpdateTicketHistoryAsync(Ticket updatedTicket, string userId);
       Task<bool> StartWorkOnTicketAsync(int ticketId);
       Task<bool> ResolvedOnTicketAsync(int ticketId);
       Task<bool> CloseOnTicketAsync(int ticketId);
-      Task<IEnumerable<Ticket>> GetTicketListByUserIdAsync(string userId);
-      Task AddWorkpackagesAsync(int ticketId, IEnumerable<int> workpackageIds);
-      Task RemoveWorkpackagesAsync(int ticketId, IEnumerable<int> workpackageIds);
+      Task<IEnumerable<T>> GetTicketListByUserIdAsync<T>(string userId) where T : Ticket;
+      Task AddComplainsAsync(int ticketId, IEnumerable<int> ComplainIds);
+      Task RemoveComplainsAsync(int ticketId, IEnumerable<int> ComplainIds);
 }

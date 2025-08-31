@@ -12,5 +12,5 @@ public class ComplainRequestDto
     public DateTime? ResolvedDate { get; set; }
     public string Subject { get; set; }
     public string? Comment { get; set; }
-    public Workpackage? Status { get; set; }
+    public Complain? Status { get; set; }
 }

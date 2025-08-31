@@ -23,8 +23,8 @@ namespace PSMWebAPI.Controllers
         {
             var comment = new Comment
             {
-                Text = request.text,
-                WorkpackageId = request.WorkPackageId,
+                Text = request.Text,
+                ComplainId = request.ComplainId,
                 IsPrivate = request.IsPrivate,
                 Type = request.Type,
                 ClientId = request.ClientId

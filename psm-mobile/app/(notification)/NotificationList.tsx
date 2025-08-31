@@ -51,10 +51,9 @@ export default function NotificationList() {
   }
 
   async function handleRating() {
-    if (!selectedNotification?.workpackage?.workpackageId || !starRating)
-      return;
+    if (!selectedNotification?.complain?.complainId || !starRating) return;
     addRating({
-      workpackageId: selectedNotification.workpackage.workpackageId,
+      complainId: selectedNotification.complain.complainId,
       rating: starRating,
       note: feedback,
       clientId: userInfo.sub,
@@ -93,7 +92,7 @@ export default function NotificationList() {
                     <View>
                       <Image
                         source={
-                          iconMap[item?.workpackage?.workpackageType] ||
+                          iconMap[item?.complain?.complainType] ||
                           require("@/assets/icons/LightPostComplain.png")
                         }
                         className="w-7 h-7"
@@ -169,13 +168,13 @@ export default function NotificationList() {
               <View>
                 <Text className="text-[#22577a] font-bold">Complain</Text>
                 <Text className="text-[#22577a]">
-                  {selectedNotification?.workpackage?.subject}
+                  {selectedNotification?.complain?.subject}
                 </Text>
               </View>
               <View className="flex flex-row justify-between mt-3">
                 <Text className="text-[#22577a] font-bold">Created Date</Text>
                 <Text className="text-[#22577a]">
-                  {new Date(selectedNotification?.workpackage?.createdAt)
+                  {new Date(selectedNotification?.complain?.createdAt)
                     .toLocaleString()
                     .slice(0, 9)}
                 </Text>
@@ -190,7 +189,7 @@ export default function NotificationList() {
                     </Text>
 
                     <Text className="font-bold text-xl bg-[#57cc99] rounded-full px-4 py-2">
-                      {selectedNotification?.workpackage?.rating}
+                      {selectedNotification?.complain?.rating}
                     </Text>
 
                     <Text>Starts</Text>

@@ -13,7 +13,7 @@ export default function ComplainListModel({ project }) {
   async function fetchComplainList() {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/projectcomplains/${project.id}`
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/complain/projectcomplains/${project.id}`
       );
 
       const result = await response.json();
@@ -27,7 +27,7 @@ export default function ComplainListModel({ project }) {
     // Handle delete logic here
     try {
       await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/projectcomplain/${complainId}`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/complain/projectcomplain/${complainId}`,
         {
           method: "DELETE",
           headers: {
@@ -38,7 +38,7 @@ export default function ComplainListModel({ project }) {
       );
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/projectcomplains/${project.id}`
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/complain/projectcomplains/${project.id}`
       );
       const newData = await response.json();
 
@@ -60,7 +60,7 @@ export default function ComplainListModel({ project }) {
           <View className="w-10/12 gap-4">
             <View className="flex-row gap-6">
               <Badge size={30} style={{ backgroundColor: "green" }}>
-                {item.workpackageId}
+                {item.complainId}
               </Badge>
               <Text>{item.subject}</Text>
             </View>
@@ -76,7 +76,7 @@ export default function ComplainListModel({ project }) {
             <View className="flex-row justify-end w-2/12">
               <IconButton
                 icon="delete"
-                onPress={() => handleDelete(item.workpackageId)}
+                onPress={() => handleDelete(item.complainId)}
               />
             </View>
           ) : null}
@@ -90,7 +90,7 @@ export default function ComplainListModel({ project }) {
       <FlatList
         data={data}
         renderItem={itemRender} // Replace with your item rendering
-        keyExtractor={(item, index) => item.workpackageId} // Use a unique key
+        keyExtractor={(item, index) => item.complainId} // Use a unique key
       />
     </View>
   );

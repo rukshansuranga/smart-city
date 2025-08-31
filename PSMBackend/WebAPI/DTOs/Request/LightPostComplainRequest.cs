@@ -7,7 +7,7 @@ public class LightPostComplainRequest
 {
     public string Subject { get; set; }
     public string Detail { get; set; }
-    public WorkpackageStatus? Status { get; set; }
+    public ComplainStatus? Status { get; set; }
     public string LightPostNumber { get; set; }
     public string ClientId { get; set; }
 }

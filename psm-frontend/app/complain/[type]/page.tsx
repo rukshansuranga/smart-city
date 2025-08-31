@@ -1,7 +1,8 @@
 "use client";
 
-import LightPost from "@/app/components/complain/lightpost";
-import WorkpackageList from "@/app/components/workpackage/WorkpackageList";
+import ComplainList from "@/app/components/complain/ComplainList";
+import LightPostComplainList from "@/app/components/complain/lightpost";
+
 import { useParams } from "next/navigation";
 
 export default function ComplainPage() {
@@ -10,12 +11,12 @@ export default function ComplainPage() {
   console.log("Complain type:", type);
 
   if (type === "LightPostComplain") {
-    return <LightPost />;
+    return <LightPostComplainList />;
   }
 
   return (
     <div>
-      <WorkpackageList type={type} pageSize={8} />
+      <ComplainList type={type} pageSize={8} />
     </div>
   );
 }

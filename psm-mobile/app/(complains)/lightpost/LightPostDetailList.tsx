@@ -75,7 +75,7 @@ export default function LightPostDetailList({
         <FlatList
           data={activeComplainList}
           renderItem={renderList}
-          keyExtractor={(item) => item.workpackageId}
+          keyExtractor={(item) => item.complainId}
           contentContainerStyle={{ paddingBottom: 24 }}
         />
       </View>

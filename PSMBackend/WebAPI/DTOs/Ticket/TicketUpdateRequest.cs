@@ -10,7 +10,7 @@ public class TicketUpdateRequest
     public string? Detail { get; set; }
     public string? Note { get; set; } 
     public TicketStatus? Status { get; set; }
-    public List<int>? WorkpackageIdList { get; set; }
+    public List<int>? ComplainIdList { get; set; }
     public string UserId { get; set; }
     public int Estimation { get; set; }
     public TicketPriority? Priority { get; set; }

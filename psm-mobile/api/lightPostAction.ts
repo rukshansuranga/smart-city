@@ -3,7 +3,7 @@ import { Place } from "react-native-google-places-textinput";
 
 export async function getNearLightPosts(place: Place): Promise<[]> {
   return fetchWrapper.get(
-    `workpackage/lightPost/near?latitude=${place.details?.location?.latitude}&longitude=${place.details?.location?.longitude}`
+    `complain/lightPost/near?latitude=${place.details?.location?.latitude}&longitude=${place.details?.location?.longitude}`
   );
 }
 
@@ -13,22 +13,22 @@ export async function addLightPostComplainAsync(complain: {
   subject: string;
   detail: string;
 }): Promise<void> {
-  return fetchWrapper.post("workpackage/lightPost", complain);
+  return fetchWrapper.post("complain/lightPost", complain);
 }
 
 export async function getListPostsByPostNo(postNo: string): Promise<[]> {
-  return fetchWrapper.get(`workpackage/lightPost/${postNo}`);
+  return fetchWrapper.get(`complain/lightPost/${postNo}`);
 }
 
 export async function getListPostsSpecificCategoryByPostNoAndName(
   postNo: string,
   name: string
 ): Promise<[]> {
-  return fetchWrapper.get(`workpackage/lightPost/${postNo}/${name}`);
+  return fetchWrapper.get(`complain/lightPost/${postNo}/${name}`);
 }
 
 export async function GetActiveListPostComplainsByMe(
   postNo: string
 ): Promise<[]> {
-  return fetchWrapper.get(`workpackage/lightPost/me/${postNo}`);
+  return fetchWrapper.get(`complain/lightPost/me/${postNo}`);
 }

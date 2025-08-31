@@ -9,6 +9,6 @@ public class ComplainPaging
     public int PageSize { get; set; }
     public int PageIndex { get; set; }
     public int Duration { get; set; }
-    public WorkpackageType? Type { get; set; }
-    public TicketWorkpackageType? TicketWorkpackageType { get; set; }
+    public ComplainType? Type { get; set; }
+    public ComplainType? TicketComplainType { get; set; }
 }

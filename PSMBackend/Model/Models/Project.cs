@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
+using PSMModel.Enums;
 
 namespace PSMModel.Models;
 
@@ -21,9 +22,10 @@ public class Project: BaseEntity
     public double? Longitude { get; set; }
     public decimal? EstimatedCost { get; set; }
     //[ForeignKey("Tender")]
-    public int? AwadedTenderId { get; set; }
-    //public Tender? AwadedTener { get; set; }
+    public int? AwardedTenderId { get; set; }
+    public ProjectProgressFrequency? ProgressFrequency { get; set; }
+    //public Tender? AwardedTender { get; set; }
     public LocalDate? TenderOpeningDate { get; set; }
     public LocalDate? TenderClosingDate { get; set; }
-    public ICollection<ProjectComplain> ProjectComplains { get; set; }
+    public ICollection<ProjectComplain>? ProjectComplains { get; set; }
 }

@@ -16,8 +16,8 @@ export type Client = {
   city?: string;
 };
 
-export type Workpackage = {
-  workpackageId: number;
+export type Complain = {
+  complainId: number;
   subject: string;
   detail?: string;
   status?: WorkpackageStatus;
@@ -28,17 +28,17 @@ export type Workpackage = {
     lastName?: string;
     mobile?: string;
   };
-  workpackageType?: string;
+  complainType?: string;
 };
 
-export type GeneralComplain = Workpackage & {
+export type GeneralComplain = Complain & {
   isPrivate: boolean;
 };
 
 export type Comment = {
   commentId?: number;
   text: string;
-  workpackageId: number;
+  complainId: number;
   isPrivate: boolean;
   clientId?: string;
   client: {
@@ -57,6 +57,6 @@ export type Notification = {
   clientId: string;
   status: NotificationStatus;
   type: NotificationType;
-  workpackage: Workpackage;
+  complain: Complain;
   isRead: boolean;
 };

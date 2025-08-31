@@ -94,7 +94,7 @@ export default function GeneralComplainList() {
   async function addCommentHandler() {
     try {
       const newComment = {
-        workpackageId: selectedGeneralComplain?.workpackageId,
+        complainId: selectedGeneralComplain?.complainId,
         clientId: userInfo.sub, // Replace with actual client ID
         text: comment,
         isPrivate: isPrivate,
@@ -115,7 +115,7 @@ export default function GeneralComplainList() {
 
   async function deletePrivateComplainHandler(item) {
     try {
-      await deleteGeneralComplain(item.workpackageId);
+      await deleteGeneralComplain(item.complainId);
 
       const newData = await GetGeneralComplainPaging(page, isPrivate, pageSize);
 
@@ -143,7 +143,7 @@ export default function GeneralComplainList() {
                   size={30}
                   style={{ backgroundColor: "#38a3a5", color: "#fff" }}
                 >
-                  {item.workpackageId}
+                  {item.complainId}
                 </Badge>
                 <Text className="text-[#22577a] font-bold text-base">
                   {item.subject}
@@ -184,7 +184,7 @@ export default function GeneralComplainList() {
               size={30}
               style={{ backgroundColor: "#38a3a5", color: "#fff" }}
             >
-              {item.workpackageId}
+              {item.complainId}
             </Badge>
             <Text className="text-[#22577a] font-bold text-base">
               {item.subject}
@@ -192,8 +192,11 @@ export default function GeneralComplainList() {
           </View>
           <View className="flex-row justify-between items-center mt-2">
             <View className="flex-row gap-2">
-              {item?.ticketPackages?.map((ticket, idx) => (
-                <Text key={idx} className="text-[#22577a] text-xs">
+              {item?.ticketPackages?.map((ticket) => (
+                <Text
+                  key={ticket?.ticket?.id || ticket?.ticketId}
+                  className="text-[#22577a] text-xs"
+                >
                   {ticket?.ticket?.subject}
                 </Text>
               ))}
@@ -255,7 +258,7 @@ export default function GeneralComplainList() {
                 contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
                 data={data}
                 renderItem={itemRender}
-                keyExtractor={(item, index) => item.workpackageId}
+                keyExtractor={(item, index) => item.complainId}
               />
             )}
           </View>

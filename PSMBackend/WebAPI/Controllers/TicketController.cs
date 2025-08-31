@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PSMModel.Models;
 using PSMWebAPI.DTOs;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
 using PSMWebAPI.DTOs.Request;
@@ -26,21 +27,20 @@ namespace PSMWebAPI.Controllers
         }
 
 
-        [HttpPost("external")]
-        public async Task<IActionResult> AddExternalTicket(TicketPostRequest request)
+        [HttpPost("complain")]
+        public async Task<IActionResult> AddComplainTicket(TicketPostRequest request)
         {
-            var workPackageList = new List<TicketPackage>();
-            foreach (var workPackageId in request.WorkpackageIdList)
+            var ComplainIdList = new List<TicketPackage>();
+            foreach (var ComplainId in request.ComplainIdList)
             {
-                workPackageList.Add(new TicketPackage
+                ComplainIdList.Add(new TicketPackage
                 {
-                    WorkpackageId = workPackageId,
+                    ComplainId = ComplainId,
                 });
             }
 
-            var ticket = _mapper.Map<Ticket>(request); // Uses the utility class to get current time in Colombo timezone
-            ticket.TicketPackages = workPackageList;
-
+            var ticket = _mapper.Map<ComplainTicket>(request); // Uses the utility class to get current time in Colombo timezone
+            ticket.TicketPackages = ComplainIdList;
 
             var addedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
             return CreatedAtAction(nameof(GetById), new { id = addedTicket.TicketId }, addedTicket);
@@ -60,7 +60,7 @@ namespace PSMWebAPI.Controllers
         [HttpDelete("{ticketId}")]
         public async Task<IActionResult> DeleteTicket(int ticketId)
         {
-            var existingTicket = await _ticketRepository.GetByIdAsync(ticketId);
+            var existingTicket = await _ticketRepository.GetByIdAsync<ComplainTicket>(ticketId);
             if (existingTicket == null)
             {
                 return NotFound();
@@ -75,7 +75,7 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-                var ticket = await _ticketRepository.GetByIdAsync(id); // Calls service to fetch product by ID
+                var ticket = await _ticketRepository.GetByIdAsync<ComplainTicket>(id); // Calls service to fetch product by ID
                 return Ok(ticket); // Returns 200 OK response if found
             }
             catch (KeyNotFoundException)
@@ -84,12 +84,12 @@ namespace PSMWebAPI.Controllers
             }
         }
 
-        [HttpGet("workpackage/{id}")]
-        public async Task<IActionResult> GetTicketListByWorkpackageId(int id)
+        [HttpGet("complain/{id}")]
+        public async Task<IActionResult> GetTicketListByComplainId(int id)
         {
             try
             {
-                var tickets = await _ticketRepository.GetTicketListByWorkPackageIdAsync(id); // Calls service to fetch product by ID
+                var tickets = await _ticketRepository.GetTicketListByComplainIdAsync(id); // Calls service to fetch product by ID
                 return Ok(tickets); // Returns 200 OK response if found
             }
             catch (KeyNotFoundException)
@@ -101,7 +101,7 @@ namespace PSMWebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] TicketPaging paging)
         {
-            var response = await _ticketRepository.GetPagingAsync(paging); // Calls service to fetch product by ID
+            var response = await _ticketRepository.GetPagingAsync<ComplainTicket>(paging); // Calls service to fetch product by ID
             return Ok(response); // Returns 200 OK response if found
         }
 
@@ -153,7 +153,7 @@ namespace PSMWebAPI.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetTicketListByUserIdAsync(string userId)
         {
-            var result = await _ticketRepository.GetTicketListByUserIdAsync(userId);
+            var result = await _ticketRepository.GetTicketListByUserIdAsync<ComplainTicket>(userId);
             return Ok(result);
         }
 
@@ -164,17 +164,17 @@ namespace PSMWebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPost("addworkpackages")]
-        public async Task<IActionResult> AddWorkPackages(UpdateTicketPayload updateTicket)
+        [HttpPost("addcomplains")]
+        public async Task<IActionResult> AddComplains(UpdateTicketPayload updateTicket)
         {
-            await _ticketRepository.AddWorkpackagesAsync(updateTicket.TicketId, updateTicket.WorkpackageIds);
+            await _ticketRepository.AddComplainsAsync(updateTicket.TicketId, updateTicket.ComplainIds);
             return Ok();
         }
 
-        [HttpPost("removeworkpackages")]
-        public async Task<IActionResult> RemoveWorkPackages(UpdateTicketPayload updateTicket)
+        [HttpPost("removecomplains")]
+        public async Task<IActionResult> RemoveComplains(UpdateTicketPayload updateTicket)
         {
-            await _ticketRepository.RemoveWorkpackagesAsync(updateTicket.TicketId, updateTicket.WorkpackageIds);
+            await _ticketRepository.RemoveComplainsAsync(updateTicket.TicketId, updateTicket.ComplainIds);
             return Ok();
         }
     }

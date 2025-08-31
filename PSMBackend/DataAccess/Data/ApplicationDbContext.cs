@@ -9,18 +9,29 @@ namespace PSMDataAccess;
 
 public class ApplicationDbContext : DbContext
 {
-    public DbSet<TicketActivity> TicketActivities { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<LightPost> LightPosts { get; set; }
-    public DbSet<Ticket> Tickets { get; set; }
-    public DbSet<Workpackage> Workpackages { get; set; }
-    public DbSet<LightPostComplain> LightPostComplains { get; set; }
 
+    //Ticket
+    public DbSet<Ticket> Tickets { get; set; }
+    public DbSet<InternalTicket> InternalTickets { get; set; }
+    public DbSet<ComplainTicket> ComplainTickets { get; set; }
+    public DbSet<ProjectTicket> ProjectTickets { get; set; }
     public DbSet<TicketPackage> TicketPackages { get; set; }
-    public DbSet<Comment> Comments { get; set; }
+    public DbSet<TicketHistory> TicketHistories { get; set; }
+    public DbSet<TicketActivity> TicketActivities { get; set; }
+
+    //Complains
+    public DbSet<Complain> Complains { get; set; }
+    public DbSet<LightPostComplain> LightPostComplains { get; set; }
     public DbSet<GeneralComplain> GeneralComplains { get; set; }
+    public DbSet<ProjectComplain> ProjectComplains { get; set; }
+    public DbSet<GarbageComplain> GarbageComplains { get; set; }
+
+    
+    public DbSet<Comment> Comments { get; set; }
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Region> Regions { get; set; }
     public DbSet<Vehical> Vehicals { get; set; }
@@ -29,44 +40,24 @@ public class ApplicationDbContext : DbContext
     public DbSet<Ride> Rides   { get; set; }
     public DbSet<RidePoint> RidePoints   { get; set; }
     public DbSet<GCShedule> GCShedules   { get; set; }
-    public DbSet<Company> Companies   { get; set; }
+    public DbSet<Contractor> Contractors   { get; set; }
     public DbSet<Project> Projects   { get; set; }
     public DbSet<Tender> Tenders   { get; set; }
-    public DbSet<ProjectComplain> ProjectComplains { get; set; }
-    public DbSet<TicketHistory> TicketHistories { get; set; }
+    public DbSet<ProjectInspector> ProjectInspectors { get; set; }
+    public DbSet<ProjectInspection> ProjectInspections { get; set; }
+    public DbSet<ProjectProgress> ProjectProgresses { get; set; }
+
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
 
-
-    //local connection
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     //optionsBuilder.UseNpgsql("Host=localhost;Database=OLD_PSM;Username=postgres;Password=test");
-
-    //     optionsBuilder.UseNpgsql(
-    //     "Host=localhost;Database=PSM2;Username=postgres;Password=test",
-    //     o => o.UseNodaTime()
-    // );
-    // }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     //optionsBuilder.UseNpgsql("Host=localhost;Database=OLD_PSM;Username=postgres;Password=test");
-
-    //     optionsBuilder.UseNpgsql(
-    //     "Host=ep-morning-math-a10tj24y-pooler.ap-southeast-1.aws.neon.tech; Database=neondb; Username=neondb_owner; Password=npg_DiA1HhTn2Gmr; SSL Mode=VerifyFull; Channel Binding=Require;",
-    //     o => o.UseNodaTime()
-    // );
-    // }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Workpackage>()
-            .HasDiscriminator<string>("WorkpackageType")
-            .HasValue<Workpackage>("Workpackage")
+        modelBuilder.Entity<Complain>()
+            .HasDiscriminator<string>("ComplainType")
+            .HasValue<Complain>("Complain")
             .HasValue<LightPostComplain>("LightPostComplain")
             .HasValue<GarbageComplain>("GarbageComplain")
             .HasValue<GeneralComplain>("GeneralComplain")
@@ -76,6 +67,12 @@ public class ApplicationDbContext : DbContext
             .HasDiscriminator<string>("UserType")
             .HasValue<User>("User")
             .HasValue<Driver>("Driver");
+
+        modelBuilder.Entity<Ticket>()
+            .HasDiscriminator<string>("TicketType")
+            .HasValue<ProjectTicket>("ProjectTicket")
+            .HasValue<InternalTicket>("InternalTicket")
+            .HasValue<ComplainTicket>("ComplainTicket");
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
@@ -88,7 +85,7 @@ public class ApplicationDbContext : DbContext
         #region Configurations
         modelBuilder.ApplyConfiguration(new ClientConfiguration()); 
         modelBuilder.ApplyConfiguration(new LightPostConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkpackageConfiguration());
+        //modelBuilder.ApplyConfiguration(new ComplainConfiguration());
         modelBuilder.ApplyConfiguration(new LightPostComplainConfiguration());
         modelBuilder.ApplyConfiguration(new TicketConfiguration());
         modelBuilder.ApplyConfiguration(new TicketPackageMappingConfiguration());
@@ -101,10 +98,11 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RideConfiguration());
         modelBuilder.ApplyConfiguration(new RegionConfiguration());
         modelBuilder.ApplyConfiguration(new GCSheduleConfiguration());
-        modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractorConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         modelBuilder.ApplyConfiguration(new TenderConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectComplainConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectInspectorConfiguration());
 
         #endregion
     }

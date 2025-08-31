@@ -16,9 +16,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import qs from "query-string";
 import { useSearchParams } from "next/navigation";
-import { filterProjects } from "../api/actions/projectActions";
+import { filterProjects } from "../api/client/projectActions";
 import Link from "next/link";
 import { ProjectStatus, ProjectType } from "@/enums";
+import toast from "react-hot-toast";
+import { LuPencil } from "react-icons/lu";
 
 export type ProjectFilter = {
   pageSize: number;
@@ -84,22 +86,16 @@ export default function ProjectList() {
     setIsLoading(true);
     try {
       const url = generateQuery(filter);
-      const pageList = await filterProjects(url);
-      // const list = pageList?.records.map((project: Project) => {
-      //   const type = typeList.find(
-      //     (type) => type.value === project.type
-      //   )?.subject;
-      //   const status = statusList.find(
-      //     (status) => status.value === project.status
-      //   )?.text;
+      const response = await filterProjects(url);
 
-      //   return { ...project, type, status };
-      // });
-
-      const list = pageList?.records;
-
-      setTotalItems(pageList?.totalItems);
-      setProjects(list);
+      if (response.isSuccess) {
+        setTotalItems(response.data?.totalItems);
+        setProjects(response.data?.records);
+      } else {
+        setTotalItems(0);
+        setProjects([]);
+        toast.error(response.message || "Failed to fetch projects");
+      }
     } catch (error) {
       console.error("Error fetching projects:", error);
       // Optionally, you can set an error state here to display an error message in the UI
@@ -211,9 +207,6 @@ export default function ProjectList() {
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
-                  <TableHeadCell>
-                    <span className="sr-only">Add Tender</span>
-                  </TableHeadCell>
                 </TableRow>
               </TableHead>
               <TableBody className="divide-y">
@@ -236,17 +229,9 @@ export default function ProjectList() {
                     <TableCell>
                       <Link
                         href={`/project/update/${project.id}`}
-                        className="font-medium text-primary-600 hover:underline dark:text-primary-500 ml-2"
+                        className="inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                       >
-                        Edit
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/tender/list/${project.id}`}
-                        className="font-medium text-primary-600 hover:underline dark:text-primary-500 ml-2"
-                      >
-                        Add Tender
+                        <LuPencil className="w-4 h-4" />
                       </Link>
                     </TableCell>
                   </TableRow>

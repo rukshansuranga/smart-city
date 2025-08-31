@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using PSMDataAccess;
 using PSMModel.Models;
+using PSMModel.Enums;
 using PSMWebAPI.DTOs;
 using PSMWebAPI.DTOs.Project;
 
@@ -17,9 +18,17 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Project> AddAsync(Project project)
     {
-        await _context.Projects.AddAsync(project);
-        await _context.SaveChangesAsync();
-        return project;
+        try
+        {
+            project.Status = ProjectStatus.New;
+            await _context.Projects.AddAsync(project);
+            await _context.SaveChangesAsync();
+            return project;
+        }catch(Exception ex)
+        {
+            throw ex;
+        }
+        
     }
 
     public async Task<IEnumerable<Project>> GetAllProjects()
@@ -29,9 +38,9 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Project?> GetByIdAsync(int id)
     {
-        //var project = await _context.Projects.Include(p => p.AwadedTener).ThenInclude(x => x.Company).FirstOrDefaultAsync(p => p.Id == id);
+        //var project = await _context.Projects.Include(p => p.AwardedTender).ThenInclude(x => x.Company).FirstOrDefaultAsync(p => p.Id == id);
         var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
-        //return await _context.Projects.Include(p => p.AwadedTener).FindAsync(id);
+        //return await _context.Projects.Include(p => p.AwardedTender).FindAsync(id);
         return project;
     }
 
@@ -39,7 +48,7 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
-            //var query = _context.Projects.Include(x => x.AwadedTener).AsQueryable();
+            //var query = _context.Projects.Include(x => x.AwardedTender).AsQueryable();
             var query = _context.Projects.AsQueryable();
 
             if (!string.IsNullOrEmpty(paging.SearchText))
@@ -128,4 +137,134 @@ public class ProjectRepository : IProjectRepository
 
         return query;
     }
+
+    #region Project Progress
+    
+    // Create new project progress
+    public async Task<ProjectProgress> AddProjectProgressAsync(ProjectProgress projectProgress)
+    {
+        try
+        {
+            await _context.ProjectProgresses.AddAsync(projectProgress);
+            await _context.SaveChangesAsync();
+            return projectProgress;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    // Get all project progress records
+    public async Task<IEnumerable<ProjectProgress>> GetAllProjectProgressAsync()
+    {
+        return await _context.ProjectProgresses
+            .Include(pp => pp.Project)
+            .Include(pp => pp.ApprovedByUser)
+            .ToListAsync();
+    }
+
+    // Get project progress by ID
+    public async Task<ProjectProgress?> GetProjectProgressByIdAsync(int projectProgressId)
+    {
+        return await _context.ProjectProgresses
+            .Include(pp => pp.Project)
+            .Include(pp => pp.ApprovedByUser)
+            .FirstOrDefaultAsync(pp => pp.ProjectProgressId == projectProgressId);
+    }
+
+    // Get project progress by project ID
+    public async Task<IEnumerable<ProjectProgress>> GetProjectProgressByProjectIdAsync(int projectId)
+    {
+        try
+        {
+            return await _context.ProjectProgresses
+                        .Include(pp => pp.Project)
+                        .Include(pp => pp.ApprovedByUser)
+                        .Where(pp => pp.ProjectId == projectId)
+                        .OrderByDescending(pp => pp.ProgressDate)
+                        .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        
+    }
+
+    // Update project progress
+    public async Task<ProjectProgress> UpdateProjectProgressAsync(ProjectProgress projectProgress)
+    {
+        try
+        {
+            _context.ProjectProgresses.Update(projectProgress);
+            await _context.SaveChangesAsync();
+            return projectProgress;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    // Delete project progress
+    public async Task<bool> DeleteProjectProgressAsync(int projectProgressId)
+    {
+        try
+        {
+            var projectProgress = await _context.ProjectProgresses.FindAsync(projectProgressId);
+            if (projectProgress == null)
+                return false;
+
+            _context.ProjectProgresses.Remove(projectProgress);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    // Get latest project progress for a project
+    public async Task<ProjectProgress?> GetLatestProjectProgressAsync(int projectId)
+    {
+        return await _context.ProjectProgresses
+            .Include(pp => pp.Project)
+            .Include(pp => pp.ApprovedByUser)
+            .Where(pp => pp.ProjectId == projectId)
+            .OrderByDescending(pp => pp.ProgressDate)
+            .FirstOrDefaultAsync();
+    }
+
+    // Get project progress by status
+    public async Task<IEnumerable<ProjectProgress>> GetProjectProgressByStatusAsync(ProjectProgressApprovedStatus status)
+    {
+        return await _context.ProjectProgresses
+            .Include(pp => pp.Project)
+            .Include(pp => pp.ApprovedByUser)
+            .Where(pp => pp.ProjectProgressApprovedStatus == status)
+            .OrderByDescending(pp => pp.ProgressDate)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Project>> GetAllProjectsByContractorId(string contractorId)
+    {
+        try
+        {
+            var sql = @"SELECT p.* FROM public.""Projects"" p 
+                       INNER JOIN public.""Tenders"" t ON p.""AwardedTenderId"" = t.""TenderId"" 
+                       WHERE t.""ContractorId"" = {0}";
+            var projectList = await _context.Projects.FromSqlRaw(sql, contractorId).ToListAsync();
+            return projectList;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+    }
+
+
+    #endregion
 }

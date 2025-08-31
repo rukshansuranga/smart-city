@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PSMModel.Models;
-using PSMWebAPI.DTOs.Workpackage;
+using PSMWebAPI.DTOs.Complain;
 
 namespace PSMWebAPI.Repositories
 {

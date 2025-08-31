@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PSMModel.Models;
-using PSMWebAPI.DTOs.Workpackage;
+using PSMWebAPI.DTOs.Complain;
 using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers

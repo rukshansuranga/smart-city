@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NodaTime;
+using PSMModel.Enums;
 using PSMModel.Models;
 
 namespace PSMDataAccess.Configurations;
@@ -14,10 +15,10 @@ public class GeneralComplainConfiguration : IEntityTypeConfiguration<GeneralComp
         builder.HasData(
             new GeneralComplain
             {
-                WorkpackageId = 12,
+                ComplainId = 1,
                 Subject = "General Complain 1",
                 Detail = "General Complain 1 description",
-                Status = PSMModel.Enums.WorkpackageStatus.New,
+                Status = ComplainStatus.New,
                 ClientId = "1",
                 IsPrivate = false,
                 CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14, 0),

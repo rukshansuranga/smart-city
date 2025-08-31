@@ -14,10 +14,10 @@ public class ProjectComplainConfiguration : IEntityTypeConfiguration<ProjectComp
         builder.HasData(
             new ProjectComplain
             {
-                WorkpackageId = 31,
+                ComplainId = 4,
                 Subject = "Project Complain 1",
                 Detail = "Project Complain 1 description",
-                Status = WorkpackageStatus.New,
+                Status = ComplainStatus.New,
                 ClientId = "1",
                 ProjectId = 1,
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
@@ -26,27 +26,15 @@ public class ProjectComplainConfiguration : IEntityTypeConfiguration<ProjectComp
             },
             new ProjectComplain
             {
-                WorkpackageId = 32,
+                ComplainId = 5,
                 Subject = "Project Complain 2",
                 Detail = "Project Complain 2 description",
-                Status = WorkpackageStatus.InProgress,
+                Status = ComplainStatus.InProgress,
                 ClientId = "2",
                 ProjectId = 2,
                 CreatedAt = new LocalDateTime(2025, 6, 20, 10, 0, 0),
                 CreatedBy = "2",
                 IsActive = true
-            }
-            // new ProjectComplain
-            // {
-            //     WorkpackageId = 33,
-            //     Subject = "Project Complain 3",
-            //     Detail = "Project Complain 3 description",
-            //     Status = WorkpackageStatus.Close,
-            //     ClientId = 2,
-            //     ProjectId = 2,
-            //     CreatedAt = new LocalDateTime(2025, 6, 21, 9, 30, 0),
-            //     CreatedBy = 2,
-            //     IsActive = true
-            );
+            });
     }
 }

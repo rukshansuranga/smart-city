@@ -26,6 +26,8 @@
 
   <ItemGroup>
     <Folder Include="Diagrams\StateDiagram\" />
+    <Folder Include="uploads\projects\" />
+    <Folder Include="uploads\tenders\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getWorkpackagePaging } from "../api/actions/workpackageAction";
 
-import { Paging, Workpackage } from "@/types";
+import { Paging, Complain } from "@/types";
 import {
   Button,
   ButtonGroup,
@@ -21,7 +21,7 @@ const itemsPerPage = 2;
 export default function WorkpackagePage() {
   const router = useRouter();
 
-  const [data, setData] = useState<Paging<Workpackage>>({
+  const [data, setData] = useState<Paging<Complain>>({
     records: [],
     totalItems: 0,
   });
@@ -32,9 +32,9 @@ export default function WorkpackagePage() {
     "New",
   ]);
 
-  const [selectedWorkpackages, setSelectedWorkpackages] = useState<
-    Workpackage[]
-  >([]);
+  const [selectedWorkpackages, setSelectedWorkpackages] = useState<Complain[]>(
+    []
+  );
 
   const searchParams = useSearchParams();
   const pageIndex = searchParams.get("pageIndex") ?? "1";
@@ -53,7 +53,7 @@ export default function WorkpackagePage() {
 
         setData(result);
       } catch (error) {
-        console.error("Error fetching workpackage data:", error);
+        console.error("Error fetching complain data:", error);
       }
     };
 
@@ -69,27 +69,27 @@ export default function WorkpackagePage() {
   }, [statusList]);
 
   function addWorkpackage(
-    workpackage: Workpackage | undefined,
+    complain: Complain | undefined,
     e: React.ChangeEvent<HTMLInputElement>
   ) {
     if (e.target.checked) {
       if (
         !selectedWorkpackages.find(
-          (wp) => wp.workPackageId === workpackage?.workPackageId
+          (wp) => wp.workPackageId === complain?.workPackageId
         )
       ) {
-        setSelectedWorkpackages((prev) => [...prev, workpackage!]);
+        setSelectedWorkpackages((prev) => [...prev, complain!]);
       }
     } else {
       setSelectedWorkpackages(
         selectedWorkpackages.filter(
-          (wp) => wp.workPackageId !== workpackage?.workPackageId
+          (wp) => wp.workPackageId !== complain?.workPackageId
         )
       );
     }
   }
 
-  function openPopupModel(initWorkpackage: Workpackage, open: boolean) {
+  function openPopupModel(initWorkpackage: Complain, open: boolean) {
     if (
       !selectedWorkpackages.find(
         (wp) => wp.workPackageId === initWorkpackage?.workPackageId
@@ -187,33 +187,33 @@ export default function WorkpackagePage() {
             </tr>
           </thead>
           <tbody>
-            {data?.records.map((workpackage) => (
+            {data?.records.map((complain) => (
               <tr
-                key={workpackage.workPackageId}
+                key={complain.workPackageId}
                 className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {workpackage.workPackageId}
+                  {complain.workPackageId}
                 </th>
-                <td className="px-6 py-4">{workpackage.name}</td>
+                <td className="px-6 py-4">{complain.name}</td>
                 <td className="px-6 py-4">
-                  {new Date(workpackage.createdDate).toISOString().slice(0, 10)}
+                  {new Date(complain.createdDate).toISOString().slice(0, 10)}
                 </td>
-                <td className="px-6 py-4">{workpackage.status}</td>
+                <td className="px-6 py-4">{complain.status}</td>
                 <td className="px-6 py-4">
                   <Checkbox
                     id="accept"
-                    onChange={(e) => addWorkpackage(workpackage, e)}
+                    onChange={(e) => addWorkpackage(complain, e)}
                     checked={selectedWorkpackages
                       .map((x) => x.workPackageId)
-                      .includes(workpackage.workPackageId)}
+                      .includes(complain.workPackageId)}
                   />
                 </td>
                 <td className="px-6 py-4">
-                  <Button onClick={() => openPopupModel(workpackage, true)}>
+                  <Button onClick={() => openPopupModel(complain, true)}>
                     Create Ticket
                   </Button>
                 </td>

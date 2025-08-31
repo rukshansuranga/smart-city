@@ -13,7 +13,7 @@ export default function InfoWindowCard({
   const [checkedStatus, setCheckedStatus] = useState(() => {
     const status: Record<number, boolean> = {};
     marker.complains.forEach((c) => {
-      status[c.workpackageId] = c.isChecked || false;
+      status[c.complainId] = c.isChecked || false;
     });
     return status;
   });
@@ -29,7 +29,7 @@ export default function InfoWindowCard({
     const checkedIds = Object.entries(checkedStatus)
       .filter(([_, checked]) => checked)
       .map(([id]) => parseInt(id));
-    //console.log("Checked workpackage IDs:", checkedIds);
+    //console.log("Checked complain IDs:", checkedIds);
     onClose(checkedIds);
   }
 
@@ -41,13 +41,13 @@ export default function InfoWindowCard({
       <hr className="my-2" />
       {marker.complains.map((complain) => (
         <div
-          key={complain.workpackageId || complain.id}
+          key={complain.complainId || complain.id}
           className="flex items-center pt-2 gap-2 ml-2"
         >
           <Checkbox
-            checked={checkedStatus[complain.workpackageId] || false}
+            checked={checkedStatus[complain.complainId] || false}
             onChange={(e) =>
-              handleCheckboxChange(complain.workpackageId, e.target.checked)
+              handleCheckboxChange(complain.complainId, e.target.checked)
             }
           />
           <p>{complain.subject}</p>

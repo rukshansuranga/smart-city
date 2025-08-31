@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PSMModel.Models;
 using PSMWebAPI.DTOs.Client;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers

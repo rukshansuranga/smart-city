@@ -3,7 +3,7 @@
 import { useAuthStore } from "@/stores/authStore";
 
 //const baseUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-const baseUrl = "https://d0e910a8d7ed.ngrok-free.app/api/";
+const baseUrl = "https://38c8f458c0e8.ngrok-free.app/api/";
 
 async function get(url: string) {
   const requestOptions = {

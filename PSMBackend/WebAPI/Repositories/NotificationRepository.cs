@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PSMDataAccess;
-using PSMModel.Enums;
+using PSMModel.Enums;   
 using PSMModel.Models;
 using PSMWebAPI.DTOs;
-using PSMWebAPI.DTOs.Workpackage;
+using PSMWebAPI.DTOs.Complain;
 using PSMWebAPI.Profiles;
 using PSMWebAPI.Utils;
 
@@ -68,8 +68,8 @@ namespace PSMWebAPI.Repositories
         public async Task<IEnumerable<Notification>> GetNotificationsByClientAsync(string clientId)
         {
             return await _context.Notifications
-                .Include(w => w.Workpackage)
-                .Include(t => t.Ticket)// Assuming Workpackage is a navigation property
+                .Include(w => w.Complain)
+                .Include(t => t.Ticket)// Assuming Complain is a navigation property
                 .Where(n => n.ClientId == clientId)
                 .OrderDescending()
                 .ToListAsync();
@@ -89,13 +89,13 @@ namespace PSMWebAPI.Repositories
 
         public async Task AddRating(RatingRequest ratingRequest)
     {
-        var workpackage = await _context.Workpackages.FirstOrDefaultAsync(w => w.WorkpackageId == ratingRequest.WorkpackageId);
-        if (workpackage != null)
+    var complain = await _context.Complains.FirstOrDefaultAsync(w => w.ComplainId == ratingRequest.ComplainId);
+    if (complain != null)
         {
-            workpackage.Rating = ratingRequest.Rating;
-            workpackage.RatingReview = ratingRequest.Note;
-            workpackage.RatedAt = PSMDateTime.Now;
-            workpackage.RatedBy = ratingRequest.ClientId;
+            complain.Rating = ratingRequest.Rating;
+            complain.RatingReview = ratingRequest.Note;
+            complain.RatedAt = PSMDateTime.Now;
+            complain.RatedBy = ratingRequest.ClientId;
         }
 
         var notification = await _context.Notifications.FindAsync(ratingRequest.NotificationId);

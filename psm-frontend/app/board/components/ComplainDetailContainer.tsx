@@ -1,42 +1,39 @@
 import { getWorkpackageById } from "@/app/api/actions/workpackageAction";
 import ComplainDetail from "@/app/components/complain/ComplainDetail";
-import { Workpackage } from "@/types";
+import { Complain } from "@/types";
 import { useEffect, useState } from "react";
 
 export default function ComplainDetailContainer({
-  workpackage,
+  complain,
 }: {
-  workpackage: Workpackage;
+  complain: Complain;
 }) {
   const [project, setProject] = useState(null);
   const [lightPost, setLightPost] = useState(null);
 
   useEffect(() => {
-    if (workpackage && workpackage.workpackageType === "ProjectComplain") {
-      console.log("project complain", workpackage);
-      fetchProjectByWorkpackageId(workpackage.workpackageId);
-    } else if (
-      workpackage &&
-      workpackage.workpackageType === "LightPostComplain"
-    ) {
-      fetchLightPostByWorkpackageId(workpackage.workpackageId);
+    if (complain && complain.workpackageType === "ProjectComplain") {
+      console.log("project complain", complain);
+      fetchProjectByWorkpackageId(complain.complainId);
+    } else if (complain && complain.workpackageType === "LightPostComplain") {
+      fetchLightPostByWorkpackageId(complain.complainId);
     }
-  }, [workpackage]);
+  }, [complain]);
 
-  async function fetchProjectByWorkpackageId(workpackageId: string) {
-    // Fetch project details by workpackageId if needed
+  async function fetchProjectByWorkpackageId(complainId: string) {
+    // Fetch project details by complainId if needed
     const work = await getWorkpackageById(
-      workpackage?.workpackageId,
+      complain?.complainId,
       "ProjectComplain"
     );
 
     setProject(work?.project);
   }
 
-  async function fetchLightPostByWorkpackageId(workpackageId: string) {
-    // Fetch project details by workpackageId if needed
+  async function fetchLightPostByWorkpackageId(complainId: string) {
+    // Fetch project details by complainId if needed
     const work = await getWorkpackageById(
-      workpackage?.workpackageId,
+      complain?.complainId,
       "LightPostComplain"
     );
     setLightPost(work?.lightPost);
@@ -45,7 +42,7 @@ export default function ComplainDetailContainer({
   return (
     <div>
       <ComplainDetail
-        workpackage={{ ...workpackage, project: project, lightPost: lightPost }}
+        complain={{ ...complain, project: project, lightPost: lightPost }}
       />
     </div>
   );

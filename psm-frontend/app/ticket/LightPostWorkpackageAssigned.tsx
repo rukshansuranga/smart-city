@@ -44,7 +44,7 @@ export default function LightPostWorkpackageAssigned({
         lightPostNumber: marker.lightPostNumber,
         //isIncluded: marker.isIncluded,
         complains: marker.complains.map((complain) => {
-          if (data.some((w) => w.workpackageId === complain.workpackageId)) {
+          if (data.some((w) => w.complainId === complain.complainId)) {
             isContain = true;
 
             return {
@@ -82,21 +82,17 @@ export default function LightPostWorkpackageAssigned({
           return {
             ...marker,
             complains: marker.complains.map((complain) => {
-              const isContain = workpackageIds.includes(complain.workpackageId);
+              const isContain = workpackageIds.includes(complain.complainId);
 
-              console.log(
-                "is container",
-                workpackageIds,
-                complain.workpackageId
-              );
+              console.log("is container", workpackageIds, complain.complainId);
 
               if (isContain) {
                 isIncluded = true;
-                addingWorkpackages.push(complain.workpackageId);
+                addingWorkpackages.push(complain.complainId);
 
                 return { ...complain, isChecked: true };
               } else {
-                removingWorkpackages.push(complain.workpackageId);
+                removingWorkpackages.push(complain.complainId);
                 return { ...complain, isChecked: false };
               }
             }),
@@ -170,6 +166,8 @@ export default function LightPostWorkpackageAssigned({
         <ModalBody>
           <div style={{ height: "100vh", width: "100%" }}>
             <LightPostMap
+              statusList={[0, 1]}
+              setActiveMarkers={setActiveMarkers}
               activeMarkers={activeMarkers}
               manageTicketInclusion={manageTicketInclusion}
               openPosition={openPosition}

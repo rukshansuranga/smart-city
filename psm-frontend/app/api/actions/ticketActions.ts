@@ -26,7 +26,7 @@ export async function getTicketPaging(params: {
 export async function getTicketListByWorkpackageId(
   id: string
 ): Promise<Ticket[]> {
-  return fetchWrapper.get(`ticket/workpackage/${id}`);
+  return fetchWrapper.get(`ticket/complain/${id}`);
 }
 
 export async function getTicketById(id: string): Promise<Ticket> {
@@ -34,7 +34,7 @@ export async function getTicketById(id: string): Promise<Ticket> {
 }
 
 export async function updateTicket(ticket: Partial<Ticket>): Promise<Ticket> {
-  console.log("ticket action 52", ticket);
+  //console.log("ticket action 52", ticket);
   return fetchWrapper.put(`ticket/${ticket?.ticketId}`, ticket);
 }
 

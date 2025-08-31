@@ -58,13 +58,9 @@ export default function LightPost() {
           return {
             ...marker,
             complains: marker.complains.map((complain) => {
-              const isContain = workpackageIds.includes(complain.workpackageId);
+              const isContain = workpackageIds.includes(complain.complainId);
 
-              console.log(
-                "is container",
-                workpackageIds,
-                complain.workpackageId
-              );
+              console.log("is container", workpackageIds, complain.complainId);
 
               if (isContain) {
                 isIncluded = true;
@@ -123,6 +119,8 @@ export default function LightPost() {
         </Modal>
       )}
       <LightPostMap
+        statusList={[0]}
+        setActiveMarkers={setActiveMarkers}
         activeMarkers={activeMarkers}
         manageTicketInclusion={manageTicketInclusion}
         openPosition={openPosition}

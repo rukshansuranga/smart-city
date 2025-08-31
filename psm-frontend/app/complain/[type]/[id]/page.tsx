@@ -6,7 +6,7 @@ export default async function ComplainDetailPage({
 }: {
   params: { id: string; type: string };
 }) {
-  const workpackage = await getWorkpackageById(id, type);
+  const complain = await getWorkpackageById(id, type);
 
-  return <ComplainDetail workpackage={workpackage} />;
+  return <ComplainDetail complain={complain} />;
 }

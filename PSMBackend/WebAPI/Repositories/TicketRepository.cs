@@ -20,30 +20,37 @@ public class TicketRepository : ITicketRepository
         _context = context;
         _httpContextAccessor = httpContextAccessor;
     }
-    public async Task<Ticket> AddAsync(Ticket ticket)
+    public async Task<T> AddAsync<T>(T ticket) where T : Ticket
     {
-         ticket.CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        await _context.Tickets.AddAsync(ticket);
-
-        // Update related Workpackage status to Assigned
-        if (ticket.TicketPackages != null)
+        try
         {
-            foreach (var tp in ticket.TicketPackages)
+            ticket.CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            _context.Set<T>().Add(ticket);
+
+        if (typeof(T) == typeof(ComplainTicket) && (ticket as ComplainTicket)?.TicketPackages != null)
+        {
+            var ticketPackages = (ticket as ComplainTicket)?.TicketPackages;
+            foreach (var tp in ticketPackages)
             {
-                var workpackage = await _context.Workpackages.FirstOrDefaultAsync(w => w.WorkpackageId == tp.WorkpackageId);
-                if (workpackage != null)
+                var complain = await _context.Complains.FirstOrDefaultAsync(w => w.ComplainId == tp.ComplainId);
+                if (complain != null)
                 {
-                    workpackage.Status = PSMModel.Enums.WorkpackageStatus.Assigned;
+                        complain.Status = ComplainStatus.Assigned;
+                    }
                 }
-            }
         }
 
-        await _context.SaveChangesAsync();
-        return ticket;
+            await _context.SaveChangesAsync();
+            return ticket;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error setting CreatedAt property: " + ex.Message);
+        }
     }
 
-    public async Task<PageResponse<Ticket>> GetPagingAsync(TicketPaging paging)
+    public async Task<PageResponse<T>> GetPagingAsync<T>(TicketPaging paging) where T : Ticket
     {
         try
         {
@@ -53,15 +60,9 @@ public class TicketRepository : ITicketRepository
 
             var isAdmin = AuthenticationHelper.IsUserInRole(user, "admin");
 
-            // var query = _context.Tickets.Include(x => x.User)
-            //     .OrderByDescending(t => t.TicketId)
-            //     .Skip((paging.PageIndex - 1) * paging.PageSize)
-            //     .Take(paging.PageSize);
+            var query = _context.Set<T>().Include(x => (x as Ticket).User).AsQueryable();
 
-            var query = _context.Tickets.Include(x => x.User).AsQueryable();
-
-            
-            if(!isAdmin)
+            if (!isAdmin)
             {
                 query = query.Where(s => s.UserId == userId);
             }
@@ -74,9 +75,10 @@ public class TicketRepository : ITicketRepository
                 .Take(paging.PageSize)
                 .ToListAsync();
 
-            var response = new PageResponse<Ticket> { Records = list, TotalItems = count };
+            var response = new PageResponse<T> { Records = list, TotalItems = count };
 
             return response;
+
         }
         catch (Exception ex)
         {
@@ -85,20 +87,50 @@ public class TicketRepository : ITicketRepository
 
     }
 
-    public async Task<Ticket> GetByIdAsync(int id)
+    public async Task<T> GetByIdAsync<T>(int id) where T : Ticket
     {
-        return await _context.Tickets
-            .Include(x => x.TicketPackages).ThenInclude(x => x.Workpackage).FirstOrDefaultAsync(x => x.TicketId == id);
+        if (typeof(T) == typeof(ComplainTicket))
+        {
+            var entity = await _context.ComplainTickets
+                 .Include(x => x.TicketPackages).ThenInclude(x => x.Complain)
+                 .Include(x => x.User)
+                 .FirstOrDefaultAsync(w => w.TicketId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+        if (typeof(T) == typeof(ProjectTicket))
+        {
+            var entity = await _context.ProjectTickets
+                 //.Include(x => x.TicketPackages).ThenInclude(x => x.Complain)
+                 .Include(x => x.Project)
+                 .Include(x => x.User)
+                 .FirstOrDefaultAsync(w => w.TicketId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+        if (typeof(T) == typeof(InternalTicket))
+        {
+            var entity = await _context.InternalTickets
+                 //.Include(x => x.TicketPackages).ThenInclude(x => x.Complain)
+                 .Include(x => x.User)
+                 .FirstOrDefaultAsync(w => w.TicketId == id && w.IsActive == true);
+            return entity as T;
+        }
+
+
+        return await _context.Set<T>()
+            .FirstOrDefaultAsync(x => x.TicketId == id);
     }
 
-    public async Task<Ticket> UpdateAsync(Ticket ticket)
+    public async Task<T> UpdateAsync<T>(T ticket) where T : Ticket
     {
         try
         {
             ticket.UpdatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             ticket.UpdatedAt = Utils.PSMDateTime.Now;
 
-            _context.Tickets.Update(ticket);
+            //_context.Tickets.Update(ticket);
+            _context.Set<T>().Update(ticket);
             await _context.SaveChangesAsync();
             return ticket;
         }
@@ -109,10 +141,10 @@ public class TicketRepository : ITicketRepository
 
     }
 
-    public async Task<IEnumerable<Ticket>> GetTicketListByWorkPackageIdAsync(int workPackageId)
+    public async Task<IEnumerable<ComplainTicket>> GetTicketListByComplainIdAsync(int ComplainId)
     {
-        var tickets = await _context.Tickets
-            .Where(t => t.TicketPackages.Any(tp => tp.WorkpackageId == workPackageId))
+        var tickets = await _context.ComplainTickets
+            .Where(t => t.TicketPackages.Any(tp => tp.ComplainId == ComplainId))
             .Include(t => t.User)
             .ToListAsync();
 
@@ -163,39 +195,39 @@ public class TicketRepository : ITicketRepository
         ticket.Status = TicketStatus.InProgress;
         
         //change the general complains status to InProgress
-        //change the related workpackages status to Resolved
-        var workpackages = await _context.TicketPackages
+        //change the related complains status to Resolved
+        var complains = await _context.TicketPackages
             .Where(tp => tp.TicketId == ticketId)
-            .Include(tp => tp.Workpackage)
-            .Select(tp => tp.Workpackage)
+            .Include(tp => tp.Complain)
+            .Select(tp => tp.Complain)
             .ToListAsync();
 
-        if (workpackages != null)
+        if (complains != null)
         {
-            foreach (var workpackage in workpackages)
+            foreach (var complain in complains)
             {
-                if (workpackage != null)
+                if (complain != null)
                 {
-                    workpackage.Status = WorkpackageStatus.InProgress;
+                    complain.Status = ComplainStatus.InProgress;
                     //todo: send notification to the user
 
-                    var workpackageTypeString = workpackage.WorkpackageType switch
+                    var complainTypeString = complain.ComplainType switch
                     {
                         "GeneralComplain" => "General Complain",
                         "LightPostComplain" => "Light Post Complain",
                         "ProjectComplain" => "Project Complain",
                         "GarbageComplain" => "Garbage Complain",
-                        "Workpackage" => "Workpackage",
+                        "Complain" => "Complain",
                         _ => "Unknown"
                     };
 
                     Notification notification = new Notification
                     {
-                        Subject = $"{workpackageTypeString} In Progress",
-                        Message = $"Workpackage {workpackage.Subject} is Started",
-                        WorkpackageId = workpackage.WorkpackageId,
+                        Subject = $"{complainTypeString} In Progress",
+                        Message = $"Complain {complain.Subject} is Started",
+                        ComplainId = complain.ComplainId,
                         TicketId = ticketId,
-                        ClientId = workpackage.ClientId,
+                        ClientId = complain.ClientId,
                         Status = NotificationStatus.Created,
                         Type = NotificationType.Info,
                         CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value,
@@ -222,15 +254,25 @@ public class TicketRepository : ITicketRepository
         return true;
     }
 
-    public async Task<IEnumerable<Ticket>> GetTicketListByUserIdAsync(string userId)
+    public async Task<IEnumerable<T>> GetTicketListByUserIdAsync<T>(string userId) where T : Ticket
     {
+        if (typeof(T) == typeof(ComplainTicket))
+        {
+            var complainTickets = await _context.ComplainTickets
+                .Where(t => t.UserId == userId)
+                .Include(t => t.TicketPackages).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
+                .ToListAsync();
+
+            return complainTickets.Cast<T>();
+        }
+
         var tickets = await _context.Tickets
                                 .Where(t => t.UserId == userId)
-                                .Include(t => t.TicketPackages).ThenInclude(tp => tp.Workpackage).ThenInclude(c => c.Client)
+                                //.Include(t => t.TicketPackages).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
                                 .Include(t => t.User)
                                 .ToListAsync();
 
-        return tickets;
+        return tickets.Cast<T>();
     }
 
     public async Task<bool> ResolvedOnTicketAsync(int ticketId)
@@ -294,38 +336,38 @@ public class TicketRepository : ITicketRepository
 
             _context.TicketActivities.Add(activity);
 
-            var workpackages = await _context.TicketPackages
+            var complains = await _context.TicketPackages
                         .Where(tp => tp.TicketId == ticketId)
-                        .Include(tp => tp.Workpackage)
-                        .Select(tp => tp.Workpackage)
+                        .Include(tp => tp.Complain)
+                        .Select(tp => tp.Complain)
                         .ToListAsync();
 
-            if (workpackages != null)
+            if (complains != null)
             {
-                foreach (var workpackage in workpackages)
+                foreach (var complain in complains)
                 {
-                    if (workpackage != null)
+                    if (complain != null)
                     {
-                        workpackage.Status = WorkpackageStatus.Closed;
+                        complain.Status = ComplainStatus.Closed;
                         //todo: send notification to the user
 
-                        var workpackageTypeString = workpackage.WorkpackageType switch
+                        var complainTypeString = complain.ComplainType switch
                         {
                             "GeneralComplain" => "General Complain",
                             "LightPostComplain" => "Light Post Complain",
                             "ProjectComplain" => "Project Complain",
                             "GarbageComplain" => "Garbage Complain",
-                            "Workpackage" => "Workpackage",
+                            "Complain" => "Complain",
                             _ => "Unknown"
                         };
 
                         Notification notification = new Notification
                         {
-                            Subject = $"{workpackageTypeString} In Close",
-                            Message = $"Workpackage {workpackage.Subject} is now closed. Can you give your feedback?",
-                            WorkpackageId = workpackage.WorkpackageId,
+                            Subject = $"{complainTypeString} In Close",
+                            Message = $"Complain {complain.Subject} is now closed. Can you give your feedback?",
+                            ComplainId = complain.ComplainId,
                             TicketId = ticketId,
-                            ClientId = workpackage.ClientId,
+                            ClientId = complain.ClientId,
                             Status = NotificationStatus.Sent,
                             Type = NotificationType.Rating,
                             CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value,
@@ -347,19 +389,19 @@ public class TicketRepository : ITicketRepository
         }
     }
 
-    public async Task AddWorkpackagesAsync(int ticketId, IEnumerable<int> workpackageIds)
+    public async Task AddComplainsAsync(int ticketId, IEnumerable<int> ComplainIds)
     {
         try
         {
-            var ticket = await _context.Tickets.Include(x => x.TicketPackages).FirstOrDefaultAsync(t => t.TicketId == ticketId);
+            var ticket = await _context.ComplainTickets.Include(x => x.TicketPackages).FirstOrDefaultAsync(t => t.TicketId == ticketId);
             if (ticket == null) throw new KeyNotFoundException("Ticket not found");
 
-        var workpackages = await _context.Workpackages.Where(w => workpackageIds.Contains(w.WorkpackageId)).ToListAsync();
-        if (workpackages.Count == 0) throw new KeyNotFoundException("No workpackages found");
+        var complains = await _context.Complains.Where(w => ComplainIds.Contains(w.ComplainId)).ToListAsync();
+        if (complains.Count == 0) throw new KeyNotFoundException("No complains found");
 
-        foreach (var workpackage in workpackages)
+        foreach (var complain in complains)
         {
-            if(ticket.TicketPackages.Any(tp => tp.WorkpackageId == workpackage.WorkpackageId))
+            if(ticket.TicketPackages.Any(tp => tp.ComplainId == complain.ComplainId))
             {
                 continue; // Skip if already added
             }
@@ -367,10 +409,10 @@ public class TicketRepository : ITicketRepository
             ticket.TicketPackages.Add(new TicketPackage
             {
                 TicketId = ticketId,
-                WorkpackageId = workpackage.WorkpackageId
+                ComplainId = complain.ComplainId
             });
 
-            workpackage.Status = WorkpackageStatus.Assigned;
+            complain.Status = ComplainStatus.Assigned;
         }
 
          await _context.SaveChangesAsync();
@@ -382,27 +424,28 @@ public class TicketRepository : ITicketRepository
     }
 }
 
-    public async Task RemoveWorkpackagesAsync(int ticketId, IEnumerable<int> workpackageIds)
+    public async Task RemoveComplainsAsync(int ticketId, IEnumerable<int> ComplainIds)
     {
-        var ticket = await _context.Tickets.Include(t => t.TicketPackages).FirstOrDefaultAsync(t => t.TicketId == ticketId);
+        var ticket = await _context.ComplainTickets.Include(t => t.TicketPackages).FirstOrDefaultAsync(t => t.TicketId == ticketId);
         if (ticket == null) throw new KeyNotFoundException("Ticket not found");
 
-        var workpackagesToRemove =  ticket.TicketPackages.Where(tp => workpackageIds.Contains(tp.WorkpackageId)).ToList();
-        if (workpackagesToRemove.Count == 0) throw new KeyNotFoundException("No workpackages found");
+        var complainsToRemove =  ticket.TicketPackages.Where(tp => ComplainIds.Contains(tp.ComplainId)).ToList();
+        if (complainsToRemove.Count == 0) throw new KeyNotFoundException("No complains found");
 
-        foreach (var tp in workpackagesToRemove)
+        foreach (var tp in complainsToRemove)
         {
             ticket.TicketPackages.Remove(tp);
-            var workpackage = _context.Workpackages.Find(tp.WorkpackageId);
-            if (workpackage != null)
+            var complain = _context.Complains.Find(tp.ComplainId);
+            if (complain != null)
             {
-                if(_context.TicketPackages.Where(x => x.WorkpackageId == workpackage.WorkpackageId).Count() == 0)
+                if(_context.TicketPackages.Where(x => x.ComplainId == complain.ComplainId).Count() == 0)
                 {
-                    workpackage.Status = WorkpackageStatus.New; // or whatever status you want to set
+                    complain.Status = ComplainStatus.New; // or whatever status you want to set
                 }
             }
         }
 
          await _context.SaveChangesAsync();
     }
+
 }

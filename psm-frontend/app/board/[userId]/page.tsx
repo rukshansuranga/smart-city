@@ -6,7 +6,7 @@ import {
 } from "@/app/api/actions/ticketActions";
 import ComplainDetail from "@/app/components/complain/ComplainDetail";
 import { TicketStatus, TicketType } from "@/enums";
-import { Ticket, Workpackage } from "@/types";
+import { Ticket, Complain } from "@/types";
 import {
   Badge,
   Button,
@@ -53,7 +53,7 @@ export default function UserBoard() {
   const [draggedItem, setDraggedItem] = useState(null);
 
   const [selectedWorkpackage, setSelectedWorkpackage] =
-    useState<Workpackage | null>(null);
+    useState<Complain | null>(null);
 
   useEffect(() => {
     fetchTicketsByUserId(userId);
@@ -155,9 +155,9 @@ export default function UserBoard() {
 
   console.log("column", columns);
 
-  function handleWorkpackage(workpackage) {
-    console.log("Workpackage clicked:", workpackage);
-    setSelectedWorkpackage(workpackage);
+  function handleWorkpackage(complain) {
+    console.log("Complain clicked:", complain);
+    setSelectedWorkpackage(complain);
     setOpenModal(true);
   }
 
@@ -254,15 +254,15 @@ export default function UserBoard() {
                               item.ticketPackages.map((pack) => (
                                 <Badge
                                   onClick={() =>
-                                    handleWorkpackage(pack.workpackage)
+                                    handleWorkpackage(pack.complain)
                                   }
-                                  key={pack?.workpackageId}
+                                  key={pack?.complainId}
                                   style={{
                                     borderRadius: "10px",
                                   }}
                                   size="sm"
                                 >
-                                  {pack?.workpackageId}
+                                  {pack?.complainId}
                                 </Badge>
                               ))}
                           </div>
@@ -278,13 +278,13 @@ export default function UserBoard() {
       </div>
       <Modal dismissible show={openModal} onClose={() => setOpenModal(false)}>
         <ModalHeader>
-          Workpackage -{" "}
+          Complain -{" "}
           <span className="bg-green-300 rounded-4xl p-2">
-            {selectedWorkpackage?.workpackageId}
+            {selectedWorkpackage?.complainId}
           </span>
         </ModalHeader>
         <ModalBody>
-          <ComplainDetailContainer workpackage={selectedWorkpackage} />
+          <ComplainDetailContainer complain={selectedWorkpackage} />
         </ModalBody>
       </Modal>
     </>

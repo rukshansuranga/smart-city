@@ -1,6 +1,7 @@
 "use client";
 import { Card } from "flowbite-react";
 import { Bar, Doughnut } from "react-chartjs-2";
+import { PageProtection } from "../components/PageProtection";
 
 import {
   Chart as ChartJS,
@@ -27,7 +28,7 @@ ChartJS.register(
   ChartDataLabels
 );
 
-export default function Dashboard() {
+function DashboardContent() {
   const overviewData = {
     labels: ["LightPost", "Garbage", "Project", "General"],
     datasets: [
@@ -464,5 +465,13 @@ export default function Dashboard() {
         <Bar data={projectBarData} options={projectBarOptions} />
       </Card>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <PageProtection permission="dashboard">
+      <DashboardContent />
+    </PageProtection>
   );
 }

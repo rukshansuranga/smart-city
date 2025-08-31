@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PSMModel.Models;
 
-public class LightPostComplain : Workpackage
+public class LightPostComplain : Complain
 {
     [ForeignKey("LightPost")]
     public string LightPostNumber { get; set; }

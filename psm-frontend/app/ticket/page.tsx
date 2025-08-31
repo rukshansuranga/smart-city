@@ -14,8 +14,6 @@ export default async function TicketList({
     pageSize,
   });
 
-  //console.log("response11", response?.records, response?.totalItems);
-
   return (
     <div className="flex-col ">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

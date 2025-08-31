@@ -13,7 +13,14 @@ export const { handlers, auth, signIn, signOut } = nextAuth({
         token.accessToken = account.access_token;
         if (decodedToken && typeof decodedToken !== "string") {
           const roles = decodedToken?.realm_access;
-          console.log("jwtnnnn", decodedToken?.sub);
+          console.log("jwtnnnn", decodedToken.council);
+
+          // Add council to the token instead of trying to set it directly
+          if (decodedToken.council) {
+            console.log("Adding council to token:", decodedToken.council);
+            token.council = decodedToken.council;
+          }
+
           token = { ...token, sub: decodedToken?.sub, roles: roles?.roles };
         }
       }
@@ -27,6 +34,8 @@ export const { handlers, auth, signIn, signOut } = nextAuth({
         // console.log("Tokenxxxx:", token);
         session.user.id = token.sub ?? "";
         session.roles = token.roles || [];
+        // Add council to the session
+        session.council = token.council;
       }
       //console.log("[session callback] token " + JSON.stringify(session));
       session.accessToken = token.accessToken;

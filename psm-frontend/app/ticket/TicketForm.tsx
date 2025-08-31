@@ -6,7 +6,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 
-import { Ticket, Option, Workpackage } from "@/types";
+import { Ticket, Option, Complain } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 
 import { getUsers } from "@/app/api/actions/userActions";
@@ -49,7 +49,7 @@ export default function TicketForm({
   ticketWorkpackageType?: TicketWorkpackageType;
   ticket?: Ticket;
   isInternal: boolean;
-  workpackageList?: Workpackage[];
+  workpackageList?: Complain[];
   initialValue?: { subject: string; detail: string; note?: string };
   handleClose?: () => void;
 }) {
@@ -149,7 +149,7 @@ export default function TicketForm({
           await createTicket({
             ...payload,
             type: type,
-            WorkpackageIdList: workpackageList.map((pkg) => pkg.workpackageId!),
+            WorkpackageIdList: workpackageList.map((pkg) => pkg.complainId!),
             ticketWorkpackageType: ticketWorkpackageType,
           });
         }

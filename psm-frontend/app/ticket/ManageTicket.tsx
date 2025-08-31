@@ -11,7 +11,7 @@ export default async function ManageTicket({ ticket }: { ticket: Ticket }) {
     <div>
       <TicketForm
         ticket={ticket}
-        workpackageList={ticket?.ticketPackages?.map((pkg) => pkg.workpackage!)}
+        workpackageList={ticket?.ticketPackages?.map((pkg) => pkg.complain!)}
         isInternal={ticket.type === TicketType.Internal}
         ticketWorkpackageType={ticket.ticketWorkpackageType}
       />

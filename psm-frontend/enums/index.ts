@@ -20,7 +20,7 @@ export enum TicketStatus {
   Resolved = 2,
   Closed = 3,
 }
-export enum WorkpackageStatus {
+export enum ComplainStatus {
   New = 0,
   Assigned = 1,
   InProgress = 2,
@@ -36,4 +36,10 @@ export enum TicketWorkpackageType {
   GeneralComplain = 0,
   LightPostComplain = 1,
   ProjectComplain = 2,
+}
+
+export enum ProjectProgressApprovedStatus {
+  Pending = 0,
+  Approved = 1,
+  Rejected = 2,
 }

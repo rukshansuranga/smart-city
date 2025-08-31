@@ -14,13 +14,13 @@ public class MiscRepository : IMiscRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Company>> GetCompanies()
+    public async Task<IEnumerable<Contractor>> GetContractors()
     {
-        return await _context.Companies.ToListAsync();
+        return await _context.Contractors.ToListAsync();
     }
 
-    public async Task<Company> GetCompanyByIdAsync(int id)
+    public async Task<Contractor?> GetContractorByIdAsync(string id)
     {
-        return await _context.Companies.FindAsync(id);
+        return await _context.Contractors.FindAsync(id);
     }
 }

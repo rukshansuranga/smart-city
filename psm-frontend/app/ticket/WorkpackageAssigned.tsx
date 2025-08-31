@@ -3,10 +3,10 @@ import {
   getWorkpackageByTicketId,
   manageMappingByTicketAndPackage,
 } from "@/app/api/actions/workpackageAction";
-import { Workpackage } from "@/types";
+import { Complain } from "@/types";
 import { useEffect, useState } from "react";
 import WorkpackageList from "./WorkpackageList";
-import { TicketWorkpackageType, WorkpackageStatus } from "@/enums";
+import { TicketWorkpackageType, ComplainStatus } from "@/enums";
 import { Button, Spinner } from "flowbite-react";
 
 export default function WorkpackageAssigned({
@@ -16,7 +16,7 @@ export default function WorkpackageAssigned({
   ticketId: number;
   ticketWorkpackageType: TicketWorkpackageType;
 }) {
-  const [workpackages, setWorkpackages] = useState<Workpackage[]>([]);
+  const [workpackages, setWorkpackages] = useState<Complain[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,44 +36,44 @@ export default function WorkpackageAssigned({
     fetchWorkpackagesByTicketId();
   }, []);
 
-  async function RemoveWorkpackage(workpackageId: number | undefined) {
+  async function RemoveWorkpackage(complainId: number | undefined) {
     try {
-      //await deleteMappingByTicketAndPackage(workpackageId!, ticketId);
+      //await deleteMappingByTicketAndPackage(complainId!, ticketId);
 
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: workpackageId!,
+        complainId: complainId!,
         action: "Remove",
       });
 
       const filterdWorkpackage = workpackages.filter(
-        (x) => x.workpackageId !== workpackageId
+        (x) => x.complainId !== complainId
       );
       setWorkpackages(filterdWorkpackage);
     } catch (error) {
-      console.error("Error removing workpackage:", error);
+      console.error("Error removing complain:", error);
     }
   }
 
   async function handleWorkpackageClick(
-    workpackage: Workpackage,
+    complain: Complain,
     isChecked: boolean
   ) {
     if (isChecked) {
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: parseInt(workpackage.workpackageId!),
+        complainId: parseInt(complain.complainId!),
         action: "Add",
       });
-      setWorkpackages((list) => [...list, workpackage]);
+      setWorkpackages((list) => [...list, complain]);
     } else {
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: parseInt(workpackage.workpackageId!),
+        complainId: parseInt(complain.complainId!),
         action: "Remove",
       });
       const filterd = workpackages.filter(
-        (w) => w.workpackageId !== workpackage?.workpackageId
+        (w) => w.complainId !== complain?.complainId
       );
       setWorkpackages(filterd);
     }
@@ -111,28 +111,26 @@ export default function WorkpackageAssigned({
             </tr>
           </thead>
           <tbody>
-            {workpackages.map((workpackage) => (
+            {workpackages.map((complain) => (
               <tr
-                key={workpackage.workpackageId}
+                key={complain.complainId}
                 className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {workpackage.workpackageId}
+                  {complain.complainId}
                 </th>
-                <td className="px-6 py-4">{workpackage.subject}</td>
+                <td className="px-6 py-4">{complain.subject}</td>
                 <td className="px-6 py-4">
-                  {new Date(workpackage.createdAt).toISOString().slice(0, 10)}
+                  {new Date(complain.createdAt).toISOString().slice(0, 10)}
                 </td>
-                <td className="px-6 py-4">
-                  {WorkpackageStatus[workpackage.status]}
-                </td>
+                <td className="px-6 py-4">{ComplainStatus[complain.status]}</td>
                 <td>
                   <Button
                     onClick={() =>
-                      RemoveWorkpackage(parseInt(workpackage.workpackageId!))
+                      RemoveWorkpackage(parseInt(complain.complainId!))
                     }
                   >
                     Remove

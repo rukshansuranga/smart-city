@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using PSMModel.Enums;
 
 namespace PSMModel.Models;
 
-public class User: BaseEntity
+public class User : BaseEntity
 {
     [Key]
     public string UserId { get; set; }
@@ -14,4 +15,5 @@ public class User: BaseEntity
     public string? AddressLine1 { get; set; }
     public string? AddressLine2 { get; set; }
     public string City { get; set; }
+    public Designation? Designation { get; set; }
 }

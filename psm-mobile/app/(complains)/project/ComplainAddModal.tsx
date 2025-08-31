@@ -12,7 +12,7 @@ export default function ComplainAddModal({ project, closeModel }) {
   async function addComplainHandler() {
     try {
       await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/workpackage/projectcomplain`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/complain/projectcomplain`,
         {
           method: "POST",
           headers: {

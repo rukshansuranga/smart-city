@@ -68,6 +68,14 @@ const ProjectsIcon = () => (
   <Image src="/images/projects.png" alt="Projects" width={30} height={30} />
 );
 
+const AddProjectIcon = () => (
+  <Image src="/images/project-add.png" alt="Projects" width={30} height={30} />
+);
+
+const ListProjectIcon = () => (
+  <Image src="/images/project-list.png" alt="Projects" width={30} height={30} />
+);
+
 const BoardIcon = () => (
   <Image src="/images/board.png" alt="Board" width={30} height={30} />
 );
@@ -115,9 +123,7 @@ export function SideBar({ session }: HeaderProps) {
               Garbage
             </SidebarItem>
           </SidebarCollapse>
-          {/* <SidebarItem href="/workpackage" icon={MdOutlineWorkHistory}>
-            Workpackages
-          </SidebarItem> */}
+
           <SidebarCollapse icon={TicketIcon} label="Ticket">
             <SidebarItem href="/ticket" icon={LuTicketPlus}>
               Tickets
@@ -130,15 +136,14 @@ export function SideBar({ session }: HeaderProps) {
             </SidebarItem>
           </SidebarCollapse>
           {session?.roles?.includes("admin") && (
-            <SidebarItem href="/project" icon={ProjectsIcon}>
-              Projects
-            </SidebarItem>
-          )}
-
-          {session?.roles?.includes("admin") && (
-            <SidebarItem href="/tender" icon={TenderIcon}>
-              Tenders
-            </SidebarItem>
+            <SidebarCollapse icon={ProjectsIcon} label="Projects">
+              <SidebarItem href="/project/new" icon={AddProjectIcon}>
+                New Project
+              </SidebarItem>
+              <SidebarItem href="/project" icon={ListProjectIcon}>
+                List
+              </SidebarItem>
+            </SidebarCollapse>
           )}
 
           {session?.roles?.includes("admin") && (

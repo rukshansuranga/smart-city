@@ -1,6 +1,6 @@
 "use client";
 
-import { Workpackage } from "@/types";
+import { Complain } from "@/types";
 import TicketForm from "../../TicketForm";
 import { TicketWorkpackageType } from "@/enums";
 
@@ -10,7 +10,7 @@ export default function CreateTicketForm({
   ticketWorkpackageType,
 }: {
   open: (open: boolean) => void;
-  packages: Workpackage[];
+  packages: Complain[];
   ticketWorkpackageType: TicketWorkpackageType;
 }) {
   function handleClose() {
@@ -38,10 +38,10 @@ export default function CreateTicketForm({
             </tr>
           </thead>
           <tbody>
-            {packages.map((workpackage) => (
-              <tr key={workpackage.workpackageId}>
-                <td className="px-6 py-4">{workpackage.workpackageId}</td>
-                <td className="px-6 py-4">{workpackage.subject}</td>
+            {packages.map((complain) => (
+              <tr key={complain.complainId}>
+                <td className="px-6 py-4">{complain.complainId}</td>
+                <td className="px-6 py-4">{complain.subject}</td>
               </tr>
             ))}
           </tbody>

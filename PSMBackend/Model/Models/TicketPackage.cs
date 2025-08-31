@@ -9,7 +9,7 @@ public class TicketPackage
     [ForeignKey("Ticket")]
     public int TicketId { get; set; }
     public Ticket? Ticket { get; set; }
-    [ForeignKey("Workpackage")]
-    public int WorkpackageId { get; set; }
-    public Workpackage? Workpackage { get; set; }
+    [ForeignKey("Complain")]
+    public int ComplainId { get; set; }
+    public Complain? Complain { get; set; }
 }

@@ -1,30 +1,35 @@
 import { fetchWrapper } from "@/lib/fetchWrapper";
-import { Paging, Tender } from "@/types";
+import { Paging, Tender, ApiResponse } from "@/types";
 
-export async function filterTender(query: string): Promise<Paging<Tender>> {
+export async function filterTender(
+  query: string
+): Promise<ApiResponse<Paging<Tender>>> {
   return fetchWrapper.get(`tender${query}`);
 }
 
-// Add this function to post a new project
-export async function postTender(tender: Tender): Promise<Tender> {
+export async function postTender(tender: Tender): Promise<ApiResponse<Tender>> {
   return fetchWrapper.post("tender", tender);
 }
 
-export async function getTendersByProjectIdId(id: string): Promise<Tender[]> {
+export async function getTendersByProjectIdId(
+  id: string
+): Promise<ApiResponse<Tender[]>> {
   return fetchWrapper.get(`tender/project/${id}`);
 }
 
-export async function getTendersId(id: string): Promise<Tender> {
+export async function getTendersId(id: string): Promise<ApiResponse<Tender>> {
   return fetchWrapper.get(`tender/${id}`);
 }
 
-export async function getTenderByTenderId(id: string): Promise<Tender> {
+export async function getTenderByTenderId(
+  id: string
+): Promise<ApiResponse<Tender>> {
   return fetchWrapper.get(`tender/${id}`);
 }
 
 export async function updateTender(
   id: string,
   tender: Tender
-): Promise<Tender> {
+): Promise<ApiResponse<Tender>> {
   return fetchWrapper.put(`tender/${id}`, tender);
 }

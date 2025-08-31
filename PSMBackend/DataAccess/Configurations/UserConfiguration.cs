@@ -13,29 +13,47 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasData(
             new User
             {
-                UserId = "1",
-                FirstName = "Admin",
+                UserId = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                FirstName = "Ajith",
                 LastName = "User",
                 Mobile = "0777582696",
-                Email = "admin@example.com",
+                Email = "ajith@example.com",
                 City = "Colombo"
             },
             new User
             {
-                UserId = "2",
-                FirstName = "Kamal",
+                UserId = "43e63068-a5fd-4a45-acfb-0383ff4d45ea",
+                FirstName = "Kumara",
                 LastName = "Perera",
                 Mobile = "0147894562",
-                Email = "kamal@example.com",
+                Email = "kumara@example.com",
                 City = "Galle"
             },
             new User
             {
-                UserId = "3",
-                FirstName = "Kumara",
+                UserId = "6c35c5ad-2f70-4c3f-aa44-c94bc61d10a1",
+                FirstName = "Upul",
                 LastName = "Fernando",
                 Mobile = "0117654321",
-                Email = "kumara@example.com",
+                Email = "upul@example.com",
+                City = "Kandy"
+            },
+            new User
+            {
+                UserId = "d0eca5fa-8cf4-4256-ab6a-9405c789c1b1",
+                FirstName = "kamal",
+                LastName = "Fernando",
+                Mobile = "0117654321",
+                Email = "kamal@example.com",
+                City = "Kandy"
+            },
+            new User
+            {
+                UserId = "a4aa5b28-36ab-4991-975a-5e5e441bf6fa",
+                FirstName = "constractor2",
+                LastName = "Fernando",
+                Mobile = "0117654321",
+                Email = "kamal@example.com",
                 City = "Kandy"
             }
         );

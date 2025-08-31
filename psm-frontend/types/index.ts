@@ -4,8 +4,26 @@ import {
   TicketStatus,
   TicketType,
   TicketWorkpackageType,
-  WorkpackageStatus,
+  ComplainStatus,
+  ProjectProgressApprovedStatus,
 } from "@/enums";
+
+// Role-based access control types
+export type UserRole =
+  | "admin"
+  | "manager"
+  | "staff"
+  | "contractor"
+  | "councillor";
+
+export type Permission =
+  | "dashboard"
+  | "board"
+  | "complain"
+  | "ticket"
+  | "projects"
+  | "user"
+  | "projectprogress";
 
 export type LightPostComplain = {
   id?: string;
@@ -20,13 +38,13 @@ export type LightPostComplain = {
   isIncluded?: boolean;
 };
 
-export type Workpackage = {
-  workpackageId?: string;
+export type Complain = {
+  complainId?: string;
   subject: string;
   detail: string;
   createdAt: Date;
   updatedAt: Date;
-  status: WorkpackageStatus;
+  status: ComplainStatus;
   clientId: string;
   client?: {
     userId: string;
@@ -35,7 +53,7 @@ export type Workpackage = {
   project?: Project | null;
   lightPostNumber?: string;
   lightPost?: LightPost | null;
-  workpackageType: string;
+  complainType: string;
   ticketId: string;
   ticketPackages: Ticket[];
 };
@@ -43,8 +61,8 @@ export type Workpackage = {
 export type TicketPckage = {
   id: number;
   ticketId: number;
-  workpackageId: number;
-  workpackage?: Workpackage;
+  complainId: number;
+  complain?: Complain;
 };
 
 export type Ticket = {
@@ -64,7 +82,7 @@ export type Ticket = {
     firstName: string;
   };
   ticketPackages?: TicketPckage[];
-  packages?: Workpackage[];
+  packages?: Complain[];
   ticketWorkpackageType?: TicketWorkpackageType;
 };
 
@@ -86,17 +104,27 @@ export type Paging<T> = {
 
 export interface Project {
   id?: number;
-  subject: string;
-  description?: string;
-  type: ProjectType;
-  location?: string;
-  specificationDocument?: string;
-  estimatedCost?: number;
-  tenderOpeningDate?: Date | null;
-  tenderClosingDate?: Date | null;
-  latitude?: number;
-  longitude?: number;
-  status: ProjectStatus;
+  projectId?: string; // Alternative project ID (for API consistency)
+  subject: string; // Project name/title
+  description?: string; // Project description
+  type: ProjectType; // Project type (Road, Building, etc.)
+  city: string; // City/Area name
+  specificationDocument?: string | File | null; // Document file or URL
+  estimatedCost?: number; // Project estimated cost
+  tenderOpeningDate?: Date | null; // Tender opening date
+  tenderClosingDate?: Date | null; // Tender closing date
+  latitude?: number; // Location latitude
+  longitude?: number; // Location longitude
+  status: ProjectStatus; // Project status
+  createdAt?: Date; // Project creation date
+  updatedAt?: Date; // Last update date
+  tenders?: Tender[]; // Related tenders
+  complains?: Complain[]; // Related complaints
+  startDate?: Date | null; // Project start date
+  endDate?: Date | null; // Project end date
+  location?: string; // Project location
+  locationNote?: string | null; // Additional location notes
+  awardedTenderId?: number; // ID of the awarded tender
 }
 
 export type Tender = {
@@ -105,17 +133,26 @@ export type Tender = {
   project?: Project;
   subject: string;
   note?: string;
-  companyId: string;
-  company?: Company;
-  submittedDate?: Date;
+  contractorId: string;
+  contractor?: Contractor;
+  submittedDate: Date;
+  tenderDocument?: string | File | null;
   bidAmount: number;
 };
 
-export type Company = {
-  id: number;
+export type Contractor = {
+  contractorId: number;
   name: string;
   address: string;
   //contactNumber: string;
+};
+
+// Backend API Response wrapper type
+export type ApiResponse<T> = {
+  isSuccess: boolean;
+  message: string;
+  data: T;
+  errors: string[];
 };
 
 export type LightPost = {
@@ -136,5 +173,18 @@ export type ActiveLightPostMarker = {
 
 export type UpdateTicketPayload = {
   ticketId: number;
-  workpackageIds: number[];
+  complainIds: number[];
+};
+
+export type ProjectProgress = {
+  projectProgressId: string;
+  projectId: string;
+  summary?: string;
+  description?: string;
+  progressDate: string;
+  progressPercentage: number;
+  approvedBy?: string;
+  approvedAt?: Date;
+  approvedNote?: string;
+  projectProgressApprovedStatus?: ProjectProgressApprovedStatus;
 };
