@@ -20,6 +20,7 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
                 LicenseNo = "2345",
                 ExpireDate = new LocalDateTime(2027,6,19,14,14),
                 City = "Colombo",
+                Council = "Mahara",
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
                 CreatedBy = "1",
                 IsActive = true
@@ -33,6 +34,7 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
                 LicenseNo = "2345",
                 ExpireDate = new LocalDateTime(2028,6,19,14,14),
                 City = "Galle",
+                Council = "Mahara",
                 CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
                 CreatedBy = "1",
                 IsActive = true

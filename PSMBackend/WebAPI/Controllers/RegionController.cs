@@ -1,6 +1,8 @@
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers
@@ -20,8 +22,15 @@ namespace PSMWebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRegions()
         {
-            var regionList = await _rideRepository.GetRegions();
-            return Ok(regionList); // Returns 200 OK response with the list of work packages
+            try
+            {
+                var regionList = await _rideRepository.GetRegions();
+                return Ok(ApiResponse<object>.Success(regionList, "Regions retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<object>.Failure($"Failed to retrieve regions: {ex.Message}"));
+            }
         }
     }
 }

@@ -24,6 +24,5 @@ public class Complain :BaseEntity
     public string? ClientId { get; set; }
     public Client? Client { get; set; }
     public string ComplainType { get; set; }
-    public List<TicketPackage>? TicketPackages { get; set; }
-    public List<Comment>? Comments { get; set; }
+    public List<TicketComplain>? TicketComplains { get; set; }
 }

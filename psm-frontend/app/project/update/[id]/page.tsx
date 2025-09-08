@@ -1,14 +1,21 @@
 "use client";
 import { useParams } from "next/navigation";
-import { HiClipboardList, HiCurrencyDollar, HiChartPie } from "react-icons/hi";
+import {
+  HiClipboardList,
+  HiCurrencyDollar,
+  HiChartPie,
+  HiUserGroup,
+} from "react-icons/hi";
 import ProjectForm from "../../ProjectForm";
 import TenderListComponent from "../../../components/tender/TenderList";
 import { ProjectProgressList } from "../../../components/project-progress";
+import { CoordinatorList } from "../../../components/coordinator";
 import { useState, useEffect, useCallback } from "react";
 import { getProject } from "../../../api/client/projectActions";
 import { getTendersByProjectIdId } from "../../../api/client/tenderActions";
 import { getProjectProgressByProjectId } from "../../../api/client/projectProgressActions";
-import { Project, Tender, ProjectProgress } from "@/types";
+import { getCoordinatorsByProjectId } from "../../../api/client/cordinatorActions";
+import { Project, Tender, ProjectProgress, Coordinator } from "@/types";
 import { Spinner } from "flowbite-react";
 import toast from "react-hot-toast";
 
@@ -20,6 +27,7 @@ export default function UpdateProject() {
   const [projectData, setProjectData] = useState<Project | null>(null);
   const [tendersData, setTendersData] = useState<Tender[]>([]);
   const [progressData, setProgressData] = useState<ProjectProgress[]>([]);
+  const [coordinatorsData, setCoordinatorsData] = useState<Coordinator[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,10 +40,11 @@ export default function UpdateProject() {
 
     try {
       // Load all data in parallel
-      const [project, tenders, progress] = await Promise.all([
+      const [project, tenders, progress, coordinators] = await Promise.all([
         getProject(id),
         getTendersByProjectIdId(id),
         getProjectProgressByProjectId(id),
+        getCoordinatorsByProjectId(id),
       ]);
 
       if (!project.isSuccess) {
@@ -51,6 +60,7 @@ export default function UpdateProject() {
       setProjectData(project.data);
       setTendersData(tenders.data);
       setProgressData(progress);
+      setCoordinatorsData(coordinators.isSuccess ? coordinators.data : []);
     } catch (err) {
       console.error("Error loading data:", err);
       setError("Failed to load project data");
@@ -81,13 +91,13 @@ export default function UpdateProject() {
     }
   }, [id]);
 
-  const refreshProgress = useCallback(async () => {
+  const refreshCoordinators = useCallback(async () => {
     if (!id) return;
     try {
-      const progress = await getProjectProgressByProjectId(id);
-      setProgressData(progress);
+      const response = await getCoordinatorsByProjectId(id);
+      setCoordinatorsData(response.isSuccess ? response.data : []);
     } catch (err) {
-      console.error("Error refreshing progress:", err);
+      console.error("Error refreshing coordinators:", err);
     }
   }, [id]);
 
@@ -122,6 +132,7 @@ export default function UpdateProject() {
     { id: "details", label: "Project Details", icon: HiClipboardList },
     { id: "tender", label: "Tender", icon: HiCurrencyDollar },
     { id: "progress", label: "Progress", icon: HiChartPie },
+    { id: "coordinators", label: "Coordinators", icon: HiUserGroup },
   ];
 
   const renderTabContent = () => {
@@ -221,10 +232,16 @@ export default function UpdateProject() {
                 Track project milestones and completion status
               </p>
             </div>
-            <ProjectProgressList
+            <ProjectProgressList projectId={id} initialData={progressData} />
+          </div>
+        );
+      case "coordinators":
+        return (
+          <div className="p-4">
+            <CoordinatorList
               projectId={id}
-              initialData={progressData}
-              onDataChange={refreshProgress}
+              initialData={coordinatorsData}
+              onDataChange={refreshCoordinators}
             />
           </div>
         );

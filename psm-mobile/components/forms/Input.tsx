@@ -35,15 +35,13 @@ const FormField = <T extends FieldValues>(props: Props<T>) => {
         mode="flat"
         {...props}
         {...field}
-        type={props.type || "text"}
         placeholder={props.placeholder}
         className={`${props.className}`}
-        color={
-          fieldState.error ? "failure" : !fieldState.isDirty ? "" : "success"
-        }
         onChange={(e) => field.onChange(e.nativeEvent.text)}
       />
-      {fieldState.error && <HelperText>{fieldState.error?.message}</HelperText>}
+      {fieldState.error && (
+        <HelperText type="error">{fieldState.error?.message}</HelperText>
+      )}
     </View>
   );
 };

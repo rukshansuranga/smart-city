@@ -14,7 +14,7 @@ public class ProjectInspectionConfiguration : IEntityTypeConfiguration<ProjectIn
             new ProjectInspection
             {
                 ProjectInspectionId = 1,
-                ProjectInspectorId = 1,
+                ProjectCoordinatorId = 1,
                 Findings = "No major issues found.",
                 Recommendations = "Continue with the current plan.",
                 CreatedAt = new LocalDateTime(2023, 10, 1, 9, 0, 0),
@@ -24,7 +24,7 @@ public class ProjectInspectionConfiguration : IEntityTypeConfiguration<ProjectIn
             new ProjectInspection
             {
                 ProjectInspectionId = 2,
-                ProjectInspectorId = 1,
+                ProjectCoordinatorId = 1,
                 Findings = "Minor issues found.",
                 Recommendations = "Address the minor issues.",
                 CreatedAt = new LocalDateTime(2023, 10, 8, 9, 0, 0),

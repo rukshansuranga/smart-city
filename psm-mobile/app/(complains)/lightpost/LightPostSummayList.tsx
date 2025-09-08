@@ -2,7 +2,7 @@ import { getListPostsByPostNo } from "@/api/lightPostAction";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Badge } from "react-native-paper";
-import { complainMap } from "../../../Constants";
+import { complainMap } from "../../../complainMaps";
 
 export default function LightPostSummaryList({
   postNo,
@@ -19,14 +19,20 @@ export default function LightPostSummaryList({
     async function getComplains() {
       try {
         const data = await getListPostsByPostNo(postNo);
-        setActiveComplainSummaryList(data);
+        if (!data.isSuccess) {
+          console.error("Failed to fetch complain summary:", data.message);
+          setActiveComplainSummaryList([]);
+          return;
+        }
+        setActiveComplainSummaryList(data.data || []);
       } catch (error) {
         console.log("fetch active complains", error.message);
+        setActiveComplainSummaryList([]);
       }
     }
 
     getComplains();
-  }, []);
+  }, [postNo]);
 
   if (activeComplainSummaryList.length == 0) {
     return (
@@ -63,9 +69,7 @@ export default function LightPostSummaryList({
               </View>
               <View>
                 <Badge size={35} style={{ backgroundColor: "#38a3a5" }}>
-                  <Text className="text-2xl text-white font-bold">
-                    {complain.count}
-                  </Text>
+                  {complain.count}
                 </Badge>
               </View>
             </View>

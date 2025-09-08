@@ -21,6 +21,16 @@ async function put(url: string, body: unknown) {
   return handleResponse(response);
 }
 
+async function patch(url: string, body: unknown) {
+  const requestOptions = {
+    method: "PATCH",
+    headers: await getHeaders(),
+    body: JSON.stringify(body),
+  };
+  const response = await fetch(baseUrl + url, requestOptions);
+  return handleResponse(response);
+}
+
 async function post(url: string, body: unknown) {
   const requestOptions = {
     method: "POST",
@@ -95,30 +105,42 @@ async function putFormData(
   return handleResponse(response);
 }
 
+// Generic method to patch FormData
+async function patchFormData(
+  url: string,
+  data: FormData | Record<string, unknown>
+) {
+  const formData = data instanceof FormData ? data : objectToFormData(data);
+
+  const requestOptions = {
+    method: "PATCH",
+    headers: await getFormDataHeaders(),
+    body: formData,
+  };
+  const response = await fetch(baseUrl + url, requestOptions);
+  return handleResponse(response);
+}
+
 async function handleResponse(response: Response) {
   if (response.status === 401) {
     if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
-    return { error: { status: 401, message: "Unauthorized" } };
+    return {
+      isSuccess: false,
+      message: "Unauthorized",
+      data: null,
+      errors: ["Unauthorized access"],
+    };
   }
 
   if (response.status === 404) {
-    return { error: { status: 404, message: "Not Found" } };
-  }
-
-  if (response.status === 400) {
-    const text = await response.text();
-    let data;
-
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch {
-      data = text;
-    }
-
-    console.log("Bad Request:", data);
-    return { error: { status: 400, message: "Bad Request", details: data } };
+    return {
+      isSuccess: false,
+      message: "Not Found",
+      data: null,
+      errors: ["Resource not found"],
+    };
   }
 
   const text = await response.text();
@@ -127,17 +149,40 @@ async function handleResponse(response: Response) {
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
-    data = text;
+    // If parsing fails, treat as error response
+    return {
+      isSuccess: false,
+      message: "Invalid response format",
+      data: null,
+      errors: [text || "Invalid JSON response"],
+    };
   }
 
   if (response.ok) {
-    return data || response.statusText;
+    // For successful responses, return the parsed data as is
+    // (it should already be in ApiResponse format from the backend)
+    return (
+      data || {
+        isSuccess: true,
+        message: "Success",
+        data: null,
+        errors: [],
+      }
+    );
   } else {
-    const error = {
-      status: response.status,
+    // For error responses, try to extract ApiResponse format
+    // If data is already ApiResponse format, return it
+    if (data && typeof data === "object" && "isSuccess" in data) {
+      return data;
+    }
+
+    // Otherwise, wrap in ApiResponse format
+    return {
+      isSuccess: false,
       message: typeof data === "string" ? data : response.statusText,
+      data: null,
+      errors: [typeof data === "string" ? data : response.statusText],
     };
-    return { error };
   }
 }
 
@@ -177,8 +222,10 @@ export const fetchWrapperClient = {
   get,
   post,
   put,
+  patch,
   del,
   postFormData,
   putFormData,
+  patchFormData,
   objectToFormData,
 };

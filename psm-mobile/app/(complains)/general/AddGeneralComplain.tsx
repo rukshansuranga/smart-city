@@ -22,6 +22,11 @@ export default function AddGeneralComplain() {
   const [isPrivate, setIsPrivate] = useState(true);
 
   async function addGeneralComplainHandler() {
+    // 🔍 DEBUG: Add extensive logging
+    console.log("🚀 [DEBUG] Starting addGeneralComplainHandler");
+    console.log("👤 [DEBUG] UserInfo:", userInfo);
+    console.log("📝 [DEBUG] Form values:", { title, description, isPrivate });
+
     try {
       const complain = {
         clientId: userInfo?.sub, // Replace with actual client ID
@@ -31,7 +36,21 @@ export default function AddGeneralComplain() {
         status: WorkpackageStatus.New,
       };
 
-      await addGeneralComplain(complain);
+      console.log("📤 [DEBUG] Complain object to send:", complain);
+
+      const result = await addGeneralComplain(complain);
+
+      console.log("📥 [DEBUG] API Response:", result);
+
+      if (!result.isSuccess) {
+        console.error(
+          "❌ [DEBUG] Failed to add general complain:",
+          result.message
+        );
+        console.error("🔍 [DEBUG] Error details:", result.errors);
+        return;
+      }
+      console.log("✅ [DEBUG] Complain added successfully:", result.data);
 
       router.push({
         pathname: "/(complains)/general/GeneralComplainList",
@@ -41,7 +60,8 @@ export default function AddGeneralComplain() {
         },
       });
     } catch (error) {
-      console.log("fetch active complains", error.message);
+      console.error("Error adding general complain:", error);
+      // Toast error is already shown by fetchWrapper
     }
   }
 

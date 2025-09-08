@@ -46,10 +46,13 @@ public class ComplainRepository : IComplainRepository
 
         return null;
     }
-    public async Task<T> AddComplainAsync<T>(T complain) where T : class
+    public async Task<T> AddComplainAsync<T>(T complain) where T : Complain
     {
         try
         {
+            complain.ClientId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            complain.CreatedBy = complain.ClientId;
+
             _context.Set<T>().Add(complain);
             await _context.SaveChangesAsync();
             return complain;
@@ -60,7 +63,7 @@ public class ComplainRepository : IComplainRepository
         }
 
     }
-    public async Task<T> UpdateComplainAsync<T>(T complain) where T : class
+    public async Task<T> UpdateComplainAsync<T>(T complain) where T : Complain
     {
         try
         {
@@ -88,7 +91,7 @@ public class ComplainRepository : IComplainRepository
 
             var isAdmin = AuthenticationHelper.IsUserInRole(user, "admin");
 
-            var qurery = _context.Complains.Include(t => t.TicketPackages).AsQueryable();
+            var qurery = _context.Complains.Include(t => t.TicketComplains).AsQueryable();
 
             var statusList = new List<int> { (int)ComplainStatus.New, (int)ComplainStatus.InProgress };
             if (!string.IsNullOrEmpty(complainPaging.Status))
@@ -139,7 +142,7 @@ public class ComplainRepository : IComplainRepository
 
         var query = _context.Complains
                         .Where(s => s.IsActive == true)
-                        .Where(s => s.TicketPackages.Any(c => c.Ticket.TicketId == ticketId));
+                        .Where(s => s.TicketComplains.Any(c => c.Ticket.TicketId == ticketId));
                         
         var list = await query.ToListAsync();
 
@@ -148,17 +151,17 @@ public class ComplainRepository : IComplainRepository
 
     public async Task DeleteComplainMappingByTicketId(int ticketId, int ComplainId)
     {
-        var selectedTicketPackage = await _context.TicketPackages
+        var selectedTicketComplain = await _context.TicketComplains
                         .Where(s => s.TicketId == ticketId && s.ComplainId == ComplainId).FirstOrDefaultAsync();
 
-        _context.TicketPackages.Remove(selectedTicketPackage);
+        _context.TicketComplains.Remove(selectedTicketComplain);
         await _context.SaveChangesAsync();
     }
 
     public async Task AddComplainMappingByTicketId(int ticketId, int ComplainId)
     {
-        var newTicketPackaged = new TicketPackage { TicketId = ticketId, ComplainId = ComplainId };
-        _context.TicketPackages.Add(newTicketPackaged);
+        var newTicketComplain = new TicketComplain { TicketId = ticketId, ComplainId = ComplainId };
+        _context.TicketComplains.Add(newTicketComplain);
         await _context.SaveChangesAsync();
     }
 
@@ -168,7 +171,7 @@ public class ComplainRepository : IComplainRepository
     {
         var clientId = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        var query = _context.GeneralComplains.Include(x => x.Client).Include(x => x.Comments).Include(x => x.TicketPackages).ThenInclude(x => x.Ticket)
+        var query = _context.GeneralComplains.Include(x => x.Client).Include(x => x.TicketComplains).ThenInclude(x => x.Ticket)
             .Where(s => s.IsPrivate == request.IsPrivate)
             .Where(s => s.IsActive == true);
 
@@ -189,7 +192,7 @@ public class ComplainRepository : IComplainRepository
 
     public async Task<IEnumerable<LightPostComplainDetail>> GetDetailLightPostComplintsByPostIdAndName(string postNo, string name, string FirstName)
     {
-        var complainsByPostNo = await _context.LightPostComplains.Include(c => c.Client).Include(t => t.TicketPackages)
+        var complainsByPostNo = await _context.LightPostComplains.Include(c => c.Client).Include(t => t.TicketComplains)
             .Where(x => x.IsActive == true && x.LightPostNumber == postNo && x.Subject == name)
             .Select(x => new LightPostComplainDetail
             {
@@ -199,7 +202,7 @@ public class ComplainRepository : IComplainRepository
                 ClientName = x.Client.FirstName,
                 ComplainDate = x.CreatedAt,
                 Status = x.Status.ToString(),
-                TicketList = x.TicketPackages.Select(y => new TicketResponse { Id = y.TicketId, Title = y.Ticket.Subject }).ToList()
+                TicketList = x.TicketComplains.Select(y => new TicketResponse { Id = y.TicketId, Title = y.Ticket.Subject }).ToList()
             })
             .ToListAsync();
 
@@ -290,14 +293,14 @@ public class ComplainRepository : IComplainRepository
 
     public async Task<IEnumerable<ProjectComplain>> GetProjectComplainsByProjectId(int projectId)
     {
-        var complains = _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages)
+        var complains = _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketComplains)
             .Where(x => x.IsActive == true && x.ProjectId == projectId);
         return complains;
     }
 
     public async Task<ProjectComplain> GetProjectComplainByComplainId(int ComplainId)
     {
-        return await _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketPackages)
+        return await _context.ProjectComplains.Include(c => c.Client).Include(t => t.TicketComplains)
             .FirstOrDefaultAsync(x => x.IsActive == true && x.ComplainId == ComplainId);
     }
 

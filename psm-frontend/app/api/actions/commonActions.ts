@@ -1,6 +1,6 @@
 import { fetchWrapper } from "@/lib/fetchWrapper";
-import { Company } from "@/types";
+import { Contractor, ApiResponse } from "@/types";
 
-export async function getCompanies(): Promise<Company[]> {
+export async function getCompanies(): Promise<ApiResponse<Contractor[]>> {
   return fetchWrapper.get(`misc/companies`);
 }

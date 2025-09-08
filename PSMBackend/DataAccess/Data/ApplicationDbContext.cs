@@ -19,7 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<InternalTicket> InternalTickets { get; set; }
     public DbSet<ComplainTicket> ComplainTickets { get; set; }
     public DbSet<ProjectTicket> ProjectTickets { get; set; }
-    public DbSet<TicketPackage> TicketPackages { get; set; }
+    public DbSet<TicketComplain> TicketComplains { get; set; }
     public DbSet<TicketHistory> TicketHistories { get; set; }
     public DbSet<TicketActivity> TicketActivities { get; set; }
 
@@ -43,7 +43,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Contractor> Contractors   { get; set; }
     public DbSet<Project> Projects   { get; set; }
     public DbSet<Tender> Tenders   { get; set; }
-    public DbSet<ProjectInspector> ProjectInspectors { get; set; }
+    public DbSet<ProjectCoordinator> ProjectCoordinators { get; set; }
     public DbSet<ProjectInspection> ProjectInspections { get; set; }
     public DbSet<ProjectProgress> ProjectProgresses { get; set; }
 
@@ -88,7 +88,7 @@ public class ApplicationDbContext : DbContext
         //modelBuilder.ApplyConfiguration(new ComplainConfiguration());
         modelBuilder.ApplyConfiguration(new LightPostComplainConfiguration());
         modelBuilder.ApplyConfiguration(new TicketConfiguration());
-        modelBuilder.ApplyConfiguration(new TicketPackageMappingConfiguration());
+        modelBuilder.ApplyConfiguration(new TicketComplainMappingConfiguration());
         modelBuilder.ApplyConfiguration(new GeneralComplainConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new VehicalConfiguration());
@@ -102,7 +102,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         modelBuilder.ApplyConfiguration(new TenderConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectComplainConfiguration());
-        modelBuilder.ApplyConfiguration(new ProjectInspectorConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectCoordinatorConfiguration());
+        modelBuilder.ApplyConfiguration(new CommentConfiguration());
 
         #endregion
     }

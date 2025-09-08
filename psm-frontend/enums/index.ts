@@ -38,8 +38,32 @@ export enum TicketWorkpackageType {
   ProjectComplain = 2,
 }
 
+export enum ComplainType {
+  General = 0,
+  LightPost = 1,
+  Project = 2,
+}
+
 export enum ProjectProgressApprovedStatus {
   Pending = 0,
   Approved = 1,
   Rejected = 2,
+}
+
+export enum ProjectCoordinatorType {
+  Coordinator = 0,
+  Supporter = 1,
+}
+
+export enum AuthType {
+  Admin = 0,
+  Staff = 1,
+  Contractor = 2,
+  Councillor = 3,
+}
+
+export enum TicketCategory {
+  ProjectTicket = 0,
+  ComplainTicket = 1,
+  InternalTicket = 2,
 }

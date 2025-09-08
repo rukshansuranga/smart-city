@@ -32,3 +32,16 @@ export enum NotificationType {
   Warning,
   Rating,
 }
+
+export enum CommentType {
+  GeneralComplain,
+  LightpostComplain,
+  ProjectComplain,
+  GarbageComplain,
+}
+
+export enum ProjectProgressApprovedStatus {
+  Pending,
+  Approved,
+  Rejected,
+}

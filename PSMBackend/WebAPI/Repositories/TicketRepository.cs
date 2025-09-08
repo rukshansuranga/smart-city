@@ -28,10 +28,10 @@ public class TicketRepository : ITicketRepository
 
             _context.Set<T>().Add(ticket);
 
-        if (typeof(T) == typeof(ComplainTicket) && (ticket as ComplainTicket)?.TicketPackages != null)
+        if (typeof(T) == typeof(ComplainTicket) && (ticket as ComplainTicket)?.TicketComplains != null)
         {
-            var ticketPackages = (ticket as ComplainTicket)?.TicketPackages;
-            foreach (var tp in ticketPackages)
+            var ticketComplains = (ticket as ComplainTicket)?.TicketComplains;
+            foreach (var tp in ticketComplains)
             {
                 var complain = await _context.Complains.FirstOrDefaultAsync(w => w.ComplainId == tp.ComplainId);
                 if (complain != null)
@@ -59,6 +59,9 @@ public class TicketRepository : ITicketRepository
             var userId = user?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
             var isAdmin = AuthenticationHelper.IsUserInRole(user, "admin");
+
+            // var query1 = _context.Set<T>().AsQueryable();
+            // var count1 = await query1.CountAsync();
 
             var query = _context.Set<T>().Include(x => (x as Ticket).User).AsQueryable();
 
@@ -92,7 +95,7 @@ public class TicketRepository : ITicketRepository
         if (typeof(T) == typeof(ComplainTicket))
         {
             var entity = await _context.ComplainTickets
-                 .Include(x => x.TicketPackages).ThenInclude(x => x.Complain)
+                 .Include(x => x.TicketComplains).ThenInclude(x => x.Complain)
                  .Include(x => x.User)
                  .FirstOrDefaultAsync(w => w.TicketId == id && w.IsActive == true);
             return entity as T;
@@ -144,7 +147,7 @@ public class TicketRepository : ITicketRepository
     public async Task<IEnumerable<ComplainTicket>> GetTicketListByComplainIdAsync(int ComplainId)
     {
         var tickets = await _context.ComplainTickets
-            .Where(t => t.TicketPackages.Any(tp => tp.ComplainId == ComplainId))
+            .Where(t => t.TicketComplains.Any(tp => tp.ComplainId == ComplainId))
             .Include(t => t.User)
             .ToListAsync();
 
@@ -196,7 +199,7 @@ public class TicketRepository : ITicketRepository
         
         //change the general complains status to InProgress
         //change the related complains status to Resolved
-        var complains = await _context.TicketPackages
+        var complains = await _context.TicketComplains
             .Where(tp => tp.TicketId == ticketId)
             .Include(tp => tp.Complain)
             .Select(tp => tp.Complain)
@@ -254,25 +257,47 @@ public class TicketRepository : ITicketRepository
         return true;
     }
 
-    public async Task<IEnumerable<T>> GetTicketListByUserIdAsync<T>(string userId) where T : Ticket
+    public async Task<BoardTicket> GetTicketListByUserIdAsync(string userId)
     {
-        if (typeof(T) == typeof(ComplainTicket))
+        try
         {
-            var complainTickets = await _context.ComplainTickets
-                .Where(t => t.UserId == userId)
-                .Include(t => t.TicketPackages).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
-                .ToListAsync();
+            BoardTicket boardTicket = new BoardTicket();
+           
+                var complainTickets = await _context.ComplainTickets
+                    .Where(t => t.UserId == userId)
+                    .Include(t => t.TicketComplains).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
+                    .ToListAsync();
 
-            return complainTickets.Cast<T>();
+                boardTicket.ComplainTickets = complainTickets;
+
+                
+            
+                var projectTickets = await _context.ProjectTickets
+                    .Where(t => t.UserId == userId)
+                    //.Include(t => t.TicketPackages).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
+                    .ToListAsync();
+
+                boardTicket.ProjectTickets = projectTickets;
+
+
+
+                var internalTickets = await _context.InternalTickets
+                    .Where(t => t.UserId == userId)
+                    //.Include(t => t.TicketPackages).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
+                    .ToListAsync();
+
+                boardTicket.InternalTickets = internalTickets;
+
+                
+
+            return boardTicket;
         }
-
-        var tickets = await _context.Tickets
-                                .Where(t => t.UserId == userId)
-                                //.Include(t => t.TicketPackages).ThenInclude(tp => tp.Complain).ThenInclude(c => c.Client)
-                                .Include(t => t.User)
-                                .ToListAsync();
-
-        return tickets.Cast<T>();
+        catch (Exception ex)
+        {
+            throw ex;
+            // Log the exception
+        }
+        
     }
 
     public async Task<bool> ResolvedOnTicketAsync(int ticketId)
@@ -336,7 +361,7 @@ public class TicketRepository : ITicketRepository
 
             _context.TicketActivities.Add(activity);
 
-            var complains = await _context.TicketPackages
+            var complains = await _context.TicketComplains
                         .Where(tp => tp.TicketId == ticketId)
                         .Include(tp => tp.Complain)
                         .Select(tp => tp.Complain)
@@ -393,7 +418,7 @@ public class TicketRepository : ITicketRepository
     {
         try
         {
-            var ticket = await _context.ComplainTickets.Include(x => x.TicketPackages).FirstOrDefaultAsync(t => t.TicketId == ticketId);
+            var ticket = await _context.ComplainTickets.Include(x => x.TicketComplains).FirstOrDefaultAsync(t => t.TicketId == ticketId);
             if (ticket == null) throw new KeyNotFoundException("Ticket not found");
 
         var complains = await _context.Complains.Where(w => ComplainIds.Contains(w.ComplainId)).ToListAsync();
@@ -401,12 +426,12 @@ public class TicketRepository : ITicketRepository
 
         foreach (var complain in complains)
         {
-            if(ticket.TicketPackages.Any(tp => tp.ComplainId == complain.ComplainId))
+            if(ticket.TicketComplains.Any(tp => tp.ComplainId == complain.ComplainId))
             {
                 continue; // Skip if already added
             }
 
-            ticket.TicketPackages.Add(new TicketPackage
+            ticket.TicketComplains.Add(new TicketComplain
             {
                 TicketId = ticketId,
                 ComplainId = complain.ComplainId
@@ -426,19 +451,19 @@ public class TicketRepository : ITicketRepository
 
     public async Task RemoveComplainsAsync(int ticketId, IEnumerable<int> ComplainIds)
     {
-        var ticket = await _context.ComplainTickets.Include(t => t.TicketPackages).FirstOrDefaultAsync(t => t.TicketId == ticketId);
+        var ticket = await _context.ComplainTickets.Include(t => t.TicketComplains).FirstOrDefaultAsync(t => t.TicketId == ticketId);
         if (ticket == null) throw new KeyNotFoundException("Ticket not found");
 
-        var complainsToRemove =  ticket.TicketPackages.Where(tp => ComplainIds.Contains(tp.ComplainId)).ToList();
+        var complainsToRemove =  ticket.TicketComplains.Where(tp => ComplainIds.Contains(tp.ComplainId)).ToList();
         if (complainsToRemove.Count == 0) throw new KeyNotFoundException("No complains found");
 
         foreach (var tp in complainsToRemove)
         {
-            ticket.TicketPackages.Remove(tp);
+            ticket.TicketComplains.Remove(tp);
             var complain = _context.Complains.Find(tp.ComplainId);
             if (complain != null)
             {
-                if(_context.TicketPackages.Where(x => x.ComplainId == complain.ComplainId).Count() == 0)
+                if(_context.TicketComplains.Where(x => x.ComplainId == complain.ComplainId).Count() == 0)
                 {
                     complain.Status = ComplainStatus.New; // or whatever status you want to set
                 }

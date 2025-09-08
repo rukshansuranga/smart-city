@@ -19,9 +19,18 @@ export default function LightPostDetailList({
           postNo,
           name
         );
-        setActiveComplainList(data);
+        if (!data.isSuccess) {
+          console.error(
+            "Failed to fetch specific complain details:",
+            data.message
+          );
+          setActiveComplainList([]);
+          return;
+        }
+        setActiveComplainList(data.data || []);
       } catch (error) {
         console.log("fetch active complains", error.message);
+        setActiveComplainList([]);
       }
     }
 

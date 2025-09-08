@@ -1,6 +1,8 @@
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.Repositories;
 
 namespace PSMWebAPI.Controllers
@@ -20,8 +22,15 @@ namespace PSMWebAPI.Controllers
         [HttpGet("{regionNo}")]
         public async Task<IActionResult> GetSheduleByRegion(string regionNo)
         {
-            var shedule = await _garbageRepository.GetGCSheduleByRegion(regionNo);
-            return Ok(shedule); // Returns 200 OK response with the list of work packages
+            try
+            {
+                var shedule = await _garbageRepository.GetGCSheduleByRegion(regionNo);
+                return Ok(ApiResponse<object>.Success(shedule, "Schedule retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<object>.Failure($"Failed to retrieve schedule: {ex.Message}"));
+            }
         }
     }
 }

@@ -1,13 +1,13 @@
-import { addComment } from "@/api/commentAction";
 import {
   deleteGeneralComplain,
   GetGeneralComplainPaging,
 } from "@/api/complainAction";
-import { useAuthStore } from "@/stores/authStore";
-import { WorkpackageStatus } from "@/types";
+import { CommentModal } from "@/components/CommentModal";
+import { EntityType } from "@/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, FlatList, Modal, ScrollView, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 import {
   ActivityIndicator,
@@ -16,7 +16,6 @@ import {
   Card,
   IconButton,
   MD2Colors,
-  TextInput,
 } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,7 +23,6 @@ const pageSize = 10;
 
 export default function GeneralComplainList() {
   const router = useRouter();
-  const { userInfo } = useAuthStore();
   const params = useLocalSearchParams();
 
   const [isPrivate, setIsPrivate] = useState(() => {
@@ -37,38 +35,43 @@ export default function GeneralComplainList() {
   console.log("isPrivate", isPrivate, params.isPrivate);
 
   const [selectedGeneralComplain, setSelectedGeneralComplain] = useState(null);
-
   const [data, setData] = useState([]);
-  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true); // To track if there's more data to load
-
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [comment, setComment] = useState("");
-
   useEffect(() => {
-    if (params?.isPrivate) {
+    if (params?.isPrivate !== undefined) {
       fetchData(params.isPrivate === "true");
     } else {
       fetchData();
     }
-  }, [params?.random]);
+  }, [params?.random, params?.isPrivate]);
 
   // Fetch data when modal becomes visible
   useEffect(() => {
     if (modalVisible) {
       fetchData(isPrivate);
     }
-  }, [modalVisible]);
+  }, [modalVisible, isPrivate]);
 
   async function fetchData(isPrivate = false) {
     setIsLoading(true);
     try {
       const res = await GetGeneralComplainPaging(1, isPrivate, pageSize);
-      setData(res);
-      //setIsLoading(false);
+      if (!res.isSuccess) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: `Failed to fetch general complains: ${res.message}`,
+        });
+        setData([]);
+        return;
+      }
+      setData(res.data || []);
     } catch (error) {
+      console.error("Error fetching general complains:", error);
+      setData([]);
+      // Toast error is already shown by fetchWrapper
     } finally {
       setIsLoading(false);
     }
@@ -91,40 +94,44 @@ export default function GeneralComplainList() {
     setSelectedGeneralComplain(item);
   }
 
-  async function addCommentHandler() {
-    try {
-      const newComment = {
-        complainId: selectedGeneralComplain?.complainId,
-        clientId: userInfo.sub, // Replace with actual client ID
-        text: comment,
-        isPrivate: isPrivate,
-        type: "GeneralComplain",
-      };
-
-      console.log("newComment", newComment);
-
-      await addComment(newComment);
-      fetchData(isPrivate);
-      setComment("");
-
-      setModalVisible(!modalVisible);
-    } catch (error) {
-      console.log("fetch active complains", error.message);
-    }
+  function modalCloseHandler() {
+    console.log("modal closed");
+    setModalVisible(false);
   }
+
+  // async function addCommentHandler(comment) {
+  //   console.log("Add comment", comment);
+  //   await addComment(comment);
+  // }
 
   async function deletePrivateComplainHandler(item) {
     try {
-      await deleteGeneralComplain(item.complainId);
+      const deleteResult = await deleteGeneralComplain(item.complainId);
+      if (!deleteResult.isSuccess) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: `Failed to delete complain: ${deleteResult.message}`,
+        });
+        return;
+      }
+      console.log("Complain deleted successfully");
 
-      const newData = await GetGeneralComplainPaging(page, isPrivate, pageSize);
+      const newData = await GetGeneralComplainPaging(1, isPrivate, pageSize);
+      if (!newData.isSuccess) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: `Failed to fetch updated complains: ${newData.message}`,
+        });
+        return;
+      }
+      setData(newData.data || []);
 
-      setData(newData);
-
-      console.log("res general complain", newData);
+      console.log("res general complain", newData.data);
     } catch (error) {
-      console.log("fetch active complains", error.message);
-    } finally {
+      console.error("Error deleting complain:", error);
+      // Toast error is already shown by fetchWrapper
     }
   }
 
@@ -291,144 +298,13 @@ export default function GeneralComplainList() {
             </View>
           </View>
         </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
+        <CommentModal
           visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-        >
-          {selectedGeneralComplain ? (
-            <View className="flex-1 justify-center items-center bg-[#57cc99]/80">
-              <View className="w-4/5 p-4 bg-[#f6fff8] rounded-2xl items-center elevation-sm gap-4 relative">
-                <Text className="font-bold text-2xl self-start text-[#22577a]">
-                  Add Comment
-                </Text>
-                <Card className="flex w-full gap-2 px-2 py-2 mt-12 bg-[#57cc99]">
-                  <View>
-                    <Text className="font-semibold text-xl text-[#22577a]">
-                      Title
-                    </Text>
-                    <Text className="text-[#22577a]">
-                      {selectedGeneralComplain.subject}
-                    </Text>
-                  </View>
-                  {selectedGeneralComplain.detail ? (
-                    <View>
-                      <Text className="font-semibold text-xl text-[#22577a]">
-                        Description
-                      </Text>
-                      <Text className="text-[#22577a]">
-                        {selectedGeneralComplain.detail}
-                      </Text>
-                    </View>
-                  ) : null}
-                  <View className="flex-row justify-between">
-                    <View>
-                      <Text className="font-semibold text-xl text-[#22577a]">
-                        Created By
-                      </Text>
-                      <Text className="text-[#22577a]">
-                        {selectedGeneralComplain.client.firstName}
-                      </Text>
-                    </View>
-                    <View className="flex items-center">
-                      <Text className="font-semibold text-xl text-[#22577a]">
-                        Status
-                      </Text>
-                      <Text className="text-[#22577a]">
-                        {WorkpackageStatus[selectedGeneralComplain.status]}
-                      </Text>
-                    </View>
-                    <View className="flex items-center">
-                      <Text className="font-semibold text-xl text-[#22577a]">
-                        Created Date
-                      </Text>
-                      <Text className="text-[#22577a]">
-                        {new Date(selectedGeneralComplain.createdAt)
-                          .toISOString()
-                          .slice(0, 10)}
-                      </Text>
-                    </View>
-                  </View>
-                </Card>
-                <View
-                  className={`w-full mt-2 mb-2 ${
-                    selectedGeneralComplain?.comments?.length > 0
-                      ? "max-h-96"
-                      : ""
-                  }`}
-                >
-                  <ScrollView contentContainerStyle={{ gap: 4 }}>
-                    {selectedGeneralComplain?.comments.length > 0 ? (
-                      selectedGeneralComplain.comments.map((comment) => (
-                        <Card key={comment.commentId} className="bg-[#c7f9cc]">
-                          <View className="p-2">
-                            <Text className="text-[#22577a]">
-                              {comment.text}
-                            </Text>
-                            <View className="flex-row justify-end">
-                              <Text className="font-semibold text-xl text-[#22577a]">
-                                {comment?.client?.name}
-                              </Text>
-                            </View>
-                          </View>
-                        </Card>
-                      ))
-                    ) : (
-                      <View className="items-center justify-center py-4">
-                        <Text className="text-[#22577a]">No comments yet.</Text>
-                      </View>
-                    )}
-                  </ScrollView>
-                </View>
-                <Card className="w-full pb-2 px-2 bg-[#57cc99]">
-                  <View className="w-full ">
-                    <Text className="font-semibold text-xl text-[#22577a]">
-                      Comment
-                    </Text>
-                    <TextInput
-                      value={comment}
-                      multiline
-                      onChangeText={setComment}
-                      style={{
-                        color: "#22577a",
-                        backgroundColor: "#f6fff8",
-                        borderRadius: 8,
-                        borderColor: "#57cc99",
-                        borderWidth: 2,
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        fontWeight: "bold",
-                      }}
-                    />
-                  </View>
-                  <Button
-                    className="self-end mt-2"
-                    icon="plus"
-                    mode="contained"
-                    style={{ backgroundColor: "#38a3a5" }}
-                    labelStyle={{ color: "#fff", fontWeight: "bold" }}
-                    onPress={addCommentHandler}
-                  >
-                    Add Comment
-                  </Button>
-                </Card>
-                <View className="absolute top-1 right-2 z-10">
-                  <IconButton
-                    icon="close"
-                    className="bg-[#57cc99]"
-                    size={18}
-                    mode="contained"
-                    onPress={() => setModalVisible(false)}
-                  />
-                </View>
-              </View>
-            </View>
-          ) : null}
-        </Modal>
+          onClose={() => setModalVisible(false)}
+          entityId={selectedGeneralComplain?.complainId?.toString() || ""}
+          entityType={EntityType.GeneralComplain}
+          isPrivate={isPrivate}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );

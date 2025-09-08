@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { Image, Text, View } from "react-native";
 import { Badge, IconButton } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 // Minimal custom header component
 
 function MinimalHeader({
@@ -29,8 +30,6 @@ function MinimalHeader({
       : undefined) ||
     (route && route.name ? route.name : "");
   const router = useRouter();
-
-  console.log("notificationCount:", notificationCount);
 
   return (
     <View className="flex-row items-center justify-between bg-[#38a3a5] px-4 py-2 shadow-md rounded-b-xl">
@@ -136,8 +135,22 @@ export default function RootLayout() {
 
   async function fetchUnreadNotificationCount() {
     console.log("Fetching unread notification count...");
-    const count = await getUnreadNotificationCount(userInfo.sub);
-    updateNotificationCount(count);
+    try {
+      const count = await getUnreadNotificationCount(userInfo.sub);
+      if (!count.isSuccess) {
+        console.error(
+          "Failed to fetch unread notification count:",
+          count.message
+        );
+        updateNotificationCount(0);
+        return;
+      }
+      updateNotificationCount(count.data || 0);
+    } catch (error) {
+      console.error("Error fetching unread notification count:", error);
+      updateNotificationCount(0);
+      // Toast error is already shown by fetchWrapper
+    }
   }
 
   //console.log("auth store1:", userInfo, accessToken);
@@ -174,8 +187,10 @@ export default function RootLayout() {
             <Stack.Screen name="(complains)" options={{ title: "Complains" }} />
             <Stack.Screen name="(garbage)" options={{ title: "Garbage" }} />
             <Stack.Screen name="(projects)" options={{ title: "Projects" }} />
+            <Stack.Screen name="editUser" options={{ title: "Edit User" }} />
           </Stack.Protected>
         </Stack>
+        <Toast />
       </SafeAreaView>
     </SafeAreaProvider>
   );

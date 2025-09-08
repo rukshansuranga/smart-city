@@ -1,6 +1,9 @@
 import { fetchWrapper } from "@/lib/fetchWrapper";
+import { ApiResponse, Notification } from "@/types";
 
-export async function readNotification(notificationId: number): Promise<void> {
+export async function readNotification(
+  notificationId: number
+): Promise<ApiResponse<void>> {
   console.log("Reading notification:", notificationId);
   return fetchWrapper.get(`notification/read/${notificationId}`);
 }
@@ -11,21 +14,18 @@ export async function addRating(rating: {
   note: string;
   clientId: string;
   notificationId: number;
-}): Promise<void> {
+}): Promise<ApiResponse<void>> {
   return fetchWrapper.post("notification/rating", rating);
 }
 
 export async function getNotifications(
   clientId: number
-): Promise<Notification[]> {
+): Promise<ApiResponse<Notification[]>> {
   return fetchWrapper.get(`notification/client/${clientId}`);
 }
 
 export async function getUnreadNotificationCount(
   clientId: number
-): Promise<number> {
-  const response = await fetchWrapper.get(
-    `notification/unread/count/${clientId}`
-  );
-  return response || 0;
+): Promise<ApiResponse<number>> {
+  return fetchWrapper.get(`notification/unread/count/${clientId}`);
 }

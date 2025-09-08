@@ -5,7 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
@@ -21,6 +27,65 @@ const schema = z.object({
     .trim()
     .regex(/^\d{10}$/, "Mobile number must be 10 digits")
     .optional(),
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#c7f9cc", // Light mint background
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 20,
+  },
+  header: {
+    backgroundColor: "#22577a", // Dark blue-green
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#c7f9cc",
+    textAlign: "center",
+  },
+  formContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: "#80ed99",
+  },
+  inputGroup: {
+    marginBottom: 15,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+  submitButton: {
+    backgroundColor: "#38a3a5", // Teal
+    borderRadius: 12,
+    paddingVertical: 4,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
 });
 
 export default function EditUser() {
@@ -156,61 +221,90 @@ export default function EditUser() {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <Input
-          label="User Name"
-          type="text"
-          placeholder="Enter User Name"
-          name="username"
-          control={control}
-        />
-        <Input
-          label="Email"
-          type="text"
-          placeholder="Enter Email"
-          name="email"
-          control={control}
-        />
-        <Input
-          label="First Name"
-          type="text"
-          placeholder="Enter First Name"
-          name="firstName"
-          control={control}
-        />
-        <Input
-          label="Last Name"
-          type="text"
-          placeholder="Enter Last Name"
-          name="lastName"
-          control={control}
-        />
-        <Input
-          label="Councilor Name"
-          type="text"
-          placeholder="Enter Councilor Name"
-          name="council"
-          control={control}
-        />
-        <Input
-          label="Mobile Number"
-          type="text"
-          placeholder="Enter Mobile Number"
-          name="mobile"
-          control={control}
-        />
-
-        <Button
-          className="mt-4"
-          mode="contained"
-          onPress={handleSubmit(addUser)}
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
         >
-          Add User
-        </Button>
+          {/* Form Section */}
+          <View style={styles.formContainer}>
+            <View style={styles.inputGroup}>
+              <Input
+                label="User Name"
+                type="text"
+                placeholder="Enter User Name"
+                name="username"
+                control={control}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Input
+                label="Email"
+                type="text"
+                placeholder="Enter Email"
+                name="email"
+                control={control}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Input
+                label="First Name"
+                type="text"
+                placeholder="Enter First Name"
+                name="firstName"
+                control={control}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Input
+                label="Last Name"
+                type="text"
+                placeholder="Enter Last Name"
+                name="lastName"
+                control={control}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Input
+                label="Councilor Name"
+                type="text"
+                placeholder="Enter Councilor Name"
+                name="council"
+                control={control}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Input
+                label="Mobile Number"
+                type="text"
+                placeholder="Enter Mobile Number"
+                name="mobile"
+                control={control}
+              />
+            </View>
+          </View>
+
+          {/* Button Section */}
+          <View style={styles.buttonContainer}>
+            <Button
+              mode="contained"
+              onPress={handleSubmit(addUser)}
+              style={styles.submitButton}
+              labelStyle={styles.buttonLabel}
+            >
+              Update Profile
+            </Button>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

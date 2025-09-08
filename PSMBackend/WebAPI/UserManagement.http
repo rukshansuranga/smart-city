@@ -1,0 +1,111 @@
+### Variables
+@baseUrl = http://localhost:5000
+@keycloak_url = https://smartcity-identity-ecesd5fya0buajfs.southeastasia-01.azurewebsites.net
+@keycloak_realm = smartcity
+
+# Client Credentials Configuration (Service Account)
+@service_client_id = smartcity-test
+@service_client_secret = Sy7SFs54eJR2SsZbukkeyvcveUkXntYX
+
+### Get Bearer Token (Client Credentials Flow)
+# @name getToken
+POST {{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id={{service_client_id}}&client_secret={{service_client_secret}}
+
+###
+
+# Extract token from response
+@access_token = {{getToken.response.body.access_token}}
+Authorization: Bearer {{access_token}}
+
+### Create New User (Replace {{access_token}} with actual token from above request)
+POST {{baseUrl}}/api/User
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "userId": "test.user.001",
+    "mobile": "+94771234567",
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "test.user@smartcity.lk",
+    "addressLine1": "123 Main Street",
+    "addressLine2": "Apartment 4B",
+    "city": "Colombo",
+    "designation": "Municipal Officer",
+    "authType": "Admin",
+    "council": "Mahara",
+    "password": "TempPassword123!"
+}
+
+### Create User Without Password (Keycloak will generate one)
+POST {{baseUrl}}/api/User  
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "userId": "test.user.002",
+    "mobile": "+94777654321",
+    "firstName": "Another",
+    "lastName": "TestUser", 
+    "email": "another.test@smartcity.lk",
+    "addressLine1": "456 Second Street",
+    "city": "Kandy",
+    "council": "Gampaha"
+}
+
+### Create User for Biyagama Council
+POST {{baseUrl}}/api/User  
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "userId": "test.user.003",
+    "mobile": "+94773334455",
+    "firstName": "Biyagama",
+    "lastName": "TestUser", 
+    "email": "biyagama.test@smartcity.lk",
+    "addressLine1": "789 Third Avenue",
+    "city": "Biyagama",
+    "council": "Biyagama"
+}
+
+### Test Validation - Missing Required Fields (Should fail)
+POST {{baseUrl}}/api/User
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "mobile": "+94777777777",
+    "addressLine1": "Test Address"
+}
+
+### Test Validation - Invalid Council (Should fail)
+POST {{baseUrl}}/api/User
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "userId": "test.user.004",
+    "mobile": "+94778888888",
+    "firstName": "Invalid",
+    "lastName": "Council",
+    "email": "invalid.council@smartcity.lk",
+    "council": "InvalidCouncil"
+}
+
+### Test Validation - Invalid Email Format (Should fail)  
+POST {{baseUrl}}/api/User
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+    "userId": "test.user.005",
+    "mobile": "+94779999999",
+    "firstName": "Invalid",
+    "lastName": "Email",
+    "email": "invalid-email-format",
+    "council": "Mahara"
+}

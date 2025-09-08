@@ -53,7 +53,7 @@ export default function WorkpackageList({
 
       console.log(45666, ticketWorkpackageType);
 
-      const result = await getWorkpackagePaging({
+      const response = await getWorkpackagePaging({
         status: statusList.join(","),
         pageSize: itemsPerPage.toString(),
         pageIndex: pageIndex.toString(),
@@ -61,9 +61,25 @@ export default function WorkpackageList({
         ticketWorkpackageType: TicketWorkpackageType[ticketWorkpackageType],
       });
 
-      setData(result);
+      if (response.isSuccess && response.data) {
+        setData(response.data);
+      } else {
+        console.error("Error fetching complain data:", response.message);
+        setData({
+          records: [],
+          totalRecords: 0,
+          currentPage: 1,
+          pageSize: itemsPerPage,
+        });
+      }
     } catch (error) {
       console.error("Error fetching complain data:", error);
+      setData({
+        records: [],
+        totalRecords: 0,
+        currentPage: 1,
+        pageSize: itemsPerPage,
+      });
     } finally {
       setLoading(false);
     }

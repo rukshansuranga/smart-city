@@ -1,5 +1,7 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.DTOs.Request;
 using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
@@ -21,10 +23,17 @@ namespace PSMWebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRideByRegionAndDate([FromQuery] GarbageTrackingRequest  request)
+        public async Task<IActionResult> GetRideByRegionAndDate([FromQuery] GarbageTrackingRequest request)
         {
-            var currentRide = await _routeRepository.GetLatestRoute(request.RegionNo, request.Date?? PSMDateTime.Now.Date);
-            return Ok(currentRide); // Returns 200 OK response with the list of work packages
+            try
+            {
+                var currentRide = await _routeRepository.GetLatestRoute(request.RegionNo, request.Date ?? PSMDateTime.Now.Date);
+                return Ok(ApiResponse<object>.Success(currentRide, "Route retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<object>.Failure($"Failed to retrieve route: {ex.Message}"));
+            }
         }
     }
 }

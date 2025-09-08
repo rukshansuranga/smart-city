@@ -13,8 +13,8 @@ public interface IComplainRepository
 {
     Task<PageResponse<Complain>> GetComplains(ComplainPaging complainPaging);
     Task<T> GetByIdAsync<T>(int id) where T : class;
-    Task<T> AddComplainAsync<T>(T complain) where T : class;
-    Task<T> UpdateComplainAsync<T>(T complain) where T : class;
+    Task<T> AddComplainAsync<T>(T complain) where T : Complain;
+    Task<T> UpdateComplainAsync<T>(T complain) where T : Complain;
     Task<IEnumerable<Complain>> GetComplainsByTicketId(int ticketId);
     Task DeleteComplainMappingByTicketId(int ticketId, int ComplainId);
     Task AddComplainMappingByTicketId(int ticketId, int ComplainId);

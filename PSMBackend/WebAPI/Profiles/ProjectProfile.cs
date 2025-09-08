@@ -27,5 +27,27 @@ public class ProjectProfile : Profile
             .ForMember(dest => dest.Project, opt => opt.Ignore()) // Navigation property
             .ForMember(dest => dest.ApprovedByUser, opt => opt.Ignore()) // Navigation property
             .ReverseMap();
+
+        // ProjectCoordinator mappings
+        CreateMap<ProjectCoordinatorPostRequest, ProjectCoordinator>()
+            .ForMember(dest => dest.ProjectCoordinatorId, opt => opt.Ignore()) // Auto-generated
+            .ForMember(dest => dest.CoordinatorId, opt => opt.MapFrom(src => src.CoordinatorId)) // Map from request
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.Project, opt => opt.Ignore()) // Navigation property
+            .ForMember(dest => dest.Coordinator, opt => opt.Ignore()); // Navigation property
+
+        CreateMap<ProjectCoordinatorUpdateRequest, ProjectCoordinator>()
+            .ForMember(dest => dest.CoordinatorId, opt => opt.MapFrom(src => src.CoordinatorId)) // Map from request
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Don't update
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Don't update
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore()) // Don't update in normal update
+            .ForMember(dest => dest.Project, opt => opt.Ignore()) // Navigation property
+            .ForMember(dest => dest.Coordinator, opt => opt.Ignore()); // Navigation property
     }
 }

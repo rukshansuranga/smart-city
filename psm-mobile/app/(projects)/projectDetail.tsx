@@ -2,6 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Card, Text } from "react-native-paper";
+import { getProjectDetails } from "../../api/projectAction";
 
 export default function ProjectDetail() {
   const { projectId } = useLocalSearchParams();
@@ -16,14 +17,23 @@ export default function ProjectDetail() {
 
   async function fetchProjectDetail(id) {
     try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/project/${id}`
-      );
-      const data = await response.json();
+      const response = await getProjectDetails(id);
 
-      setProject(data);
+      // Handle new ApiResponse structure
+
+      if (!response.isSuccess) {
+        console.error("Fetching project detail failed:", response.message);
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach((error) => console.error(error));
+        }
+        setProject(null);
+        return;
+      }
+      // Use the data property for successful response
+      setProject(response.data);
     } catch (error) {
-    } finally {
+      console.error("Error fetching project detail:", error);
+      setProject(null);
     }
   }
 

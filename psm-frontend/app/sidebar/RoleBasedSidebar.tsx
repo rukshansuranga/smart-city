@@ -118,7 +118,12 @@ export function RoleBasedSidebar({ session }: RoleBasedSidebarProps) {
     // If item has sub-items, render as collapsible
     if (item.subItems && item.subItems.length > 0) {
       return (
-        <SidebarCollapse key={item.key} icon={IconComponent} label={item.label}>
+        <SidebarCollapse
+          key={item.key}
+          icon={IconComponent}
+          label={item.label}
+          className="hover:bg-[#E9C46A]/20 transition-all duration-200 rounded-lg mb-1 text-[#264653]"
+        >
           {item.subItems.map(
             (
               subItem: { label: string; href: string; icon: string },
@@ -130,8 +135,11 @@ export function RoleBasedSidebar({ session }: RoleBasedSidebarProps) {
                   key={`${item.key}-${index}`}
                   href={subItem.href}
                   icon={SubIconComponent}
+                  className="text-[#264653] hover:bg-[#F4A261]/20 hover:text-[#264653] transition-all duration-200 rounded-lg ml-4"
                 >
-                  {subItem.label}
+                  <span className="text-[#264653] font-medium">
+                    {subItem.label}
+                  </span>
                 </SidebarItem>
               );
             }
@@ -146,9 +154,9 @@ export function RoleBasedSidebar({ session }: RoleBasedSidebarProps) {
         key={item.key}
         href={item.href}
         icon={IconComponent}
-        labelColor="dark"
+        className="text-[#264653] hover:bg-[#E9C46A]/20 hover:text-[#264653] transition-all duration-200 rounded-lg mb-1"
       >
-        {item.label}
+        <span className="text-[#264653] font-medium">{item.label}</span>
       </SidebarItem>
     );
   };
@@ -156,11 +164,25 @@ export function RoleBasedSidebar({ session }: RoleBasedSidebarProps) {
   // Don't render sidebar if no authorized items
   if (authorizedNavItems.length === 0) {
     return (
-      <Sidebar aria-label="No access sidebar" className="w-52">
+      <Sidebar
+        aria-label="No access sidebar"
+        className="w-52 bg-white border-r-4 border-[#E76F51] shadow-lg"
+        theme={{
+          root: {
+            base: "h-full bg-white",
+            inner:
+              "h-full overflow-y-auto overflow-x-hidden rounded bg-white px-3 py-4",
+          },
+        }}
+      >
         <SidebarItems>
           <SidebarItemGroup>
-            <SidebarItem href="#" icon={DefaultIcon} labelColor="dark">
-              No Access
+            <SidebarItem
+              href="#"
+              icon={DefaultIcon}
+              className="text-[#E76F51] hover:bg-[#E76F51]/20 transition-all duration-200 rounded-lg"
+            >
+              <span className="text-[#E76F51] font-medium">No Access</span>
             </SidebarItem>
           </SidebarItemGroup>
         </SidebarItems>
@@ -169,7 +191,31 @@ export function RoleBasedSidebar({ session }: RoleBasedSidebarProps) {
   }
 
   return (
-    <Sidebar aria-label="Role-based sidebar" className="w-52">
+    <Sidebar
+      aria-label="Role-based sidebar"
+      className="w-52 bg-white border-r-4 border-[#2A9D8F] shadow-lg"
+      theme={{
+        root: {
+          base: "h-full bg-white",
+          inner:
+            "h-full overflow-y-auto overflow-x-hidden rounded bg-white px-3 py-4",
+        },
+        item: {
+          base: "flex items-center justify-center rounded-lg p-2 text-base font-medium text-[#264653] hover:bg-[#E9C46A]/20 hover:text-[#264653] transition-all duration-200",
+          active: "bg-[#2A9D8F] text-white hover:bg-[#2A9D8F] hover:text-white",
+        },
+        collapse: {
+          button:
+            "group flex w-full items-center rounded-lg p-2 text-base font-medium text-[#264653] transition duration-75 hover:bg-[#E9C46A]/20",
+          icon: {
+            base: "h-6 w-6 text-[#264653] transition duration-75 group-hover:text-[#264653]",
+          },
+          label: {
+            base: "ml-3 flex-1 whitespace-nowrap text-left text-[#264653] group-hover:text-[#264653]",
+          },
+        },
+      }}
+    >
       <SidebarItems>
         <SidebarItemGroup>
           {authorizedNavItems.map(renderNavigationItem)}

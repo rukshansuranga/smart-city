@@ -23,7 +23,13 @@ export function ProjectProgressTab({ projectId }: { projectId: string }) {
     try {
       setLoading(true);
       const progress = await getProjectProgressByProjectId(projectId);
-      setProgressList(progress);
+
+      if (!progress.isSuccess) {
+        console.error("Error fetching project progress:", progress.message);
+        setProgressList([]);
+      }
+
+      setProgressList(progress.data || []);
     } catch (error) {
       console.error("Error fetching project progress:", error);
     } finally {

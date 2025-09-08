@@ -2,35 +2,60 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
+import { addProjectComplain } from "../../../api/complainAction";
+import { useAuthStore } from "../../../stores/authStore";
 
 export default function ComplainAddModal({ project, closeModel }) {
   const router = useRouter();
 
   const [complainText, setComplainText] = useState("");
   const [description, setDescription] = useState("");
+  const { userInfo } = useAuthStore();
 
   async function addComplainHandler() {
     try {
-      await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/complain/projectcomplain`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            subject: complainText,
-            detail: description,
-            clientId: 1,
-            projectId: project.id,
-          }),
+      // const res = await fetch(
+      //   `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/complain/projectcomplain`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       Accept: "application/json",
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       subject: complainText,
+      //       detail: description,
+      //       clientId: 1,
+      //       projectId: project.id,
+      //     }),
+      //   }
+      // );
+
+      const complain = {
+        subject: complainText,
+        detail: description,
+        clientId: userInfo?.sub,
+        projectId: project.id,
+      };
+
+      console.log("Submitting complain:", complain);
+
+      const response = await addProjectComplain(complain);
+
+      // Handle new ApiResponse structure
+
+      if (!response.isSuccess) {
+        console.error("Adding complain failed:", response.message);
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach((error) => console.error(error));
         }
-      );
+        return;
+      }
+      console.log("Complain added successfully:", response.data);
 
       closeModel(false);
     } catch (error) {
-      console.log("fetch active complains", error?.message);
+      console.error("Error adding complain:", error);
     }
   }
   return (

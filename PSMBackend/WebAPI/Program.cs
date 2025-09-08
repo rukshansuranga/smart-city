@@ -64,8 +64,15 @@ builder.Services.AddScoped<ITicketActivityRepository, TicketActivityRepository>(
 builder.Services.Configure<KeycloakClientCredentialsOptions>(
     builder.Configuration.GetSection("keycloak:ClientCredentials"));
 
+// Configure Keycloak Admin Token
+builder.Services.Configure<KeycloakAdminTokenOptions>(
+    builder.Configuration.GetSection("keycloak:AdminToken"));
+
 // Register Keycloak Token Service
 builder.Services.AddHttpClient<IKeycloakTokenService, KeycloakTokenService>();
+
+// Register Keycloak User Service
+builder.Services.AddHttpClient<IKeycloakUserService, KeycloakUserService>();
 
 // builder.Services.AddHostedService<RideSimulationService>();
 builder.Services.AddAuthorization(options =>

@@ -18,7 +18,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 LastName = "User",
                 Mobile = "0777582696",
                 Email = "ajith@example.com",
-                City = "Colombo"
+                City = "Colombo",
+                Council = "Mahara"
             },
             new User
             {
@@ -27,7 +28,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 LastName = "Perera",
                 Mobile = "0147894562",
                 Email = "kumara@example.com",
-                City = "Galle"
+                City = "Galle",
+                Council = "Mahara"
             },
             new User
             {
@@ -36,7 +38,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 LastName = "Fernando",
                 Mobile = "0117654321",
                 Email = "upul@example.com",
-                City = "Kandy"
+                City = "Kandy",
+                Council = "Mahara"
             },
             new User
             {
@@ -45,7 +48,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 LastName = "Fernando",
                 Mobile = "0117654321",
                 Email = "kamal@example.com",
-                City = "Kandy"
+                City = "Kandy",
+                Council = "Mahara"
             },
             new User
             {
@@ -54,7 +58,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 LastName = "Fernando",
                 Mobile = "0117654321",
                 Email = "kamal@example.com",
-                City = "Kandy"
+                City = "Kandy",
+                Council = "Mahara"
             }
         );
     }

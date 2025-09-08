@@ -48,4 +48,22 @@ namespace PSMWebAPI.DTOs.Common
             return new ApiResponse<T>(false, message, new List<string> { error });
         }
     }
+
+    public static class ApiResponse
+    {
+        public static ApiResponse<object> Success(string message = "Operation completed successfully")
+        {
+            return new ApiResponse<object>(true, message);
+        }
+
+        public static ApiResponse<object> Failure(string message, List<string> errors = null)
+        {
+            return new ApiResponse<object>(false, message, errors ?? new List<string>());
+        }
+
+        public static ApiResponse<object> Failure(string message, string error)
+        {
+            return new ApiResponse<object>(false, message, new List<string> { error });
+        }
+    }
 }

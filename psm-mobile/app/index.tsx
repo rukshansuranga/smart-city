@@ -11,7 +11,7 @@ export default function Index() {
         // Button data for DRY formatting
         { label: "Complains", route: "/(complains)" },
         { label: "Garbage", route: "/garbage" },
-        { label: "Projects", route: "/(projects)/road" },
+        { label: "Projects", route: "/(projects)" },
         { label: "Payments" },
         { label: "Notifications" },
         { label: "Profile", route: "/editUser" },
@@ -22,7 +22,7 @@ export default function Index() {
           style={{ backgroundColor: idx % 2 === 0 ? "#80ed99" : "#57cc99" }}
         >
           <Button
-            onPress={route ? () => router.navigate(route) : undefined}
+            onPress={route ? () => router.navigate(route as any) : undefined}
             style={{ width: "100%", height: "100%" }}
             contentStyle={{ height: "100%" }}
           >

@@ -30,44 +30,65 @@ namespace PSMWebAPI.Controllers
         [HttpPost("complain")]
         public async Task<IActionResult> AddComplainTicket(TicketPostRequest request)
         {
-            var ComplainIdList = new List<TicketPackage>();
-            foreach (var ComplainId in request.ComplainIdList)
+            try
             {
-                ComplainIdList.Add(new TicketPackage
+                var ticket = _mapper.Map<ComplainTicket>(request); // Uses the utility class to get current time in Colombo timezone
+                
+                // Create the ticket first without the complain relationships
+                var addedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
+                
+                // Now add the complains to the existing ticket using the repository method
+                if (request?.ComplainIdList != null && request.ComplainIdList.Any())
                 {
-                    ComplainId = ComplainId,
-                });
+                    await _ticketRepository.AddComplainsAsync(addedTicket.TicketId, request.ComplainIdList);
+                }
+                
+                return CreatedAtAction(nameof(GetById), new { id = addedTicket.TicketId }, 
+                    ApiResponse<ComplainTicket>.Success(addedTicket, "Complain ticket created successfully"));
+                // Returns 201 Created response with location header pointing to the new product
             }
-
-            var ticket = _mapper.Map<ComplainTicket>(request); // Uses the utility class to get current time in Colombo timezone
-            ticket.TicketPackages = ComplainIdList;
-
-            var addedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
-            return CreatedAtAction(nameof(GetById), new { id = addedTicket.TicketId }, addedTicket);
-            // Returns 201 Created response with location header pointing to the new product
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error creating complain ticket", ex.Message));
+            }
         }
 
         [HttpPost("internal")]
         public async Task<IActionResult> AddInternal(TicketPostRequest request)
         {
-            var ticket = _mapper.Map<Ticket>(request);
+            try
+            {
+                var ticket = _mapper.Map<InternalTicket>(request);
 
-            var updatedTicket = await _ticketRepository.AddAsync(ticket); // Calls service to add a new product
-            return CreatedAtAction(nameof(GetById), new { id = updatedTicket.TicketId }, updatedTicket);
-            // Returns 201 Created response with location header pointing to the new product
+                var updatedTicket = await _ticketRepository.AddAsync<InternalTicket>(ticket); // Calls service to add a new product
+                return CreatedAtAction(nameof(GetById), new { id = updatedTicket.TicketId }, 
+                    ApiResponse<Ticket>.Success(updatedTicket, "Internal ticket created successfully"));
+                // Returns 201 Created response with location header pointing to the new product
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error creating internal ticket", ex.Message));
+            }
         }
 
         [HttpDelete("{ticketId}")]
         public async Task<IActionResult> DeleteTicket(int ticketId)
         {
-            var existingTicket = await _ticketRepository.GetByIdAsync<ComplainTicket>(ticketId);
-            if (existingTicket == null)
+            try
             {
-                return NotFound();
+                var existingTicket = await _ticketRepository.GetByIdAsync<ComplainTicket>(ticketId);
+                if (existingTicket == null)
+                {
+                    return NotFound(ApiResponse<ComplainTicket>.Failure($"Ticket with ID {ticketId} not found"));
+                }
+                existingTicket.IsActive = false;
+                await _ticketRepository.UpdateAsync(existingTicket);
+                return NoContent();
             }
-            existingTicket.IsActive = false;
-            await _ticketRepository.UpdateAsync(existingTicket);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error deleting ticket", ex.Message));
+            }
         }
 
         [HttpGet("{id}")]
@@ -75,12 +96,16 @@ namespace PSMWebAPI.Controllers
         {
             try
             {
-                var ticket = await _ticketRepository.GetByIdAsync<ComplainTicket>(id); // Calls service to fetch product by ID
-                return Ok(ticket); // Returns 200 OK response if found
+                var ticket = await _ticketRepository.GetByIdAsync<Ticket>(id); // Calls service to fetch product by ID
+                if (ticket == null)
+                {
+                    return NotFound(ApiResponse<Ticket>.Failure("Ticket not found"));
+                }
+                return Ok(ApiResponse<Ticket>.Success(ticket, "Ticket retrieved successfully")); // Returns 200 OK response if found
             }
-            catch (KeyNotFoundException)
+            catch (Exception ex)
             {
-                return NotFound(); // Returns 404 Not Found if product does not exist
+                return StatusCode(500, ApiResponse.Failure("Error retrieving ticket", ex.Message));
             }
         }
 
@@ -90,92 +115,155 @@ namespace PSMWebAPI.Controllers
             try
             {
                 var tickets = await _ticketRepository.GetTicketListByComplainIdAsync(id); // Calls service to fetch product by ID
-                return Ok(tickets); // Returns 200 OK response if found
+                return Ok(ApiResponse<IEnumerable<ComplainTicket>>.Success(tickets, "Tickets retrieved successfully")); // Returns 200 OK response if found
             }
-            catch (KeyNotFoundException)
+            catch (Exception ex)
             {
-                return NotFound(); // Returns 404 Not Found if product does not exist
+                return StatusCode(500, ApiResponse.Failure("Error retrieving tickets by complain ID", ex.Message));
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] TicketPaging paging)
         {
-            var response = await _ticketRepository.GetPagingAsync<ComplainTicket>(paging); // Calls service to fetch product by ID
-            return Ok(response); // Returns 200 OK response if found
+            try
+            {
+                var response = await _ticketRepository.GetPagingAsync<Ticket>(paging); // Calls service to fetch product by ID
+                return Ok(ApiResponse<object>.Success(response, "Tickets retrieved successfully")); // Returns 200 OK response if found
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error retrieving tickets", ex.Message));
+            }
         }
 
         [HttpPut("{ticketId}")]
         public async Task<IActionResult> Update(int ticketId, TicketUpdateRequest request)
         {
-            var ticket = _mapper.Map<Ticket>(request);
-            ticket.TicketId = ticketId;
+            try
+            {
+                var ticket = _mapper.Map<Ticket>(request);
+                ticket.TicketId = ticketId;
 
-            var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId);
+                var existingTicket = await _ticketRepository.UpdateTicketHistoryAsync(ticket, ticket.UserId ?? "");
 
-            //var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
+                //var selectedTicket = await _ticketRepository.GetByIdAsync(ticketId);
 
-            _mapper.Map<TicketUpdateRequest, Ticket>(request, existingTicket);
+                _mapper.Map<TicketUpdateRequest, Ticket>(request, existingTicket);
 
-            var updatedTicket = await _ticketRepository.UpdateAsync(existingTicket); // Calls service to add a new product
+                var updatedTicket = await _ticketRepository.UpdateAsync(existingTicket); // Calls service to add a new product
 
-            return Ok(updatedTicket);
+                return Ok(ApiResponse<Ticket>.Success(updatedTicket, "Ticket updated successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error updating ticket", ex.Message));
+            }
         }
 
         [HttpGet("start/{ticketId}")]
         public async Task<IActionResult> StartWorkOnTicket(int ticketId)
         {
-            var result = await _ticketRepository.StartWorkOnTicketAsync(ticketId);
-            if (!result) return NotFound();
+            try
+            {
+                var result = await _ticketRepository.StartWorkOnTicketAsync(ticketId);
+                if (!result) return NotFound(ApiResponse<bool>.Failure($"Ticket with ID {ticketId} not found"));
 
-            return Ok(result);
+                return Ok(ApiResponse<bool>.Success(result, "Work started on ticket successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error starting work on ticket", ex.Message));
+            }
         }
 
 
         [HttpGet("resolve/{ticketId}")]
         public async Task<IActionResult> ResolveTicket(int ticketId)
         {
-            var result = await _ticketRepository.ResolvedOnTicketAsync(ticketId);
-            if (!result) return NotFound();
+            try
+            {
+                var result = await _ticketRepository.ResolvedOnTicketAsync(ticketId);
+                if (!result) return NotFound(ApiResponse<bool>.Failure($"Ticket with ID {ticketId} not found"));
 
-            return Ok(result);
+                return Ok(ApiResponse<bool>.Success(result, "Ticket resolved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error resolving ticket", ex.Message));
+            }
         }
 
         [HttpGet("close/{ticketId}")]
         public async Task<IActionResult> CloseTicket(int ticketId)
         {
-            var result = await _ticketRepository.CloseOnTicketAsync(ticketId);
-            if (!result) return NotFound();
+            try
+            {
+                var result = await _ticketRepository.CloseOnTicketAsync(ticketId);
+                if (!result) return NotFound(ApiResponse<bool>.Failure($"Ticket with ID {ticketId} not found"));
 
-            return Ok(result);
+                return Ok(ApiResponse<bool>.Success(result, "Ticket closed successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error closing ticket", ex.Message));
+            }
         }
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetTicketListByUserIdAsync(string userId)
         {
-            var result = await _ticketRepository.GetTicketListByUserIdAsync<ComplainTicket>(userId);
-            return Ok(result);
+            try
+            {
+                var result = await _ticketRepository.GetTicketListByUserIdAsync(userId);
+                return Ok(ApiResponse<BoardTicket>.Success(result, "Tickets retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error retrieving tickets by user ID", ex.Message));
+            }
         }
 
         [HttpGet("resolve")]
         public async Task<IActionResult> GetResolvedTickets()
         {
-            var result = await _ticketRepository.GetResolvedTicketsAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _ticketRepository.GetResolvedTicketsAsync();
+                return Ok(ApiResponse<IEnumerable<Ticket>>.Success(result, "Resolved tickets retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error retrieving resolved tickets", ex.Message));
+            }
         }
 
         [HttpPost("addcomplains")]
         public async Task<IActionResult> AddComplains(UpdateTicketPayload updateTicket)
         {
-            await _ticketRepository.AddComplainsAsync(updateTicket.TicketId, updateTicket.ComplainIds);
-            return Ok();
+            try
+            {
+                await _ticketRepository.AddComplainsAsync(updateTicket.TicketId, updateTicket.ComplainIds);
+                return Ok(ApiResponse.Success("Complains added to ticket successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error adding complains to ticket", ex.Message));
+            }
         }
 
         [HttpPost("removecomplains")]
         public async Task<IActionResult> RemoveComplains(UpdateTicketPayload updateTicket)
         {
-            await _ticketRepository.RemoveComplainsAsync(updateTicket.TicketId, updateTicket.ComplainIds);
-            return Ok();
+            try
+            {
+                await _ticketRepository.RemoveComplainsAsync(updateTicket.TicketId, updateTicket.ComplainIds);
+                return Ok(ApiResponse.Success("Complains removed from ticket successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error removing complains from ticket", ex.Message));
+            }
         }
     }
 }

@@ -3,10 +3,17 @@ import {
   ProjectType,
   TicketStatus,
   TicketType,
+  TicketPriority,
   TicketWorkpackageType,
   ComplainStatus,
+  ComplainType,
   ProjectProgressApprovedStatus,
+  ProjectCoordinatorType,
+  TicketCategory,
 } from "@/enums";
+
+// Export the enum for use in other files
+export { ProjectCoordinatorType };
 
 // Role-based access control types
 export type UserRole =
@@ -58,6 +65,27 @@ export type Complain = {
   ticketPackages: Ticket[];
 };
 
+export type TicketComplain = {
+  id?: number;
+  ticketId: number;
+  complainId: number;
+  ticket?: Ticket;
+  complain?: Complain;
+};
+
+export type TicketActivity = {
+  id?: number;
+  ticketId: number;
+  userId: string;
+  activityType: string;
+  description: string;
+  createdAt: Date;
+  user?: {
+    userId: string;
+    firstName: string;
+  };
+};
+
 export type TicketPckage = {
   id: number;
   ticketId: number;
@@ -70,31 +98,81 @@ export type Ticket = {
   subject: string;
   detail?: string;
   note?: string;
-  userId: string;
-  createdAt?: Date;
-  status: TicketStatus;
+  tags?: string;
+  status?: TicketStatus;
   type?: TicketType;
-  estimate: number;
-  priority?: number;
+  category?: TicketCategory;
+  estimation: number;
+  priority?: TicketPriority;
   dueDate?: Date | string;
+  attachments?: string[];
+  userId?: string;
+  createdAt?: Date;
   user?: {
     userId: string;
     firstName: string;
   };
-  ticketPackages?: TicketPckage[];
-  packages?: Complain[];
-  ticketWorkpackageType?: TicketWorkpackageType;
+  activities?: TicketActivity[];
 };
 
+export type ProjectTicket = Ticket & {
+  projectId: string;
+  project?: Project;
+};
+
+export type ComplainTicket = Ticket & {
+  complainType?: ComplainType;
+  ticketComplains?: TicketComplain[];
+};
+
+export type InternalTicket = Ticket;
+
 export type User = {
-  userId: number;
-  firstName: string;
+  userId?: string;
+  username: string;
   mobile: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city: string;
+  designation?: string;
+  authType?: number;
+  council: string;
+  password?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type CreateUserRequest = {
+  username: string;
+  mobile: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city: string;
+  designation?: string;
+  authType?: number;
+  council: string;
+  password?: string;
+};
+
+export type Council = {
+  id: string;
+  name: string;
 };
 
 export type Option = {
   value: string | number | null;
   text: string;
+};
+
+export type PagingRequest = {
+  pageNumber: number;
+  pageSize: number;
 };
 
 export type Paging<T> = {
@@ -187,4 +265,21 @@ export type ProjectProgress = {
   approvedAt?: Date;
   approvedNote?: string;
   projectProgressApprovedStatus?: ProjectProgressApprovedStatus;
+};
+
+export type Coordinator = {
+  projectCoordinatorId?: number;
+  projectId: number;
+  coordinatorId: string;
+  coordinatorType: ProjectCoordinatorType;
+  assignDate: Date | string;
+  note?: string;
+  project?: Project;
+  coordinator?: User;
+};
+
+export type BoardTicket = {
+  projectTickets: ProjectTicket[];
+  complainTickets: ComplainTicket[];
+  internalTickets: InternalTicket[];
 };

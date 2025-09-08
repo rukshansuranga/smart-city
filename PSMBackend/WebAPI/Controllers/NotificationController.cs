@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PSMModel.Models;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.DTOs.Complain;
 using PSMWebAPI.Repositories;
 
@@ -19,76 +21,138 @@ namespace PSMWebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Notification>>> GetAll()
+        public async Task<ActionResult<ApiResponse<IEnumerable<Notification>>>> GetAll()
         {
-            var notifications = await _notificationRepository.GetAllAsync();
-            return Ok(notifications);
+            try
+            {
+                var notifications = await _notificationRepository.GetAllAsync();
+                return Ok(ApiResponse<IEnumerable<Notification>>.Success(notifications, "Notifications retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<IEnumerable<Notification>>.Failure($"Failed to retrieve notifications: {ex.Message}"));
+            }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Notification>> GetById(int id)
+        public async Task<ActionResult<ApiResponse<Notification>>> GetById(int id)
         {
-            var notification = await _notificationRepository.GetByIdAsync(id);
-            if (notification == null)
-                return NotFound();
-            return Ok(notification);
+            try
+            {
+                var notification = await _notificationRepository.GetByIdAsync(id);
+                if (notification == null)
+                    return NotFound(ApiResponse<Notification>.Failure("Notification not found"));
+                return Ok(ApiResponse<Notification>.Success(notification, "Notification retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<Notification>.Failure($"Failed to retrieve notification: {ex.Message}"));
+            }
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add(Notification notification)
+        public async Task<ActionResult<ApiResponse<Notification>>> Add(Notification notification)
         {
-            await _notificationRepository.AddAsync(notification);
-            return CreatedAtAction(nameof(GetById), new { id = notification.Id }, notification);
+            try
+            {
+                await _notificationRepository.AddAsync(notification);
+                return Ok(ApiResponse<Notification>.Success(notification, "Notification added successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<Notification>.Failure($"Failed to add notification: {ex.Message}"));
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, Notification notification)
+        public async Task<ActionResult<ApiResponse<string>>> Update(int id, Notification notification)
         {
-            if (id != notification.Id)
-                return BadRequest();
-            await _notificationRepository.UpdateAsync(notification);
-            return NoContent();
+            try
+            {
+                if (id != notification.Id)
+                    return BadRequest(ApiResponse<string>.Failure("Invalid notification ID"));
+                await _notificationRepository.UpdateAsync(notification);
+                return Ok(ApiResponse<string>.Success("", "Notification updated successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<string>.Failure($"Failed to update notification: {ex.Message}"));
+            }
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<ApiResponse<string>>> Delete(int id)
         {
-            await _notificationRepository.DeleteAsync(id);
-            return NoContent();
+            try
+            {
+                await _notificationRepository.DeleteAsync(id);
+                return Ok(ApiResponse<string>.Success("", "Notification deleted successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<string>.Failure($"Failed to delete notification: {ex.Message}"));
+            }
         }
 
         [HttpGet("client/{clientId}")]
-        public async Task<ActionResult<IEnumerable<Notification>>> GetNotificationsByClient(string clientId)
+        public async Task<ActionResult<ApiResponse<IEnumerable<Notification>>>> GetNotificationsByClient(string clientId)
         {
-            var notifications = await _notificationRepository.GetNotificationsByClientAsync(clientId);
-            return Ok(notifications);
+            try
+            {
+                var notifications = await _notificationRepository.GetNotificationsByClientAsync(clientId);
+                return Ok(ApiResponse<IEnumerable<Notification>>.Success(notifications, "Client notifications retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<IEnumerable<Notification>>.Failure($"Failed to retrieve client notifications: {ex.Message}"));
+            }
         }
 
         [HttpGet("read/{id}")]
-        public async Task<ActionResult<Notification>> ReadNotification(int id)
+        public async Task<ActionResult<ApiResponse<string>>> ReadNotification(int id)
         {
-            await _notificationRepository.ReadNotificationAsync(id);
-
-            return Ok();
+            try
+            {
+                await _notificationRepository.ReadNotificationAsync(id);
+                return Ok(ApiResponse<string>.Success("", "Notification marked as read successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<string>.Failure($"Failed to mark notification as read: {ex.Message}"));
+            }
         }
 
         [HttpPost("rating")]
         public async Task<IActionResult> AddRating(RatingRequest request)
         {
-            if (request == null)
+            try
             {
-                return BadRequest("Request cannot be null");
-            }
+                if (request == null)
+                {
+                    return BadRequest(ApiResponse<string>.Failure("Request cannot be null"));
+                }
 
-            await _notificationRepository.AddRating(request);
-            return Ok();
+                await _notificationRepository.AddRating(request);
+                return Ok(ApiResponse<string>.Success("", "Rating added successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<string>.Failure($"Failed to add rating: {ex.Message}"));
+            }
         }
 
         [HttpGet("unread/count/{clientId}")]
-        public async Task<ActionResult<int>> GetUnreadNotificationCount(string clientId)
+        public async Task<ActionResult<ApiResponse<int>>> GetUnreadNotificationCount(string clientId)
         {
-            var count = await _notificationRepository.GetUnreadNotificationCountAsync(clientId);
-            return Ok(count);
+            try
+            {
+                var count = await _notificationRepository.GetUnreadNotificationCountAsync(clientId);
+                return Ok(ApiResponse<int>.Success(count, "Unread notification count retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse<int>.Failure($"Failed to retrieve unread notification count: {ex.Message}"));
+            }
         }
     }
 }

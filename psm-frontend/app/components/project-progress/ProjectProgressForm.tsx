@@ -65,10 +65,16 @@ export default function ProjectProgressForm({
   const loadProjects = async () => {
     setLoading(true);
     try {
-      const projectsData = await getAllProjects();
-      setProjects(projectsData);
+      const response = await getAllProjects();
+      if (response.isSuccess && response.data) {
+        setProjects(response.data);
+      } else {
+        console.error("Error loading projects:", response.message);
+        setProjects([]);
+      }
     } catch (error) {
       console.error("Error loading projects:", error);
+      setProjects([]);
     } finally {
       setLoading(false);
     }

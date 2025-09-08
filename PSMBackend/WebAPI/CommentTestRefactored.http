@@ -1,0 +1,64 @@
+### Test Comment API with new EntityType and EntityId structure
+
+# Add a comment for a Complain entity
+POST http://localhost:5000/api/comment
+Content-Type: application/json
+
+{
+    "entityType": "Complain",
+    "entityId": "1",
+    "text": "This is a test comment for a complain",
+    "type": "General",
+    "isPrivate": false,
+    "clientId": "test-client-id"
+}
+
+###
+
+# Add a comment for a Project entity
+POST http://localhost:5000/api/comment
+Content-Type: application/json
+
+{
+    "entityType": "Project",
+    "entityId": "1",
+    "text": "This is a test comment for a project",
+    "type": "General",
+    "isPrivate": false,
+    "clientId": "test-client-id"
+}
+
+###
+
+# Add a comment for a Ticket entity
+POST http://localhost:5000/api/comment
+Content-Type: application/json
+
+{
+    "entityType": "Ticket",
+    "entityId": "1",
+    "text": "This is a test comment for a ticket",
+    "type": "General",
+    "isPrivate": true,
+    "clientId": "test-client-id"
+}
+
+###
+
+# Get comment by ID
+GET http://localhost:5000/api/comment/1
+
+###
+
+# Get comments by entity (Complain with ID 1)
+GET http://localhost:5000/api/comment/entity/Complain/1
+
+###
+
+# Get comments by entity (Project with ID 1)
+GET http://localhost:5000/api/comment/entity/Project/1
+
+###
+
+# Get comments by entity (Ticket with ID 1)
+GET http://localhost:5000/api/comment/entity/Ticket/1

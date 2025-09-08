@@ -70,7 +70,12 @@ export default function ProjectProgressListTab({
       // Try to use actual API first, fall back to mock data if it fails
       try {
         const response = await getProjectProgressList();
-        setProgressList(response.records || []);
+        if (response.isSuccess && response.data) {
+          setProgressList(response.data.records || []);
+        } else {
+          console.warn("API response not successful:", response.message);
+          setProgressList(mockProjectProgressData);
+        }
       } catch (apiError) {
         console.warn("API call failed, using mock data:", apiError);
         // Use mock data as fallback

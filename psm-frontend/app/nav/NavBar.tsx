@@ -48,14 +48,14 @@ export default function NavBar({ session }: HeaderProps) {
     <Navbar
       rounded
       className="sticky top-0 z-50 flex justify-between 
-            bg-white p-5 items-center text-gray-800 shadow-md"
+            bg-[#FFFFFF] border-b-4 border-[#2A9D8F] p-5 items-center text-gray-800 shadow-lg"
     >
       <NavbarBrand as={Link} href="https://flowbite-react.com">
         <Logo />
       </NavbarBrand>
 
       {session?.roles && (
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 bg-[#E9C46A]/20 px-4 py-2 rounded-lg">
           {session.roles
             .filter(
               (role) =>
@@ -64,7 +64,10 @@ export default function NavBar({ session }: HeaderProps) {
                 role !== "uma_authorization"
             )
             .map((role) => (
-              <span key={role} className="text-sm text-gray-600">
+              <span
+                key={role}
+                className="text-sm text-[#264653] font-medium bg-[#E9C46A] px-2 py-1 rounded shadow-sm"
+              >
                 {role}
               </span>
             ))}
@@ -72,8 +75,10 @@ export default function NavBar({ session }: HeaderProps) {
       )}
 
       {session?.user ? (
-        <div className="flex flex-row justify-between items-center">
-          <div className="mr-4">{session.user.name}</div>
+        <div className="flex flex-row justify-between items-center bg-[#2A9D8F]/20 px-4 py-2 rounded-lg shadow-sm">
+          <div className="mr-4 font-medium text-[#264653]">
+            {session.user.name}
+          </div>
           <SignOut />
         </div>
       ) : (

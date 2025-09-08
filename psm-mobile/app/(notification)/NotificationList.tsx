@@ -33,10 +33,17 @@ export default function NotificationList() {
   async function fetchNotifications() {
     try {
       const res = await getNotifications(userInfo.sub);
-      console.log("Fetched notifications:", res);
-      setNotifications(res);
+      if (!res.isSuccess) {
+        console.error("Failed to fetch notifications:", res.message);
+        setNotifications([]);
+        return;
+      }
+      console.log("Fetched notifications:", res.data);
+      setNotifications(res.data || []);
     } catch (error) {
-      console.log("Error fetching notifications:", error);
+      console.error("Error fetching notifications:", error);
+      setNotifications([]);
+      // Toast error is already shown by fetchWrapper
     } finally {
       setLoading(false);
     }
@@ -52,28 +59,48 @@ export default function NotificationList() {
 
   async function handleRating() {
     if (!selectedNotification?.complain?.complainId || !starRating) return;
-    addRating({
-      complainId: selectedNotification.complain.complainId,
-      rating: starRating,
-      note: feedback,
-      clientId: userInfo.sub,
-      notificationId: selectedNotification.id,
-    });
 
-    setFeedback("");
-    setModalVisible(false);
+    try {
+      const result = await addRating({
+        complainId: selectedNotification.complain.complainId,
+        rating: starRating,
+        note: feedback,
+        clientId: userInfo.sub,
+        notificationId: selectedNotification.id,
+      });
+      if (!result.isSuccess) {
+        console.error("Failed to add rating:", result.message);
+        return;
+      }
+      console.log("Rating added successfully:", result.data);
 
-    await fetchNotifications();
+      setFeedback("");
+      setModalVisible(false);
+      await fetchNotifications();
+    } catch (error) {
+      console.error("Error adding rating:", error);
+      // Toast error is already shown by fetchWrapper
+    }
   }
 
   async function handleNotificationPress(item) {
-    if (!item.isRead) {
-      await readNotification(item.id);
+    try {
+      if (!item.isRead) {
+        const readResult = await readNotification(item.id);
+        if (!readResult.isSuccess) {
+          console.error(
+            "Failed to mark notification as read:",
+            readResult.message
+          );
+        }
+      }
+      setSelectedNotification(item);
+      setModalVisible(true);
+      await fetchNotifications();
+    } catch (error) {
+      console.error("Error reading notification:", error);
+      // Toast error is already shown by fetchWrapper
     }
-    setSelectedNotification(item);
-    setModalVisible(true);
-
-    await fetchNotifications();
   }
 
   return (

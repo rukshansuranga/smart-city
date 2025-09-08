@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PSMWebAPI.DTOs.Common;
 using PSMWebAPI.Services;
 
 namespace PSMWebAPI.Controllers
@@ -31,21 +32,23 @@ namespace PSMWebAPI.Controllers
 
                 if (tokenResponse == null)
                 {
-                    return BadRequest(new { error = "Failed to obtain access token" });
+                    return BadRequest(ApiResponse<object>.Failure("Failed to obtain access token"));
                 }
 
-                return Ok(new
+                var response = new
                 {
                     access_token = tokenResponse.AccessToken,
                     token_type = tokenResponse.TokenType,
                     expires_in = tokenResponse.ExpiresIn,
                     scope = tokenResponse.Scope
-                });
+                };
+
+                return Ok(ApiResponse<object>.Success(response, "Access token obtained successfully"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while obtaining client credentials token");
-                return StatusCode(500, new { error = "Internal server error" });
+                return StatusCode(500, ApiResponse<object>.Failure($"Internal server error: {ex.Message}"));
             }
         }
     }

@@ -36,7 +36,7 @@ export default function ComplainsIndex() {
           style={{ backgroundColor: color }}
         >
           <Button
-            onPress={route ? () => router.push(route) : undefined}
+            onPress={route ? () => router.push(route as any) : undefined}
             style={{ width: "100%", height: "100%" }}
             contentStyle={{ height: "100%" }}
           >

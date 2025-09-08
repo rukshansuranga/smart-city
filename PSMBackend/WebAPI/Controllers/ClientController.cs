@@ -28,11 +28,15 @@ namespace PSMWebAPI.Controllers
             try
             {
                 var client = await _clientRepository.GetByIdAsync(id); // Calls service to fetch product by ID
-                return Ok(client); // Returns 200 OK response if found
+                if (client == null)
+                {
+                    return NotFound(ApiResponse<Client>.Failure("Client not found"));
+                }
+                return Ok(ApiResponse<Client>.Success(client, "Client retrieved successfully")); // Returns 200 OK response if found
             }
-            catch (KeyNotFoundException)
+            catch (Exception ex)
             {
-                return NotFound(); // Returns 404 Not Found if product does not exist
+                return StatusCode(500, ApiResponse.Failure("Error retrieving client", ex.Message));
             }
         }
 
@@ -42,7 +46,7 @@ namespace PSMWebAPI.Controllers
         {
             if (request == null)
             {
-                return BadRequest();
+                return BadRequest(ApiResponse<Client>.Failure("Request cannot be null"));
             }
 
             try
@@ -51,13 +55,13 @@ namespace PSMWebAPI.Controllers
                 //client.CreatedDate = PSMDateTime.Now; // Set the created date to current time
 
                 var createdClient = await _clientRepository.AddAsync(client);
-                return CreatedAtAction(nameof(GetById), new { id = createdClient.ClientId }, createdClient);
+                return CreatedAtAction(nameof(GetById), new { id = createdClient.ClientId }, 
+                    ApiResponse<Client>.Success(createdClient, "Client created successfully"));
             }
             catch (Exception ex)
             {
-                throw ex;
+                return StatusCode(500, ApiResponse.Failure("Error creating client", ex.Message));
             }
-            
         }
 
         //generate action for update project
@@ -66,19 +70,26 @@ namespace PSMWebAPI.Controllers
         {
             if (string.IsNullOrEmpty(id))
             {
-                return BadRequest();
+                return BadRequest(ApiResponse<Client>.Failure("Client ID cannot be null or empty"));
             }
 
-            var existingClient = await _clientRepository.GetByIdAsync(id);
-            if (existingClient == null)
+            try
             {
-                return NotFound();
+                var existingClient = await _clientRepository.GetByIdAsync(id);
+                if (existingClient == null)
+                {
+                    return NotFound(ApiResponse<Client>.Failure("Client not found"));
+                }
+
+                _mapper.Map<ClientPostRequest, Client>(request, existingClient);
+
+                var updatedClient = await _clientRepository.UpdateAsync(existingClient);
+                return Ok(ApiResponse<Client>.Success(updatedClient, "Client updated successfully"));
             }
-
-            _mapper.Map<ClientPostRequest, Client>(request, existingClient);
-
-            var updatedClient = await _clientRepository.UpdateAsync(existingClient);
-            return Ok(updatedClient);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponse.Failure("Error updating client", ex.Message));
+            }
         }
     }
 }

@@ -66,18 +66,34 @@ export default function ComplainList({
     const fetchData = async () => {
       try {
         setLoading(true);
-        const result = await getWorkpackagePaging({
+        const response = await getWorkpackagePaging({
           status: statusList.join(","),
           pageSize: pageSize.toString(),
           pageIndex: pageIndex,
           type: type,
           duration: "60",
         });
-        console.log("Fetched complain data:", result);
+        console.log("Fetched complain data:", response);
 
-        setData(result);
+        if (response.isSuccess && response.data) {
+          setData(response.data);
+        } else {
+          console.error("Error fetching complain data:", response.message);
+          setData({
+            records: [],
+            totalRecords: 0,
+            currentPage: 1,
+            pageSize: pageSize,
+          });
+        }
       } catch (error) {
         console.error("Error fetching complain data:", error);
+        setData({
+          records: [],
+          totalRecords: 0,
+          currentPage: 1,
+          pageSize: pageSize,
+        });
       } finally {
         setLoading(false);
       }

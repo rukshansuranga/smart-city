@@ -17,7 +17,7 @@ public interface ITicketRepository
       Task<bool> StartWorkOnTicketAsync(int ticketId);
       Task<bool> ResolvedOnTicketAsync(int ticketId);
       Task<bool> CloseOnTicketAsync(int ticketId);
-      Task<IEnumerable<T>> GetTicketListByUserIdAsync<T>(string userId) where T : Ticket;
+      Task<BoardTicket> GetTicketListByUserIdAsync(string userId);
       Task AddComplainsAsync(int ticketId, IEnumerable<int> ComplainIds);
       Task RemoveComplainsAsync(int ticketId, IEnumerable<int> ComplainIds);
 }

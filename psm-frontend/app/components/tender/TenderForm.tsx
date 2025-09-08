@@ -172,21 +172,46 @@ export default function TenderForm({
 
     Promise.all([projectListPromise, companyListPromise, tenderPromise])
       .then(([projectData, companyData, tenderResponse]) => {
-        setProjects([
-          { value: "", text: "Select Project" },
-          ...projectData.map((project) => ({
-            value: project?.id?.toString() ?? "",
-            text: project.subject,
-          })),
-        ]);
+        // Handle projects data
+        if (projectData && Array.isArray(projectData)) {
+          // If projectData is directly an array (old format)
+          setProjects([
+            { value: "", text: "Select Project" },
+            ...projectData.map((project) => ({
+              value: project?.id?.toString() ?? "",
+              text: project.subject,
+            })),
+          ]);
+        } else if (projectData?.isSuccess && projectData?.data) {
+          // If projectData is ApiResponse format
+          setProjects([
+            { value: "", text: "Select Project" },
+            ...projectData.data.map((project) => ({
+              value: project?.id?.toString() ?? "",
+              text: project.subject,
+            })),
+          ]);
+        }
 
-        setContractors([
-          { value: "", text: "Select Contractor" },
-          ...companyData.map((contractor) => ({
-            value: contractor?.contractorId?.toString(),
-            text: contractor.name,
-          })),
-        ]);
+        // Handle company data
+        if (companyData?.isSuccess && companyData?.data) {
+          setContractors([
+            { value: "", text: "Select Contractor" },
+            ...companyData.data.map((contractor) => ({
+              value: contractor?.contractorId?.toString(),
+              text: contractor.name,
+            })),
+          ]);
+        } else if (companyData && Array.isArray(companyData)) {
+          // Fallback for old format
+          setContractors([
+            { value: "", text: "Select Contractor" },
+            ...companyData.map((contractor) => ({
+              value: contractor?.contractorId?.toString(),
+              text: contractor.name,
+            })),
+          ]);
+        }
 
         if (tenderId && tenderResponse) {
           if (tenderResponse.isSuccess && tenderResponse.data) {

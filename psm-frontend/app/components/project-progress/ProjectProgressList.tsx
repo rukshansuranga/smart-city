@@ -8,10 +8,16 @@ import {
   ModalHeader,
   ModalBody,
 } from "flowbite-react";
-import { HiCheckCircle, HiClock, HiExclamationCircle } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiClock,
+  HiExclamationCircle,
+  HiPencilAlt,
+} from "react-icons/hi";
 import { getProjectProgressByProjectId } from "@/app/api/client/projectProgressActions";
 import { ProjectProgress } from "@/types";
 import { ProjectProgressApprovedStatus } from "@/enums";
+import ProjectProgressApprovalModal from "./ProjectProgressApprovalModal";
 
 interface ProjectProgressListProps {
   projectId: string;
@@ -32,6 +38,11 @@ export default function ProjectProgressList({
   const [selectedProgress, setSelectedProgress] =
     useState<ProjectProgress | null>(null);
 
+  // Approval modal state
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [approvalProgress, setApprovalProgress] =
+    useState<ProjectProgress | null>(null);
+
   // Handle opening modal to view progress details
   const handleViewProgress = (progress: ProjectProgress) => {
     setSelectedProgress(progress);
@@ -42,6 +53,46 @@ export default function ProjectProgressList({
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedProgress(null);
+  };
+
+  // Handle opening approval modal
+  const handleApprovalModal = (progress: ProjectProgress) => {
+    setApprovalProgress(progress);
+    setShowApprovalModal(true);
+  };
+
+  // Handle closing approval modal
+  const handleCloseApprovalModal = () => {
+    setShowApprovalModal(false);
+    setApprovalProgress(null);
+  };
+
+  // Handle approval success
+  const handleApprovalSuccess = () => {
+    // Refresh the progress list after successful approval
+    const loadProgressData = async () => {
+      if (!initialData) {
+        try {
+          const response = await getProjectProgressByProjectId(projectId);
+          if (response.isSuccess && response.data) {
+            setProgressList(response.data);
+          } else {
+            console.error(
+              "Error refreshing project progress:",
+              response.message
+            );
+            setProgressList([]);
+          }
+        } catch (error) {
+          console.error("Error refreshing project progress:", error);
+          setProgressList([]);
+        }
+      }
+    };
+
+    if (projectId) {
+      loadProgressData();
+    }
   };
 
   useEffect(() => {
@@ -56,8 +107,13 @@ export default function ProjectProgressList({
       // Fetch data if no initial data provided
       setIsLoading(true);
       try {
-        const data = await getProjectProgressByProjectId(projectId);
-        setProgressList(data);
+        const response = await getProjectProgressByProjectId(projectId);
+        if (response.isSuccess && response.data) {
+          setProgressList(response.data);
+        } else {
+          console.error("Error fetching project progress:", response.message);
+          setProgressList([]);
+        }
       } catch (error) {
         console.error("Error fetching project progress:", error);
         setProgressList([]);
@@ -225,25 +281,38 @@ export default function ProjectProgressList({
                         </div>
                       )}
 
-                      <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-600">
-                        {onEditProgress && (
+                      <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-600 space-y-2">
+                        <div className="flex flex-wrap gap-2">
+                          {onEditProgress && (
+                            <Button
+                              color="gray"
+                              size="xs"
+                              onClick={() => onEditProgress(progress)}
+                              className="text-xs"
+                            >
+                              Edit Progress
+                            </Button>
+                          )}
                           <Button
                             color="gray"
                             size="xs"
-                            onClick={() => onEditProgress(progress)}
-                            className="text-xs mr-2"
+                            onClick={() => handleViewProgress(progress)}
+                            className="text-xs"
                           >
-                            Edit Progress
+                            View Details
                           </Button>
-                        )}
-                        <Button
-                          color="gray"
-                          size="xs"
-                          onClick={() => handleViewProgress(progress)}
-                          className="text-xs"
-                        >
-                          View Progress
-                        </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            color="blue"
+                            size="xs"
+                            onClick={() => handleApprovalModal(progress)}
+                            className="text-xs"
+                          >
+                            <HiPencilAlt className="w-3 h-3 mr-1" />
+                            Update Approval
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -410,6 +479,16 @@ export default function ProjectProgressList({
           )}
         </ModalBody>
       </Modal>
+
+      {/* Project Progress Approval Modal */}
+      <ProjectProgressApprovalModal
+        isOpen={showApprovalModal}
+        onClose={handleCloseApprovalModal}
+        projectProgressId={approvalProgress?.projectProgressId || ""}
+        currentStatus={approvalProgress?.projectProgressApprovedStatus}
+        currentNote={approvalProgress?.approvedNote}
+        onSuccess={handleApprovalSuccess}
+      />
     </div>
   );
 }

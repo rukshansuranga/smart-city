@@ -16,4 +16,6 @@ public class User : BaseEntity
     public string? AddressLine2 { get; set; }
     public string City { get; set; }
     public Designation? Designation { get; set; }
+    public AuthType? AuthType { get; set; }
+    public string Council { get; set; }    
 }

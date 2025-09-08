@@ -5,21 +5,27 @@ using PSMModel.Models;
 using PSMModel.Enums;
 using PSMWebAPI.DTOs;
 using PSMWebAPI.DTOs.Project;
+using PSMWebAPI.Utils;
+using System.Security.Claims;
 
 namespace PSMWebAPI.Repositories;
 
 public class ProjectRepository : IProjectRepository
 {
     private readonly ApplicationDbContext _context;
-    public ProjectRepository(ApplicationDbContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor; 
+
+    public ProjectRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Project> AddAsync(Project project)
     {
         try
         {
+            project.CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             project.Status = ProjectStatus.New;
             await _context.Projects.AddAsync(project);
             await _context.SaveChangesAsync();
@@ -94,6 +100,8 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
+            project.UpdatedAt = PSMDateTime.Now;
+            project.UpdatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _context.Projects.Update(project);
             await _context.SaveChangesAsync();
             return project;
@@ -128,14 +136,14 @@ public class ProjectRepository : IProjectRepository
             query = query.Where(p => p.City.ToLower().Contains(city.ToLower()));
         }
 
-        query.OrderByDescending(p => p.Id);
+        query = query.OrderByDescending(p => p.Id);
 
         if (isRecent.HasValue && isRecent.Value)
         {
             query = query.Take(8);
         }
 
-        return query;
+        return await query.ToListAsync();
     }
 
     #region Project Progress
@@ -145,8 +153,31 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
+            projectProgress.UpdatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             await _context.ProjectProgresses.AddAsync(projectProgress);
             await _context.SaveChangesAsync();
+
+            //Get Project Cordinator
+            var coordinator = await _context.ProjectCoordinators
+                .FirstOrDefaultAsync(coor => coor.ProjectId == projectProgress.ProjectId && coor.CoordinatorType == ProjectCoordinatorType.Coordinator && coor.IsActive);
+
+            //create a ticket
+            var ticket = new ProjectTicket
+            {
+                Subject = $"New Ticket for approve project progress, ProjectID: {projectProgress.ProjectId}",
+                Detail = $"New Ticket for approve project progress, ProjectID: {projectProgress.ProjectId}",
+                Type = TicketType.Internal,
+                Status = TicketStatus.Open,
+                Priority = TicketPriority.Medium,
+                UserId = coordinator?.CoordinatorId,
+                ProjectId = projectProgress.ProjectId,
+
+                CreatedAt = PSMDateTime.Now,
+                CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            };
+            await _context.ProjectTickets.AddAsync(ticket);
+            await _context.SaveChangesAsync();
+
             return projectProgress;
         }
         catch
@@ -197,6 +228,8 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
+            projectProgress.UpdatedAt = PSMDateTime.Now;
+            projectProgress.UpdatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _context.ProjectProgresses.Update(projectProgress);
             await _context.SaveChangesAsync();
             return projectProgress;
@@ -212,6 +245,7 @@ public class ProjectRepository : IProjectRepository
     {
         try
         {
+            
             var projectProgress = await _context.ProjectProgresses.FindAsync(projectProgressId);
             if (projectProgress == null)
                 return false;
@@ -248,6 +282,21 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Project>> GetRecentProjectsByType(ProjectType? type, int count = 10)
+    {
+        var query = _context.Projects.AsQueryable();
+
+        if (type.HasValue)
+        {
+            query = query.Where(p => p.Type == type.Value);
+        }
+
+        return await query
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<Project>> GetAllProjectsByContractorId(string contractorId)
     {
         try
@@ -265,6 +314,104 @@ public class ProjectRepository : IProjectRepository
 
     }
 
+
+    #endregion
+
+    #region Coordinator Management
+    
+    // Create new project coordinator
+    public async Task<ProjectCoordinator> AddProjectCoordinatorAsync(ProjectCoordinator projectCoordinator)
+    {
+        try
+        {
+            projectCoordinator.CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _context.ProjectCoordinators.AddAsync(projectCoordinator);
+            await _context.SaveChangesAsync();
+            return projectCoordinator;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    // Update project coordinator
+    public async Task<ProjectCoordinator> UpdateProjectCoordinatorAsync(ProjectCoordinator projectCoordinator)
+    {
+        try
+        {
+            projectCoordinator.UpdatedAt = PSMDateTime.Now;
+            projectCoordinator.UpdatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            _context.ProjectCoordinators.Update(projectCoordinator);
+            await _context.SaveChangesAsync();
+            return projectCoordinator;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    // Get project coordinator by ID
+    public async Task<ProjectCoordinator?> GetProjectCoordinatorByIdAsync(int projectCoordinatorId)
+    {
+        return await _context.ProjectCoordinators
+            .Include(pc => pc.Project)
+            .Include(pc => pc.Coordinator)
+            .FirstOrDefaultAsync(pc => pc.ProjectCoordinatorId == projectCoordinatorId);
+    }
+
+    // Get all project coordinators
+    public async Task<IEnumerable<ProjectCoordinator>> GetAllProjectCoordinatorsAsync()
+    {
+        return await _context.ProjectCoordinators
+            .Include(pc => pc.Project)
+            .Include(pc => pc.Coordinator)
+            .Where(pc => pc.IsActive)
+            .OrderByDescending(pc => pc.AssignDate)
+            .ToListAsync();
+    }
+
+    // Get project coordinators by project ID
+    public async Task<IEnumerable<ProjectCoordinator>> GetProjectCoordinatorsByProjectIdAsync(int projectId)
+    {
+        try
+        {
+            return await _context.ProjectCoordinators
+                        .Include(pc => pc.Project)
+                        .Include(pc => pc.Coordinator)
+                        .Where(pc => pc.ProjectId == projectId && pc.IsActive)
+                        .OrderByDescending(pc => pc.AssignDate)
+                        .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    // Delete project coordinator
+    public async Task<bool> DeleteProjectCoordinatorAsync(int projectCoordinatorId)
+    {
+        try
+        {
+            var projectCoordinator = await _context.ProjectCoordinators.FindAsync(projectCoordinatorId);
+            if (projectCoordinator == null)
+                return false;
+
+            projectCoordinator.IsActive = false; // Soft delete
+            projectCoordinator.UpdatedAt = PSMDateTime.Now;
+            projectCoordinator.UpdatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
+            _context.ProjectCoordinators.Update(projectCoordinator);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 
     #endregion
 }

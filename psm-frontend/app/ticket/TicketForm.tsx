@@ -5,11 +5,12 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 import { Ticket, Option, Complain } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 
-import { getUsers } from "@/app/api/actions/userActions";
+import { getUsersByUserType } from "@/app/api/client/userActions";
 import { Button } from "flowbite-react";
 import {
   createInternalTicket,
@@ -20,6 +21,7 @@ import { useRouter } from "next/navigation";
 
 import SelectField from "../components/forms/Select";
 import {
+  AuthType,
   TicketPriority,
   TicketStatus,
   TicketType,
@@ -95,8 +97,14 @@ export default function TicketForm({
 
   useEffect(() => {
     async function getAllUsers() {
-      const data = await getUsers();
-      const options = data.map((user) => ({
+      const response = await getUsersByUserType([AuthType.Staff]);
+
+      if (!response.isSuccess) {
+        toast.error(response.message || "Failed to load users");
+        return;
+      }
+
+      const options = response.data.map((user) => ({
         value: user.userId.toString(),
         text: user.firstName,
       }));
@@ -132,26 +140,41 @@ export default function TicketForm({
     try {
       if (ticket?.ticketId) {
         console.log("updating ticket", data);
-        await updateTicket({
+        const response = await updateTicket({
           ...payload,
           ticketId: ticket.ticketId,
           type: type,
         });
+
+        if (response.isSuccess) {
+          toast.success(response.message || "Ticket updated successfully!");
+        } else {
+          toast.error(response.message || "Failed to update ticket");
+          return;
+        }
       } else {
+        let response;
         if (isInternal) {
-          console.log("creating external ticket", data);
-          await createInternalTicket({
+          console.log("creating internal ticket", data);
+          response = await createInternalTicket({
             ...payload,
             type: type,
           });
         } else {
           console.log("creating external ticket", data);
-          await createTicket({
+          response = await createTicket({
             ...payload,
             type: type,
-            WorkpackageIdList: workpackageList.map((pkg) => pkg.complainId!),
+            complainIdList: workpackageList.map((pkg) => pkg.complainId!),
             ticketWorkpackageType: ticketWorkpackageType,
           });
+        }
+
+        if (response.isSuccess) {
+          toast.success(response.message || "Ticket created successfully!");
+        } else {
+          toast.error(response.message || "Failed to create ticket");
+          return;
         }
       }
       if (handleClose) {

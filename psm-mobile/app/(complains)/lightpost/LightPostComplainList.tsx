@@ -1,4 +1,4 @@
-import { complainMap } from "@/constants";
+import { complainMap } from "../../../complainMaps";
 
 import {
   addLightPostComplainAsync,
@@ -29,7 +29,7 @@ export default function LightPostComplainList() {
 
   const [selectedPostNo, setSelectedPostNo] = useState(null);
   const [myComplains, setMyComplains] = useState([]);
-  const mapRef = createRef();
+  const mapRef = createRef<MapView>();
   const { userInfo } = useAuthStore();
 
   const [nearPoles, setNearPoles] = useState([
@@ -53,27 +53,40 @@ export default function LightPostComplainList() {
   async function addComplain(id) {
     console.log("add", id);
     try {
-      await addLightPostComplainAsync({
+      const result = await addLightPostComplainAsync({
         lightPostNumber: selectedPostNo,
         clientId: userInfo.sub,
         subject: id,
         detail: "",
       });
-      await fetchActiveComplainsByMe();
+      if (!result.isSuccess) {
+        console.error("Failed to add light post complain:", result.message);
+        return;
+      }
+      console.log("Light post complain added successfully:", result.data);
 
+      await fetchActiveComplainsByMe();
       setAddingComplain(false);
     } catch (error) {
-      console.log("fetch active complains", error.message);
+      console.error("Error adding light post complain:", error);
+      // Toast error is already shown by fetchWrapper
     }
   }
 
   async function fetchActiveComplainsByMe() {
     try {
       const activeList = await GetActiveListPostComplainsByMe(selectedPostNo);
-      console.log("my list", activeList, selectedPostNo);
-      setMyComplains(activeList);
+      if (!activeList.isSuccess) {
+        console.error("Failed to fetch active complains:", activeList.message);
+        setMyComplains([]);
+        return;
+      }
+      console.log("my list", activeList.data, selectedPostNo);
+      setMyComplains(activeList.data || []);
     } catch (error) {
-      console.log("fetch active complains", error.message);
+      console.error("Error fetching active complains:", error);
+      setMyComplains([]);
+      // Toast error is already shown by fetchWrapper
     }
   }
 
@@ -81,8 +94,13 @@ export default function LightPostComplainList() {
     console.log("Selected place:", place);
     try {
       const poleList = await getNearLightPosts(place);
-      console.log("Near light posts data:", poleList);
-      setNearPoles(poleList);
+      if (!poleList.isSuccess) {
+        console.error("Failed to get near light posts:", poleList.message);
+        setNearPoles([]);
+        return;
+      }
+      console.log("Near light posts data:", poleList.data);
+      setNearPoles(poleList.data || []);
       mapRef.current.animateToRegion({
         latitude: place.details?.location?.latitude,
         longitude: place.details?.location?.longitude,
@@ -90,7 +108,9 @@ export default function LightPostComplainList() {
         longitudeDelta: 0.034,
       });
     } catch (error) {
-      console.log("error1", error);
+      console.error("Error getting near light posts:", error);
+      setNearPoles([]);
+      // Toast error is already shown by fetchWrapper
     }
   };
 
@@ -163,7 +183,9 @@ export default function LightPostComplainList() {
         ) : (
           <View className="flex-1 justify-center items-center bg-[#57cc99]/80">
             <View className="w-4/5 p-4 bg-[#f6fff8] rounded-2xl items-center elevation-sm gap-4 relative">
-              <Text className="font-bold text-2xl text-[#22577a] self-start"></Text>
+              <Text className="font-bold text-2xl text-[#22577a] self-start">
+                Light Post Details
+              </Text>
               <View className="w-full">
                 {selectedPostNo && (
                   <LightPostContainer postNo={selectedPostNo} />

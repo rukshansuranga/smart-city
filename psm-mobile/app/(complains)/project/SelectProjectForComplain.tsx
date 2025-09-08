@@ -50,10 +50,27 @@ export default function SelectProjectForComplain() {
         }
       );
 
-      const data = await res.json();
-      setProjects(data);
+      const response = await res.json();
+
+      // Handle new ApiResponse structure
+      if (response && typeof response === "object" && "isSuccess" in response) {
+        if (!response.isSuccess) {
+          console.error("Search failed:", response.message);
+          if (response.errors && response.errors.length > 0) {
+            response.errors.forEach((error) => console.error(error));
+          }
+          setProjects([]);
+          return;
+        }
+        // Use the data property for successful response
+        setProjects(response.data || []);
+      } else {
+        // For backwards compatibility
+        setProjects(response || []);
+      }
     } catch (error) {
-      console.log("fetch active complains", error?.message);
+      console.error("Error searching projects:", error);
+      setProjects([]);
     }
   }
 
