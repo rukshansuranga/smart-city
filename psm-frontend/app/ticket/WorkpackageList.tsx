@@ -1,5 +1,5 @@
-import { getWorkpackagePaging } from "@/app/api/actions/workpackageAction";
-import { Paging, Workpackage } from "@/types";
+import { ComplainStatus, ComplainType } from "@/enums";
+import { Paging, Complain } from "@/types";
 import {
   Button,
   ButtonGroup,
@@ -8,27 +8,30 @@ import {
   Spinner,
 } from "flowbite-react";
 import { useEffect, useState } from "react";
+import { getComplainPaging } from "../api/client/complainAction";
 
 const itemsPerPage = 8;
 
 export default function WorkpackageList({
   selectedWorkpackages,
   handleWorkpackageClick,
+  complainType,
 }: {
-  selectedWorkpackages: Workpackage[];
-  handleWorkpackageClick: (
-    workpackage: Workpackage,
-    isChecked: boolean
-  ) => void;
+  selectedWorkpackages: Complain[];
+  handleWorkpackageClick: (complain: Complain, isChecked: boolean) => void;
+  complainType: ComplainType;
 }) {
-  const [data, setData] = useState<Paging<Workpackage>>({
+  const [data, setData] = useState<Paging<Complain>>({
     records: [],
     totalItems: 0,
   });
 
   const [pageIndex, setPageIndex] = useState<number>(1);
 
-  const [statusList, setStatusList] = useState<string[]>(["Created", "Open"]);
+  const [statusList, setStatusList] = useState<ComplainStatus[]>([
+    ComplainStatus.New,
+    ComplainStatus.InProgress,
+  ]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -47,27 +50,49 @@ export default function WorkpackageList({
   const fetchData = async () => {
     try {
       setLoading(true);
-      const result = await getWorkpackagePaging({
+
+      console.log(45666, complainType);
+
+      const response = await getComplainPaging({
         status: statusList.join(","),
         pageSize: itemsPerPage.toString(),
         pageIndex: pageIndex.toString(),
         duration: "60",
+        complainType: ComplainType[complainType],
       });
 
-      setData(result);
+      if (response.isSuccess && response.data) {
+        setData(response.data);
+      } else {
+        console.error("Error fetching complain data:", response.message);
+        setData({
+          records: [],
+          totalItems: 0,
+          //currentPage: 1,
+          //pageSize: itemsPerPage,
+        });
+      }
     } catch (error) {
-      console.error("Error fetching workpackage data:", error);
+      console.error("Error fetching complain data:", error);
+      setData({
+        records: [],
+        totalItems: 0,
+        //currentPage: 1,
+        //pageSize: itemsPerPage,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  function statusChange(status: string) {
+  function statusChange(status: ComplainStatus) {
+    let list = [];
     if (statusList.includes(status)) {
-      setStatusList(statusList.filter((sta) => sta !== status));
+      list = statusList.filter((sta) => sta !== status);
     } else {
-      setStatusList((prev) => [...prev, status]);
+      list = [...statusList, status];
     }
+    setStatusList(list);
   }
 
   if (loading) {
@@ -85,41 +110,28 @@ export default function WorkpackageList({
           <ButtonGroup className="gap-0.5">
             <Button
               className={`shadow-lg ${
-                statusList.includes("Created") ? "bg-green-700" : ""
+                statusList.includes(ComplainStatus.New) ? "bg-green-700" : ""
               } `}
-              onClick={() => statusChange("Created")}
+              onClick={() => statusChange(ComplainStatus.New)}
             >
-              Created
+              New
+            </Button>
+
+            <Button
+              className={`shadow-lg ${
+                statusList.includes(ComplainStatus.InProgress)
+                  ? "bg-green-700"
+                  : ""
+              } `}
+              onClick={() => statusChange(ComplainStatus.InProgress)}
+            >
+              In Progress
             </Button>
             <Button
               className={`shadow-lg ${
-                statusList.includes("Open") ? "bg-green-700" : ""
+                statusList.includes(ComplainStatus.Closed) ? "bg-green-700" : ""
               } `}
-              onClick={() => statusChange("Open")}
-            >
-              Open
-            </Button>
-            <Button
-              className={`shadow-lg ${
-                statusList.includes("Pending") ? "bg-green-700" : ""
-              } `}
-              onClick={() => statusChange("Pending")}
-            >
-              Pending
-            </Button>
-            <Button
-              className={`shadow-lg ${
-                statusList.includes("Done") ? "bg-green-700" : ""
-              } `}
-              onClick={() => statusChange("Done")}
-            >
-              Done
-            </Button>
-            <Button
-              className={`shadow-lg ${
-                statusList.includes("Closed") ? "bg-green-700" : ""
-              } `}
-              onClick={() => statusChange("Closed")}
+              onClick={() => statusChange(ComplainStatus.Closed)}
             >
               Closed
             </Button>
@@ -146,33 +158,33 @@ export default function WorkpackageList({
             </thead>
             <tbody>
               {data &&
-                data.records.map((workpackage) => (
+                data.records.map((complain) => (
                   <tr
-                    key={workpackage.workPackageId}
+                    key={complain.complainId}
                     className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
                   >
                     <th
                       scope="row"
                       className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      {workpackage.workPackageId}
+                      {complain.complainId}
                     </th>
-                    <td className="px-6 py-4">{workpackage.name}</td>
+                    <td className="px-6 py-4">{complain.subject}</td>
                     <td className="px-6 py-4">
-                      {new Date(workpackage?.createdDate)
-                        .toISOString()
-                        .slice(0, 10)}
+                      {new Date(complain?.createdAt).toISOString().slice(0, 10)}
                     </td>
-                    <td className="px-6 py-4">{workpackage.status}</td>
+                    <td className="px-6 py-4">
+                      {ComplainStatus[complain.status]}
+                    </td>
                     <td className="px-6 py-4">
                       <Checkbox
                         id="accept"
                         onChange={(e) =>
-                          handleWorkpackageClick(workpackage, e.target.checked)
+                          handleWorkpackageClick(complain, e.target.checked)
                         }
                         checked={selectedWorkpackages
-                          .map((x) => x.workPackageId)
-                          .includes(workpackage.workPackageId)}
+                          .map((x) => x.complainId)
+                          .includes(complain.complainId)}
                       />
                     </td>
                   </tr>

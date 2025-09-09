@@ -11,7 +11,7 @@ export default function Logo() {
         height={50}
         className="object-contain"
       />
-      <div className="text-green-500 ">Smart City</div>
+      <div className="text-[#264653]">Smart City</div>
     </div>
   );
 }

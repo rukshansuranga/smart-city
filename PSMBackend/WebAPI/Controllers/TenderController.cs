@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PSMModel.Models;
 using PSMWebAPI.DTOs.tender;
+using PSMWebAPI.DTOs.Common;
+using PSMWebAPI.Extensions;
 using PSMWebAPI.Repositories;
 using PSMWebAPI.Utils;
 
@@ -26,25 +28,33 @@ namespace PSMWebAPI.Controllers
             try
             {
                 var ticket = await _tenderRepository.GetByIdAsync(id); // Calls service to fetch product by ID
-                return Ok(ticket); // Returns 200 OK response if found
+                if (ticket == null)
+                {
+                    return this.ApiFailure<Tender>("Tender not found");
+                }
+                return this.ApiSuccess(ticket, "Tender retrieved successfully");
             }
             catch (KeyNotFoundException)
             {
-                return NotFound(); // Returns 404 Not Found if product does not exist
+                return this.ApiFailure<Tender>("Tender not found");
             }
         }
 
-        [HttpGet("awadedTender/{id}")]
-        public async Task<IActionResult> GetAwadedTenderByProjectId(int id)
+        [HttpGet("awardedTender/{id}")]
+        public async Task<IActionResult> GetAwardedTenderByProjectId(int id)
         {
             try
             {
-                var awadedTender = await _tenderRepository.GetAwadedTenderByProjectId(id); // Calls service to fetch product by ID
-                return Ok(awadedTender); // Returns 200 OK response if found
+                var awardedTender = await _tenderRepository.GetAwardedTenderByProjectId(id); // Calls service to fetch product by ID
+                if (awardedTender == null)
+                {
+                    return this.ApiFailure("Awarded tender not found");
+                }
+                return this.ApiSuccess(awardedTender, "Awarded tender retrieved successfully");
             }
             catch (KeyNotFoundException)
             {
-                return NotFound(); // Returns 404 Not Found if product does not exist
+                return this.ApiFailure("Awarded tender not found");
             }
         }
 
@@ -54,11 +64,11 @@ namespace PSMWebAPI.Controllers
         {
             if (projectId <= 0)
             {
-                return BadRequest("Invalid project ID.");
+                return this.ApiFailure("Invalid project ID");
             }
 
             var response = await _tenderRepository.GetTendersByProjectIdAsync(projectId); // Calls service to fetch product by ID
-            return Ok(response); // Returns 200 OK response if found
+            return this.ApiSuccess(response, "Tenders retrieved successfully");
         }
         
         //generate action for create project
@@ -67,20 +77,27 @@ namespace PSMWebAPI.Controllers
         {
             if (request == null)
             {
-                return BadRequest();
+                return this.ApiFailure<Tender>("Invalid request data");
             }
 
             try
             {
-                Tender tender = _mapper.Map<Tender>(request);
-            tender.SubmittedDate = PSMDateTime.Now; // Set the submitted date to current time
+                //Check if tender already exists for this project and contractor
+                var existingTender = await _tenderRepository.GetTenderByProjectIdAndContractorIdAsync(request.ProjectId, request.ContractorId);
+                if (existingTender != null)
+                {
+                    return this.ApiFailure<Tender>("Tender for this project and contractor already exists");
+                }
 
-            var createdTender = await _tenderRepository.AddAsync(tender);
-            return CreatedAtAction(nameof(GetById), new { id = createdTender.Id }, createdTender);
+                Tender tender = _mapper.Map<Tender>(request);
+                tender.SubmittedDate = PSMDateTime.Now; // Set the submitted date to current time
+
+                var createdTender = await _tenderRepository.AddAsync(tender);
+                return this.ApiSuccess(createdTender, "Tender created successfully");
             }
             catch (Exception ex)
             {
-                throw ex;
+                return this.ApiFailure<Tender>("An error occurred while creating the tender", ex.Message);
             }
             
         }
@@ -91,13 +108,13 @@ namespace PSMWebAPI.Controllers
         {
             if (request == null || id <= 0)
             {
-                return BadRequest();
+                return this.ApiFailure<Tender>("Invalid request data or ID");
             }
 
             var existingTender = await _tenderRepository.GetByIdAsync(id);
             if (existingTender == null)
             {
-                return NotFound();
+                return this.ApiFailure<Tender>("Tender not found");
             }
 
             _mapper.Map<TenderPostRequest,Tender>(request,existingTender);
@@ -105,7 +122,40 @@ namespace PSMWebAPI.Controllers
             //_mapper.Map<Project, Project>(mapObject, existingProject);
 
             var updatedTender = await _tenderRepository.UpdateAsync(existingTender);
-            return Ok(updatedTender);
+            return this.ApiSuccess(updatedTender, "Tender updated successfully");
+        }
+
+        //generate action for delete tender
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+            {
+                return this.ApiFailure("Invalid tender ID");
+            }
+
+            try
+            {
+                var existingTender = await _tenderRepository.GetByIdAsync(id);
+                if (existingTender == null)
+                {
+                    return this.ApiFailure("Tender not found");
+                }
+
+                var isDeleted = await _tenderRepository.DeleteAsync(id);
+                if (isDeleted)
+                {
+                    return this.ApiSuccess(true, "Tender deleted successfully");
+                }
+                else
+                {
+                    return this.ApiFailure("Failed to delete tender");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.ApiFailure("An error occurred while deleting the tender", ex.Message);
+            }
         }
 
     }

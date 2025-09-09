@@ -1,27 +1,36 @@
 "use client";
 import {
-  getWorkpackageByTicketId,
+  getComplainByTicketId,
   manageMappingByTicketAndPackage,
-} from "@/app/api/actions/workpackageAction";
-import { Workpackage } from "@/types";
-import { Button, Spinner } from "flowbite-react";
+} from "@/app/api/client/complainAction";
+import { Complain } from "@/types";
 import { useEffect, useState } from "react";
 import WorkpackageList from "./WorkpackageList";
+import { ComplainType, ComplainStatus } from "@/enums";
+import { Button, Spinner } from "flowbite-react";
 
 export default function WorkpackageAssigned({
   ticketId,
+  complainType,
 }: {
   ticketId: number;
+  complainType: ComplainType;
 }) {
-  const [workpackages, setWorkpackages] = useState<Workpackage[]>([]);
+  const [workpackages, setWorkpackages] = useState<Complain[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchWorkpackagesByTicketId() {
       try {
         setLoading(true);
-        const data = await getWorkpackageByTicketId(ticketId);
-        setWorkpackages(data);
+        const response = await getComplainByTicketId(ticketId);
+
+        if (!response.isSuccess) {
+          console.error("Error fetching workpackages:", response.message);
+          return;
+        }
+
+        setWorkpackages(response.data);
       } catch (error) {
         console.error("Error fetching workpackages:", error);
       } finally {
@@ -32,48 +41,50 @@ export default function WorkpackageAssigned({
     fetchWorkpackagesByTicketId();
   }, []);
 
-  async function RemoveWorkpackage(workpackageId: number | undefined) {
+  async function RemoveWorkpackage(complainId: number | undefined) {
     try {
-      //await deleteMappingByTicketAndPackage(workpackageId!, ticketId);
+      //await deleteMappingByTicketAndPackage(complainId!, ticketId);
 
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: workpackageId!,
+        complainId: complainId!,
         action: "Remove",
       });
 
       const filterdWorkpackage = workpackages.filter(
-        (x) => x.workPackageId !== workpackageId
+        (x) => x.complainId !== complainId
       );
       setWorkpackages(filterdWorkpackage);
     } catch (error) {
-      console.error("Error removing workpackage:", error);
+      console.error("Error removing complain:", error);
     }
   }
 
   async function handleWorkpackageClick(
-    workpackage: Workpackage,
+    complain: Complain,
     isChecked: boolean
   ) {
     if (isChecked) {
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: parseInt(workpackage.workPackageId!),
+        complainId: parseInt(complain.complainId!),
         action: "Add",
       });
-      setWorkpackages((list) => [...list, workpackage]);
+      setWorkpackages((list) => [...list, complain]);
     } else {
       await manageMappingByTicketAndPackage({
         ticketId: ticketId,
-        workpackageId: parseInt(workpackage.workPackageId!),
+        complainId: parseInt(complain.complainId!),
         action: "Remove",
       });
       const filterd = workpackages.filter(
-        (w) => w.workPackageId !== workpackage?.workPackageId
+        (w) => w.complainId !== complain?.complainId
       );
       setWorkpackages(filterd);
     }
   }
+
+  console.log("All workpackages:", workpackages);
 
   if (loading) {
     return (
@@ -105,26 +116,26 @@ export default function WorkpackageAssigned({
             </tr>
           </thead>
           <tbody>
-            {workpackages.map((workpackage) => (
+            {workpackages.map((complain) => (
               <tr
-                key={workpackage.workPackageId}
+                key={complain.complainId}
                 className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {workpackage.workPackageId}
+                  {complain.complainId}
                 </th>
-                <td className="px-6 py-4">{workpackage.name}</td>
+                <td className="px-6 py-4">{complain.subject}</td>
                 <td className="px-6 py-4">
-                  {new Date(workpackage.createdDate).toISOString().slice(0, 10)}
+                  {new Date(complain.createdAt).toISOString().slice(0, 10)}
                 </td>
-                <td className="px-6 py-4">{workpackage.status}</td>
+                <td className="px-6 py-4">{ComplainStatus[complain.status]}</td>
                 <td>
                   <Button
                     onClick={() =>
-                      RemoveWorkpackage(parseInt(workpackage.workPackageId!))
+                      RemoveWorkpackage(parseInt(complain.complainId!))
                     }
                   >
                     Remove
@@ -139,6 +150,7 @@ export default function WorkpackageAssigned({
         <WorkpackageList
           selectedWorkpackages={workpackages}
           handleWorkpackageClick={handleWorkpackageClick}
+          complainType={complainType}
         />
       </div>
     </div>

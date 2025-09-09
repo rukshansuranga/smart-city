@@ -18,8 +18,17 @@ public class PSMDateTime
         }
     }
 
-    public static string FormatDate(LocalDateTime date)
+        public static LocalDate Today
     {
-        return $"{date.Year}-{date.Month}-{date.Day}";
+        get
+        {
+            // Get the current instant in UTC
+            Instant now = SystemClock.Instance.GetCurrentInstant();
+            // Convert the instant to a ZonedDateTime in the Asia/Colombo timezone
+            ZonedDateTime nowInColombo = now.InZone(DateTimeZoneProviders.Tzdb["Asia/Colombo"]);
+            // Return the LocalDate part of the ZonedDateTime
+            return nowInColombo.Date;
+        }
     }
+
 }

@@ -48,3 +48,76 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+# PSM Mobile
+
+This is a React Native mobile application for the PSM project.
+
+## Features
+
+- User authentication with Keycloak
+- User profile management
+- Project and complaint management
+- Form validation using react-hook-form and zod
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js
+- npm or yarn
+- Expo CLI (`npm install -g expo-cli`)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+   ```sh
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Copy `.env.example` to `.env` and fill in your environment variables
+
+### Running the App
+
+- For development:
+
+  ```sh
+  npx expo start
+  ```
+
+- For a development build (with custom native code):
+
+  ```sh
+  npx expo run:android
+  # or
+  npx expo run:ios
+  ```
+
+## Environment Variables
+
+- See `.env` for required variables (Keycloak, backend, etc.)
+
+## Project Structure
+
+- `app/` - Main app screens and navigation
+- `components/` - Reusable UI components
+- `stores/` - State management (e.g., auth)
+- `types/` - TypeScript types
+
+## License
+
+eas init
+
+eas build -p android --profile development
+
+ngrok
+ngrok http http://localhost:5000
+
+color schems - cool waters
+#22577a, #38a3a5, #57cc99, #80ed99, #c7f9cc
+
+MIT

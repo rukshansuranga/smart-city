@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PSMModel.Models;
 
-public class Vehical
+public class Vehical: BaseEntity
 {
     [Key]
     public string VehicalNo { get; set; }

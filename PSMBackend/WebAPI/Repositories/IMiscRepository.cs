@@ -5,6 +5,6 @@ namespace PSMWebAPI.Repositories;
 
 public interface IMiscRepository
 {
-    Task<IEnumerable<Company>> GetCompanies();
-    Task<Company> GetCompanyByIdAsync(int id);
+    Task<IEnumerable<Contractor>> GetContractors();
+    Task<Contractor?> GetContractorByIdAsync(string id);
 }

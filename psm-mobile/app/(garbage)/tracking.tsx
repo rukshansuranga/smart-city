@@ -1,7 +1,8 @@
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import { Text } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -13,7 +14,7 @@ const initialRegion = {
 };
 
 export default function Garbage() {
-  const [inputDate, setInputDate] = useState(undefined);
+  const [inputDate, setInputDate] = useState("2025-07-10");
   const [region, setRegion] = useState(undefined);
   const [coordinates, setCoordinates] = useState([]);
 
@@ -42,29 +43,61 @@ export default function Garbage() {
   async function fetchRideDataPoints() {
     console.log("select region", region);
     try {
-      const data = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/route?regionNo=${region}`
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/route?regionNo=${region}&date=${inputDate}`
       );
 
-      const ride = await data.json();
-      console.log("ride points", ride?.ridePoints);
-      setCoordinates(ride?.ridePoints);
+      const data = await response.json();
+
+      // Handle new ApiResponse structure
+      if (data && typeof data === "object" && "isSuccess" in data) {
+        if (!data.isSuccess) {
+          console.error("Fetching ride data failed:", data.message);
+          if (data.errors && data.errors.length > 0) {
+            data.errors.forEach((error) => console.error(error));
+          }
+          setCoordinates([]);
+          return;
+        }
+        console.log("ride points", data.data?.ridePoints);
+        setCoordinates(data.data?.ridePoints || []);
+      } else {
+        // For backwards compatibility
+        console.log("ride points", data?.ridePoints);
+        setCoordinates(data?.ridePoints || []);
+      }
     } catch (error) {
-      console.log("error1", error);
+      console.error("Error fetching ride data:", error);
+      setCoordinates([]);
     }
   }
 
   async function fetchRegions() {
     try {
-      const data = await fetch(
+      const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/region`
       );
 
-      const regions = await data.json();
+      const data = await response.json();
 
-      setRegions(regions);
+      // Handle new ApiResponse structure
+      if (data && typeof data === "object" && "isSuccess" in data) {
+        if (!data.isSuccess) {
+          console.error("Fetching regions failed:", data.message);
+          if (data.errors && data.errors.length > 0) {
+            data.errors.forEach((error) => console.error(error));
+          }
+          setRegions([]);
+          return;
+        }
+        setRegions(data.data || []);
+      } else {
+        // For backwards compatibility
+        setRegions(data || []);
+      }
     } catch (error) {
-      console.log("error", error);
+      console.error("Error fetching regions:", error);
+      setRegions([]);
     }
   }
 
@@ -99,13 +132,22 @@ export default function Garbage() {
           >
             {coordinates && coordinates.length > 1 && (
               <>
-                <Marker coordinate={coordinates[0]} />
-                <Marker coordinate={coordinates[coordinates.length - 1]} />
-                <Polyline
+                {/* <Marker coordinate={coordinates[0]} />
+                <Marker coordinate={coordinates[coordinates.length - 1]} /> */}
+                {/* <Polyline
                   coordinates={coordinates}
                   strokeColor="#000"
                   strokeColors={["#7F0000"]}
                   strokeWidth={6}
+                /> */}
+                <MapViewDirections
+                  origin={coordinates[0]}
+                  waypoints={coordinates.slice(1, coordinates.length - 2)}
+                  destination={coordinates[coordinates.length - 1]}
+                  apikey="AIzaSyBO2E_KAoN9H3bmeXlS9Np20qGmtlg-qbc"
+                  strokeWidth={3}
+                  strokeColor="hotpink"
+                  mode="WALKING"
                 />
               </>
             )}

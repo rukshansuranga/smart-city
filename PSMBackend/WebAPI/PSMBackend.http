@@ -1,6 +1,30 @@
-@PSMBackend_HostAddress = http://localhost:5115
+@PSMBackend_HostAddress = http://localhost:5000
+@keycloak_url = https://smartcity-identity-ecesd5fya0buajfs.southeastasia-01.azurewebsites.net
+@keycloak_realm = smartcity
 
-GET {{PSMBackend_HostAddress}}/weatherforecast/
+# Client Credentials Configuration (Service Account)
+@service_client_id = smartcity-test
+@service_client_secret = Sy7SFs54eJR2SsZbukkeyvcveUkXntYX
+
+# ======================
+# CLIENT CREDENTIALS FLOW (Service-to-Service Authentication)
+# ======================
+
+# Direct Client Credentials request to Keycloak
+# @name clientCredentialsDirect
+POST {{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id={{service_client_id}}&client_secret={{service_client_secret}}
+
+###
+
+# Extract token from Client Credentials response
+@token = {{clientCredentialsDirect.response.body.access_token}}
+
+# Use the token in your API request
+GET {{PSMBackend_HostAddress}}/api/project/contractor/d0eca5fa-8cf4-4256-ab6a-9405c789c1b1
 Accept: application/json
+Authorization: Bearer {{token}}
 
 ###

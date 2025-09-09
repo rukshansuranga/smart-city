@@ -13,12 +13,17 @@ public class RideConfiguration : IEntityTypeConfiguration<Ride>
         builder.HasData(
             new Ride
             {
-                Id = 1,
-                StartTime = new LocalDateTime(2025, 7, 10, 13, 0),
+                RideId = 1,
+                StartTime = new LocalDateTime(2025, 7, 10, 13, 0, 0),
+                EndTime = null,
                 Type = "Paper Collection",
+                Notes = null,
                 DriverNo = 1,
                 VehicalNo = "T01",
                 RegionNo = "R001",
+                CreatedAt = new LocalDateTime(2025, 7, 10, 12, 0, 0),
+                CreatedBy = "1",
+                IsActive = true
             }
         );
     }

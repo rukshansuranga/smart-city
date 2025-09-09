@@ -9,16 +9,29 @@ namespace PSMDataAccess;
 
 public class ApplicationDbContext : DbContext
 {
+    public DbSet<Notification> Notifications { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<LightPost> LightPosts { get; set; }
-    public DbSet<Ticket> Tickets { get; set; }
-    public DbSet<WorkPackage> WorkPackages { get; set; }
-    public DbSet<LightPostComplint> LightPostComplints { get; set; }
 
-    public DbSet<TicketPackage> TicketPackages { get; set; }
-    public DbSet<Comment> Comments { get; set; }
+    //Ticket
+    public DbSet<Ticket> Tickets { get; set; }
+    public DbSet<InternalTicket> InternalTickets { get; set; }
+    public DbSet<ComplainTicket> ComplainTickets { get; set; }
+    public DbSet<ProjectTicket> ProjectTickets { get; set; }
+    public DbSet<TicketComplain> TicketComplains { get; set; }
+    public DbSet<TicketHistory> TicketHistories { get; set; }
+    public DbSet<TicketActivity> TicketActivities { get; set; }
+
+    //Complains
+    public DbSet<Complain> Complains { get; set; }
+    public DbSet<LightPostComplain> LightPostComplains { get; set; }
     public DbSet<GeneralComplain> GeneralComplains { get; set; }
+    public DbSet<ProjectComplain> ProjectComplains { get; set; }
+    public DbSet<GarbageComplain> GarbageComplains { get; set; }
+
+    
+    public DbSet<Comment> Comments { get; set; }
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Region> Regions { get; set; }
     public DbSet<Vehical> Vehicals { get; set; }
@@ -27,45 +40,34 @@ public class ApplicationDbContext : DbContext
     public DbSet<Ride> Rides   { get; set; }
     public DbSet<RidePoint> RidePoints   { get; set; }
     public DbSet<GCShedule> GCShedules   { get; set; }
-    public DbSet<Company> Companies   { get; set; }
+    public DbSet<Contractor> Contractors   { get; set; }
     public DbSet<Project> Projects   { get; set; }
     public DbSet<Tender> Tenders   { get; set; }
-    public DbSet<ProjectComplain> ProjectComplains { get; set; }
-    public DbSet<TicketHistory> TicketHistories { get; set; }
+    public DbSet<ProjectCoordinator> ProjectCoordinators { get; set; }
+    public DbSet<ProjectInspection> ProjectInspections { get; set; }
+    public DbSet<ProjectProgress> ProjectProgresses { get; set; }
+    
+    // Attachments
+    public DbSet<Attachment> Attachments { get; set; }
+    
+    // Tags
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<TicketTag> TicketTags { get; set; }
+    public DbSet<ComplainTag> ComplainTags { get; set; }
+    public DbSet<ProjectTag> ProjectTags { get; set; }
+
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
 
-
-    //local connection
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     //optionsBuilder.UseNpgsql("Host=localhost;Database=OLD_PSM;Username=postgres;Password=test");
-
-    //     optionsBuilder.UseNpgsql(
-    //     "Host=localhost;Database=PSM2;Username=postgres;Password=test",
-    //     o => o.UseNodaTime()
-    // );
-    // }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     //optionsBuilder.UseNpgsql("Host=localhost;Database=OLD_PSM;Username=postgres;Password=test");
-
-    //     optionsBuilder.UseNpgsql(
-    //     "Host=ep-morning-math-a10tj24y-pooler.ap-southeast-1.aws.neon.tech; Database=neondb; Username=neondb_owner; Password=npg_DiA1HhTn2Gmr; SSL Mode=VerifyFull; Channel Binding=Require;",
-    //     o => o.UseNodaTime()
-    // );
-    // }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<WorkPackage>()
-            .HasDiscriminator<string>("WorkPackageType")
-            .HasValue<WorkPackage>("WorkPackage")
-            .HasValue<LightPostComplint>("LightPostComplint")
+        modelBuilder.Entity<Complain>()
+            .HasDiscriminator<string>("ComplainType")
+            .HasValue<Complain>("Complain")
+            .HasValue<LightPostComplain>("LightPostComplain")
             .HasValue<GarbageComplain>("GarbageComplain")
             .HasValue<GeneralComplain>("GeneralComplain")
             .HasValue<ProjectComplain>("ProjectComplain");
@@ -75,45 +77,27 @@ public class ApplicationDbContext : DbContext
             .HasValue<User>("User")
             .HasValue<Driver>("Driver");
 
-        //modelBuilder.Entity<TicketPackage>().HasNoKey();
+        modelBuilder.Entity<Ticket>()
+            .HasDiscriminator<string>("TicketType")
+            .HasValue<ProjectTicket>("ProjectTicket")
+            .HasValue<InternalTicket>("InternalTicket")
+            .HasValue<ComplainTicket>("ComplainTicket");
 
-        #region FeedData
-
-        //feed lightpost
-        modelBuilder.Entity<LightPost>().HasData(
-            new LightPost
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
             {
-                LightPostNumber = "LP001",
-                Latitude = 6.9271,
-                Longitude = 79.8612
-            },
-            new LightPost
-            {
-                LightPostNumber = "LP002",
-                Latitude = 6.9272,
-                Longitude = 79.8613
+                modelBuilder.Entity(entityType.ClrType).Property<LocalDateTime>("CreatedAt").HasDefaultValueSql("NOW()");
+                modelBuilder.Entity(entityType.ClrType).Property<bool>("IsActive").HasDefaultValue(true);
             }
-        );
-
-        //feed garbage complain
-        modelBuilder.Entity<GarbageComplain>().HasData(
-            new GarbageComplain
-            {
-                WorkPackageId = 7,
-                Name = "Garbage Collection",
-                Detail = "Garbage collection needed in area",
-                CreatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-                UpdatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-                Status = "Open",
-                ClientId = 2,
-                GarbagePointNo = "GP001"
-            });
-
-        modelBuilder.ApplyConfiguration(new ClientConfiguration());
-        modelBuilder.ApplyConfiguration(new WorkpackageConfiguration());
+        }
+        #region Configurations
+        modelBuilder.ApplyConfiguration(new ClientConfiguration()); 
+        modelBuilder.ApplyConfiguration(new LightPostConfiguration());
+        //modelBuilder.ApplyConfiguration(new ComplainConfiguration());
         modelBuilder.ApplyConfiguration(new LightPostComplainConfiguration());
         modelBuilder.ApplyConfiguration(new TicketConfiguration());
-        modelBuilder.ApplyConfiguration(new TicketPackageMappingConfiguration());
+        modelBuilder.ApplyConfiguration(new TicketComplainMappingConfiguration());
         modelBuilder.ApplyConfiguration(new GeneralComplainConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new VehicalConfiguration());
@@ -123,10 +107,17 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RideConfiguration());
         modelBuilder.ApplyConfiguration(new RegionConfiguration());
         modelBuilder.ApplyConfiguration(new GCSheduleConfiguration());
-        modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractorConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         modelBuilder.ApplyConfiguration(new TenderConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectComplainConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectCoordinatorConfiguration());
+        modelBuilder.ApplyConfiguration(new CommentConfiguration());
+        modelBuilder.ApplyConfiguration(new AttachmentConfiguration());
+        modelBuilder.ApplyConfiguration(new TagConfiguration());
+        modelBuilder.ApplyConfiguration(new TicketTagConfiguration());
+        modelBuilder.ApplyConfiguration(new ComplainTagConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectTagConfiguration());
 
         #endregion
     }

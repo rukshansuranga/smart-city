@@ -5,6 +5,6 @@ namespace PSMModel.Models;
 
 public class Driver: User
 {
-    public string? LicenNo { get; set; }
+    public string? LicenseNo { get; set; }
     public LocalDateTime? ExpireDate { get; set; }
 }

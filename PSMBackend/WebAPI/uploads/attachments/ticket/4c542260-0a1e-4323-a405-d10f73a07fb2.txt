@@ -1,0 +1,24 @@
+Assigning issue and PR request
+
+Users with write permission can assign issues and PR.
+
+Linking a PR to issue
+
+User with read access can create PR but need to write access to change code
+
+ anyone with write access to the repository can edit or delete the labels in that repository later.
+
+anyone with write access to the repository can pin 3 issues 
+
+anyone can create and participate in discussion for the repository
+
+to contribute to repository Write permission is needed
+
+write permission is needed to create branch for issue
+
+repository owners and wriete permission need to enable discussion in repo
+
+anybody can publich action to the marketplace
+
+
+

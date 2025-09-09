@@ -10,7 +10,8 @@ public class TenderProfile : Profile
     public TenderProfile()
     {
         CreateMap<TenderPostRequest, Tender>().ReverseMap();
- 
-        CreateMap<Tender, Tender>().ReverseMap();
+
+        CreateMap<Tender, Tender>().ReverseMap()
+        .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
     }
 }

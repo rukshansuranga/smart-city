@@ -1,5 +1,4 @@
 import { getTicketById } from "@/app/api/actions/ticketActions";
-import { Ticket } from "@/types";
 
 import ManageTicket from "../ManageTicket";
 
@@ -10,9 +9,13 @@ export default async function TicketById({
 }) {
   const { id } = await params;
 
-  const ticket: Ticket = await getTicketById(id);
+  const response = await getTicketById(id);
 
-  console.log(45, id, ticket);
+  if (!response.isSuccess) {
+    return <div>Error: {response.message}</div>;
+  }
+
+  const ticket = response.data;
 
   return (
     <div>

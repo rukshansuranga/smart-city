@@ -1,0 +1,13 @@
+using System;
+using PSMModel.Enums;
+
+namespace PSMWebAPI.DTOs.Complain.GeneralComplain;
+
+public class GeneralComplainAddRequest
+{
+    public string Subject { get; set; }
+    public string Detail { get; set; }
+    public ComplainStatus? Status { get; set; }
+    public bool IsPrivate { get; set; }
+    public string ClientId { get; set; }
+}

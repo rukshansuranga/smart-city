@@ -1,24 +1,26 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
+using PSMModel.Enums;
 
 namespace PSMModel.Models;
 
-public class Comment
+public class Comment : BaseEntity
 {
-public int CommentId { get; set; }
-public string Text { get; set; }
-public LocalDateTime CreatedDate { get; set; }
-public LocalDateTime UpdatedDate { get; set; }
-[ForeignKey("WorkPackage")]
-public int WorkpackageId { get; set; }
-public WorkPackage? WorkPackage { get; set; }
-public bool? IsPrivate { get; set; }
-[ForeignKey("Client")]
-public int? ClientId { get; set; }
-public Client? Client { get; set; }
-[ForeignKey("User")]
-public int? UserId { get; set; }
-public User? User { get; set; }
-public string? Type { get; set; }
+    public int CommentId { get; set; }
+    public required string Text { get; set; }
+
+    public EntityType EntityType { get; set; }
+    public required string EntityId { get; set; }
+    public bool? IsPrivate { get; set; }
+    
+    [ForeignKey("Client")]
+    public string? ClientId { get; set; }
+    public Client? Client { get; set; }
+    
+    [ForeignKey("User")]
+    public string? UserId { get; set; }
+    public User? User { get; set; }
+    
+    public CommentType? Type { get; set; }
 }

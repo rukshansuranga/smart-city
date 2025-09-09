@@ -17,34 +17,33 @@ public class TenderRepository : ITenderRepository
 
     public async Task<Tender> AddAsync(Tender tender)
     {
-       await _context.Tenders.AddAsync(tender);
+        await _context.Tenders.AddAsync(tender);
         await _context.SaveChangesAsync();
         return tender;
     }
 
-    public async Task<Tender?> GetAwadedTenderByProjectId(int id)
+    public async Task<Tender?> GetAwardedTenderByProjectId(int id)
     {
         var tender = await _context.Tenders
-            .Include(t => t.Company)
-            .FirstOrDefaultAsync(t => t.Id == id);
+            .Include(t => t.Contractor)
+            .FirstOrDefaultAsync(t => t.TenderId == id);
 
         return tender;
     }
 
-    public async Task<Tender> GetByIdAsync(int id)
+    public async Task<Tender?> GetByIdAsync(int id)
     {
         return await _context.Tenders.FindAsync(id);
     }
 
-    
-
     public async Task<IEnumerable<Tender>> GetTendersByProjectIdAsync(int projectId)
     {
-        return _context.Tenders.Include(t => t.Project)
-            .Include(t => t.Company)
-            .Where(t => t.ProjectId == projectId); 
+        return await _context.Tenders.Include(t => t.Project)
+            .Include(t => t.Contractor)
+            .Where(t => t.ProjectId == projectId)
+            .ToListAsync();
     }
-  
+
     public async Task<Tender> UpdateAsync(Tender tender)
     {
         try
@@ -53,9 +52,36 @@ public class TenderRepository : ITenderRepository
             await _context.SaveChangesAsync();
             return tender;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            throw ex;
+            throw;
         }
     }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        try
+        {
+            var tender = await _context.Tenders.FindAsync(id);
+            if (tender == null)
+            {
+                return false;
+            }
+
+            _context.Tenders.Remove(tender);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+    
+    public Task<Tender?> GetTenderByProjectIdAndContractorIdAsync(int projectId, string contractorId)
+    {
+        return _context.Tenders
+            .FirstOrDefaultAsync(t => t.ProjectId == projectId && t.ContractorId == contractorId);
+    }
+
 }

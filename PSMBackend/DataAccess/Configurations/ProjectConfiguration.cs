@@ -14,13 +14,13 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             new Project
             {
                 Id = 1,
-                Name = "Project Alpha",
+                Subject = "Project Alpha",
                 Description = "Description for Project Alpha",
-                Type = "Construction",
+                Type = ProjectType.Road,
                 SpecificationDocument = "specification_alpha.pdf",
                 StartDate = new LocalDate(2023, 1, 1),
                 EndDate = new LocalDate(2023, 12, 31),
-                Status = "Proposed",
+                Status = ProjectStatus.New,
                 Location = "Location A",
                 LocationNote = "Note for Location A",
                 City = "Weliveriya",
@@ -29,18 +29,21 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
                 EstimatedCost = 1000000,
                 TenderOpeningDate = new LocalDate(2023, 1, 15),
                 TenderClosingDate = new LocalDate(2023, 1, 30),
-                AwadedTenderId = 1
+                AwardedTenderId = 1,
+                CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
+                CreatedBy = "1",
+                IsActive = true
             },
             new Project
             {
                 Id = 2,
-                Name = "Weliveriya road project",
+                Subject = "Weliveriya road project",
                 Description = "Weliveriya road project",
-                Type = "Road Construction",
+                Type = ProjectType.Road,
                 SpecificationDocument = "specification_alpha.pdf",
                 StartDate = new LocalDate(2023, 1, 1 ),
                 EndDate = new LocalDate(2023, 12, 31),
-                Status = "Proposed",
+                Status = ProjectStatus.New,
                 Location = "Location A",
                 LocationNote = "Note for Location A",
                 City = "Ambaraluwa",
@@ -48,9 +51,12 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
                 Longitude = -118.2437,
                 EstimatedCost = 1000000,
                 TenderOpeningDate = new LocalDate(2023, 1, 15),
-                TenderClosingDate = new LocalDate(2023, 1, 30)
+                TenderClosingDate = new LocalDate(2023, 1, 30),
+                CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0, 0),
+                CreatedBy = "1",
+                AwardedTenderId = 2,
+                IsActive = true
             }
-
         );
     }
 }

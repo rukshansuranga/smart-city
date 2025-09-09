@@ -5,7 +5,8 @@ export default function ProjectLayout() {
   return (
     <SafeAreaProvider>
       {/* <Stack /> */}
-      <Stack screenOptions={{ title: "Projects" }}>
+      <Stack screenOptions={{ title: "Projects", headerShown: false }}>
+        <Stack.Screen name="index" options={{ title: "Project Home" }} />
         <Stack.Screen name="road" options={{ title: "Road" }} />
         <Stack.Screen name="irrigation" options={{ title: "Irrigation" }} />
         <Stack.Screen name="construction" options={{ title: "Construction" }} />
@@ -13,6 +14,10 @@ export default function ProjectLayout() {
         <Stack.Screen
           name="projectDetail"
           options={{ title: "Project Detail" }}
+        />
+        <Stack.Screen
+          name="project-tabs"
+          options={{ title: "Project Tabs", headerShown: false }}
         />
       </Stack>
     </SafeAreaProvider>

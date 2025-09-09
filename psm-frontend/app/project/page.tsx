@@ -16,9 +16,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import qs from "query-string";
 import { useSearchParams } from "next/navigation";
-import { filterProjects } from "../api/actions/projectActions";
-import { typeList, statusList } from "../../utility/Constants"; // Importing the constants
+import { filterProjects } from "../api/client/projectActions";
 import Link from "next/link";
+import { ProjectStatus, ProjectType } from "@/enums";
+import toast from "react-hot-toast";
+import { LuPencil } from "react-icons/lu";
 
 export type ProjectFilter = {
   pageSize: number;
@@ -84,17 +86,16 @@ export default function ProjectList() {
     setIsLoading(true);
     try {
       const url = generateQuery(filter);
-      const pageList = await filterProjects(url);
-      const list = pageList?.records.map((project: Project) => {
-        const type = typeList.find((type) => type.value === project.type)?.text;
-        const status = statusList.find(
-          (status) => status.value === project.status
-        )?.text;
+      const response = await filterProjects(url);
 
-        return { ...project, type, status };
-      });
-      setTotalItems(pageList?.totalItems);
-      setProjects(list);
+      if (response.isSuccess) {
+        setTotalItems(response.data?.totalItems);
+        setProjects(response.data?.records);
+      } else {
+        setTotalItems(0);
+        setProjects([]);
+        toast.error(response.message || "Failed to fetch projects");
+      }
     } catch (error) {
       console.error("Error fetching projects:", error);
       // Optionally, you can set an error state here to display an error message in the UI
@@ -132,11 +133,13 @@ export default function ProjectList() {
               }
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              {typeList.map((type) => (
-                <option value={type.value!} key={type.value}>
-                  {type.text}
-                </option>
-              ))}
+              {Object.keys(ProjectType)
+                .filter((key) => !isNaN(Number(key)))
+                .map((key) => (
+                  <option value={key} key={key}>
+                    {ProjectType[key as keyof typeof ProjectType]}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="w-4/12">
@@ -204,9 +207,6 @@ export default function ProjectList() {
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
-                  <TableHeadCell>
-                    <span className="sr-only">Add Tender</span>
-                  </TableHeadCell>
                 </TableRow>
               </TableHead>
               <TableBody className="divide-y">
@@ -216,26 +216,22 @@ export default function ProjectList() {
                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   >
                     <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                      {project.name}
+                      {project.subject}
                     </TableCell>
-                    <TableCell>{project.type}</TableCell>
+                    <TableCell>
+                      {ProjectType[project.type as ProjectType]}
+                    </TableCell>
                     <TableCell>{project.location}</TableCell>
-                    <TableCell>{project.status}</TableCell>
+                    <TableCell>
+                      {ProjectStatus[project.status as ProjectStatus]}
+                    </TableCell>
 
                     <TableCell>
                       <Link
                         href={`/project/update/${project.id}`}
-                        className="font-medium text-primary-600 hover:underline dark:text-primary-500 ml-2"
+                        className="inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                       >
-                        Edit
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/tender/list/${project.id}`}
-                        className="font-medium text-primary-600 hover:underline dark:text-primary-500 ml-2"
-                      >
-                        Add Tender
+                        <LuPencil className="w-4 h-4" />
                       </Link>
                     </TableCell>
                   </TableRow>

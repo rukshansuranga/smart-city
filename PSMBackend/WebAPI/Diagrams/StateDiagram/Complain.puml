@@ -2,7 +2,7 @@
 @startuml
 
 [*] --> New
-New: Client Created the Workpackage
+New: Client Created the Complain
 
 New --> OpenTicket
 OpenTicket: Create a ticket for the complain

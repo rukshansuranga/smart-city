@@ -1,13 +1,127 @@
-	
+entity Ticket {
+    TicketId
+    Subject
+    Detail
+    Note
+    Status
+    Type
+    UserId
+}
+entity Tender {
+    TenderId
+    Subject
+    Note
+    BidAmount
+    SubmittedDate
+    ProjectId
+    CompanyId
+}
+entity Vehical {
+    VehicalNo
+    RegistrationNo
+    Model
+    Brand
+    Year
+}
+entity RidePoint {
+    RidePointId
+    Latitude
+    Longitude
+    PointTime
+    RideId
+}
+
+Ride -1- RidePoint
+RidePoint -N- Ride
+entity Ride {
+    RideId
+    StartTime
+    EndTime
+    Type
+    Notes
+    DriverNo
+    VehicalNo
+    RegionNo
+}
+entity RoutePoint {
+    RoutePointId
+    PointName
+    Latitude
+    Longitude
+    RouteNo
+}
+
+Route -1- RoutePoint
+RoutePoint -N- Route
+entity Route {
+    RouteNo
+    Name
+    Distance
+}
+entity ProjectStandard {
+    ProjectStandardId
+    Standard
+    Note
+    IsMandatory
+    ProjectId
+}
+
+Project -1- ProjectStandard
+ProjectStandard -N- Project
+entity GeneralComplain {
+    IsPrivate
+}
+
+GeneralComplain --|> Workpackage
+entity Region {
+    RegionNo
+    Name
+    Note
+}
+entity GCShedule {
+    GCSheduleId
+    Day
+    Type
+    Time
+    RegionNo
+}
+
+Region -1- GCShedule
+GCShedule -N- Region
+
+entity GarbageComplain {
+    GarbagePointNo  
+}
+
+Workpackage -1- GarbageComplain
+GarbageComplain -N- Workpackage
+entity Driver {
+    UserId
+    FirstName
+    LastName
+    Mobile
+    LicenseNo
+    ExpireDate
+}
+entity Comment {
+    CommentId
+    Text
+    WorkpackageId
+
+}
+
+Workpackage -1- Comment
+Comment -N- Workpackage
+    
 @startchen
 
 entity User {
-    UserNo
+    UserId
     FirstName
     LastName
     Mobile
     Email
-    
+    City
 }
 
 
@@ -30,16 +144,23 @@ Assign_To -N- Ticket
 
 entity Client {
     ClientId
-    Name
+    FirstName
+    LastName
     Mobile
+    Email
+    AddressLine1
+    AddressLine2
+    City
 }
 
-entity Complaint{
-    ComplainId
-    Name
+entity Workpackage{
+    WorkpackageId
+    Subject
     Detail
-    CreatedDate
-    UpdatedDate
+    Status
+    ClientId
+    WorkpackageType
+
 }
 
 relationship Raise{
@@ -47,7 +168,7 @@ relationship Raise{
 }
 
 Client -1- Raise
-Raise -N- Complaint
+Raise -N- Workpackage
 
 relationship Creates{
 
@@ -55,18 +176,18 @@ relationship Creates{
 
 
 Ticket -1- Creates
-Creates -N- Complaint
+Creates -N- Workpackage
 
-entity LightPostComplint{
-    LightPostNo
+entity LightPostComplain{
+    LightPostNumber
 }
 
 entity GrabageComplaint{
     GarbagePointNo
 }
 
-Complaint ->- LightPostComplint
-Complaint ->- GrabageComplaint
+Workpackage ->- LightPostComplain
+Workpackage ->- GrabageComplaint
 
 entity LightPost{
     LightPostNumber
@@ -80,19 +201,20 @@ relationship Relates_To_Light{
 
 
 LightPost -1- Relates_To_Light
-Relates_To_Light -N- LightPostComplint
+Relates_To_Light -N- LightPostComplain
 
-entity Project{
-    Id 
-    Name 
-    description
+entity Project {
+    Id
+    Subject
+    Description
     Type
-    Specification 
+    SpecificationDocument
     StartDate
     EndDate
     Status
     Location
     LocationNote
+    City
     Latitude
     Longitude
     EstimatedCost
@@ -137,10 +259,15 @@ entity ProjectComplain{
 }
 
 entity Company{
-    Id
+    CompanyId
     Name
-    Address
-    
+    AddressLine1
+    AddressLine2
+    City
+    Mobile
 }
+
+
+
 
 @endchen

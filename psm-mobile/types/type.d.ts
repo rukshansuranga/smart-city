@@ -14,4 +14,11 @@ declare interface GoogleInputProps {
   }) => void;
 }
 
-
+export type User = {
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  council: string;
+  mobile?: string | null;
+};

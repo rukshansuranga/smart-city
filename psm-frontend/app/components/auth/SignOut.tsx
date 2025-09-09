@@ -20,7 +20,10 @@ export const generateKeycloakLogoutUrl = (
 };
 export default function SignOut() {
   return (
-    <a href={generateKeycloakLogoutUrl(process.env.NEXT_PUBLIC_AUTH_URL ?? "")}>
+    <a
+      href={generateKeycloakLogoutUrl(process.env.NEXT_PUBLIC_AUTH_URL ?? "")}
+      className="bg-[#E76F51] hover:bg-[#F4A261] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm"
+    >
       Sign out
     </a>
   );

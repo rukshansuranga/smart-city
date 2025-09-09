@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
@@ -16,13 +17,14 @@ using PSMWebAPI.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register type converter for nullable LocalDate (handles null values in multipart form data)
+TypeDescriptor.AddAttributes(typeof(LocalDate?), new TypeConverterAttribute(typeof(NullableLocalDateTypeConverter)));
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 });
-
-//builder.Services.AddControllers();
 
 builder.Services.AddCors();
 // Add services to the container.
@@ -30,11 +32,21 @@ builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenWithAuth(builder.Configuration);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o => o.UseNodaTime()));
+// Register DbContext with dynamic connection string
+builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+{
+    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+    var httpContext = httpContextAccessor.HttpContext;
+    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (httpContext != null && httpContext.Items.ContainsKey("DynamicConnectionString"))
+    {
+        connectionString = httpContext.Items["DynamicConnectionString"] as string ?? connectionString;
+    }
+    options.UseNpgsql(connectionString, o => o.UseNodaTime());
+});
 
 // Register repositories and services
-builder.Services.AddScoped<IWorkpackageRepository, WorkpackageRepository>();
+builder.Services.AddScoped<IComplainRepository, ComplainRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -44,9 +56,37 @@ builder.Services.AddScoped<IGarbageRepository, GarbageRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ITenderRepository, TenderRepository>();
 builder.Services.AddScoped<IMiscRepository, MiscRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ITicketActivityRepository, TicketActivityRepository>();
 
-//builder.Services.AddHostedService<RideSimulationService>();
-builder.Services.AddAuthorization();
+// Register Attachment Service
+builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+
+// Register Tag Service
+builder.Services.AddScoped<ITagService, TagService>();
+
+// Configure Keycloak Client Credentials
+builder.Services.Configure<KeycloakClientCredentialsOptions>(
+    builder.Configuration.GetSection("keycloak:ClientCredentials"));
+
+// Configure Keycloak Admin Token
+builder.Services.Configure<KeycloakAdminTokenOptions>(
+    builder.Configuration.GetSection("keycloak:AdminToken"));
+
+// Register Keycloak Token Service
+builder.Services.AddHttpClient<IKeycloakTokenService, KeycloakTokenService>();
+
+// Register Keycloak User Service
+builder.Services.AddHttpClient<IKeycloakUserService, KeycloakUserService>();
+
+// builder.Services.AddHostedService<RideSimulationService>();
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -65,12 +105,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 builder.Services.AddAutoMapper(typeof(ProjectProfile));
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-//AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-//app.MapDefaultEndpoints();
 
 app.MapGet("users/me", (ClaimsPrincipal claimsPrincipal) =>
 {
@@ -93,35 +132,30 @@ app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 // turn on PII logging
 Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Middleware to extract council value and set connection string
+app.Use(async (context, next) =>
+{
+    var accessToken = context.Request.Headers["Authorization"].FirstOrDefault();
+    var user = context.User;
+    string councilValue = user?.Claims?.FirstOrDefault(c => c.Type == "council")?.Value;
+    if (!string.IsNullOrEmpty(councilValue))
+    {
+        var config = context.RequestServices.GetRequiredService<IConfiguration>();
+        string connStrName = $"{councilValue}Connection";
+        string dynamicConnStr = config.GetConnectionString(connStrName) ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(dynamicConnStr))
+        {
+            context.Items["DynamicConnectionString"] = dynamicConnStr;
+        }
+    }
+    await next();
+});
 
 app.MapControllers();
-
 app.Run();
 
-// static void ApplyMigrations(WebApplication app)
-//         {
-//             using (var scope = app.Services.CreateScope())
-//             {
-//                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-//                 // Check and apply pending migrations
-//                 var pendingMigrations = dbContext.Database.GetPendingMigrations();
-//                 if (pendingMigrations.Any())
-//                 {
-//                     Console.WriteLine("Applying pending migrations...");
-//                     dbContext.Database.Migrate();
-//                     Console.WriteLine("Migrations applied successfully.");
-//                 }
-//                 else
-//                 {
-//                     Console.WriteLine("No pending migrations found.");
-//                 }
-//             }
-//         }
 
 

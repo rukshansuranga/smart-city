@@ -1,0 +1,115 @@
+### Attachment API Testing
+
+# Variables
+@baseUrl = https://localhost:7084/api
+@complainId = 1
+@ticketId = 1
+@projectId = 1
+
+### 1. Get attachments for a complain
+GET {{baseUrl}}/attachments/Complain/{{complainId}}
+
+### 2. Get attachments for a ticket
+GET {{baseUrl}}/attachments/Ticket/{{ticketId}}
+
+### 3. Get attachments for a project
+GET {{baseUrl}}/attachments/Project/{{projectId}}
+
+### 4. Upload single attachment for complain
+POST {{baseUrl}}/attachments/Complain/{{complainId}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./sample-files/document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+Sample complaint document
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="category"
+
+Evidence
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 5. Upload single attachment for ticket
+POST {{baseUrl}}/attachments/Ticket/{{ticketId}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="screenshot.png"
+Content-Type: image/png
+
+< ./sample-files/screenshot.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+Issue screenshot
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="category"
+
+Documentation
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 6. Upload single attachment for project
+POST {{baseUrl}}/attachments/Project/{{projectId}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="specification.docx"
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+< ./sample-files/specification.docx
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+Project specification document
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="category"
+
+Specification
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 7. Upload multiple attachments for ticket
+POST {{baseUrl}}/attachments/Ticket/{{ticketId}}/multiple
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="file1.pdf"
+Content-Type: application/pdf
+
+< ./sample-files/file1.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="file2.jpg"
+Content-Type: image/jpeg
+
+< ./sample-files/file2.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="category"
+
+Progress Reports
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 8. Get specific attachment by ID
+GET {{baseUrl}}/attachments/1
+
+### 9. Download attachment by ID
+GET {{baseUrl}}/attachments/1/download
+
+### 10. Update attachment metadata
+PUT {{baseUrl}}/attachments/1
+Content-Type: application/json
+
+{
+  "description": "Updated description",
+  "category": "Updated Category",
+  "orderIndex": 1
+}
+
+### 11. Delete specific attachment
+DELETE {{baseUrl}}/attachments/1
+
+### 12. Delete all attachments for an entity
+DELETE {{baseUrl}}/attachments/Complain/{{complainId}}

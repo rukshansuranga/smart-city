@@ -5,7 +5,7 @@ namespace PSMModel.Models;
 
 public class BaseEntity
 {
-    public LocalDateTime CreatedDate { get; set; }
+    public LocalDateTime CreatedAt { get; set; }
     public LocalDateTime? UpdatedAt { get; set; }
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }

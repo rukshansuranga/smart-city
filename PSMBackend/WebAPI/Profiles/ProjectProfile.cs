@@ -9,16 +9,45 @@ public class ProjectProfile : Profile
 {
     public ProjectProfile()
     {
-        CreateMap<ProjectPostRequest, Project>().ReverseMap();
-        //.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-        // .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-        // .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-        // .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-        // .ForMember(dest => dest.BirthYear, opt => opt.MapFrom(src => src.Birthday.Year))
-        // .ForMember(dest => dest.BirthMonth, opt => opt.MapFrom(src => src.Birthday.Month))
-        // .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.Birthday.Day))
-        // .ForMember(dest => dest.OccupationName, opt => opt.Ignore())
-            
-        CreateMap<Project, Project>().ReverseMap();
+        CreateMap<ProjectPostRequest, Project>()
+            .ForMember(dest => dest.SpecificationDocument, opt => opt.Ignore()) // Handle file upload manually
+            .ReverseMap();
+        
+        CreateMap<Project, Project>().ReverseMap()
+        .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+
+        // ProjectProgress mappings
+        CreateMap<ProjectProgressRequest, ProjectProgress>()
+            .ForMember(dest => dest.ProjectProgressId, opt => opt.Ignore()) // Auto-generated
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.Project, opt => opt.Ignore()) // Navigation property
+            .ForMember(dest => dest.ApprovedByUser, opt => opt.Ignore()) // Navigation property
+            .ReverseMap();
+
+        // ProjectCoordinator mappings
+        CreateMap<ProjectCoordinatorPostRequest, ProjectCoordinator>()
+            .ForMember(dest => dest.ProjectCoordinatorId, opt => opt.Ignore()) // Auto-generated
+            .ForMember(dest => dest.CoordinatorId, opt => opt.MapFrom(src => src.CoordinatorId)) // Map from request
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore()) // Handled by BaseEntity
+            .ForMember(dest => dest.Project, opt => opt.Ignore()) // Navigation property
+            .ForMember(dest => dest.Coordinator, opt => opt.Ignore()); // Navigation property
+
+        CreateMap<ProjectCoordinatorUpdateRequest, ProjectCoordinator>()
+            .ForMember(dest => dest.CoordinatorId, opt => opt.MapFrom(src => src.CoordinatorId)) // Map from request
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Don't update
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Don't update
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore()) // Set manually
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore()) // Don't update in normal update
+            .ForMember(dest => dest.Project, opt => opt.Ignore()) // Navigation property
+            .ForMember(dest => dest.Coordinator, opt => opt.Ignore()); // Navigation property
     }
 }

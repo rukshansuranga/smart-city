@@ -5,28 +5,23 @@ import "react-native-get-random-values";
 import "@/global.css";
 import { Stack } from "expo-router";
 
-import { SafeAreaProvider } from "react-native-safe-area-context";
-
 export default function ComplainLayout() {
   return (
-    <SafeAreaProvider>
-      {/* <Stack /> */}
-      <Stack screenOptions={{ title: "Complains" }}>
-        <Stack.Screen name="complains" />
-        <Stack.Screen
-          name="general/GeneralComplainList"
-          options={{ title: "General Complains" }}
-        />
-        <Stack.Screen
-          name="general/AddGeneralComplain"
-          options={{ title: "Add General Complains" }}
-        />
+    <Stack screenOptions={{ title: "Complains", headerShown: false }}>
+      {/* <Stack.Screen name="complains" options={{ title: "Complains" }} /> */}
+      <Stack.Screen
+        name="general/GeneralComplainList"
+        options={{ title: "General Complains" }}
+      />
+      <Stack.Screen
+        name="general/AddGeneralComplain"
+        options={{ title: "Add General Complains" }}
+      />
 
-        <Stack.Screen
-          name="lightpost/LightPostComplainList"
-          options={{ title: "Light Post Complains" }}
-        />
-      </Stack>
-    </SafeAreaProvider>
+      <Stack.Screen
+        name="lightpost/LightPostComplainList"
+        options={{ title: "Light Post Complains" }}
+      />
+    </Stack>
   );
 }

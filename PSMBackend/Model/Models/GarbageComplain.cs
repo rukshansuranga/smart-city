@@ -1,8 +1,8 @@
-using System;
+  using System;
 
 namespace PSMModel.Models;
 
-public class GarbageComplain : WorkPackage
+public class GarbageComplain : Complain
 {
     public string GarbagePointNo { get; set; }
 }

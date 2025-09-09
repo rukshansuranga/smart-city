@@ -3,77 +3,40 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NodaTime;
 using PSMModel.Models;
+using PSMModel.Enums;
 
 namespace PSMDataAccess.Configurations;
 
-public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPostComplint>
+public class LightPostComplainConfiguration : IEntityTypeConfiguration<LightPostComplain>
 {
-    public void Configure(EntityTypeBuilder<LightPostComplint> builder)
+    public void Configure(EntityTypeBuilder<LightPostComplain> builder)
     {
-        //feed light post complaint
         builder.HasData(
-            new LightPostComplint
+            new LightPostComplain
             {
-                WorkPackageId = 2,
-                Name = "lightisnotworking",
-                Detail = "Light post LP001 is not working",
-                CreatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-                UpdatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-                Status = "Open",
-                ClientId = 1,
-                LightPostNumber = "LP001"
-            });
-
-        builder.HasData(
-        new LightPostComplint
-        {
-            WorkPackageId = 3,
-            Name = "lightisnotworking",
-            Detail = "Light post LP001 is not working 2",
-            CreatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-            UpdatedDate = new LocalDateTime(2025, 6, 19, 14, 14),
-            Status = "Open",
-            ClientId = 1,
-            LightPostNumber = "LP001"
-        });
-
-        builder.HasData(
-        new LightPostComplint
-        {
-            WorkPackageId = 4,
-            Name = "lightisnotworking",
-            Detail = "Light post LP001 is not working 3",
-            CreatedDate = new LocalDateTime(2025, 6, 20, 14, 14),
-            UpdatedDate = new LocalDateTime(2025, 6, 20, 14, 14),
-            Status = "Open",
-            ClientId = 1,
-            LightPostNumber = "LP001"
-        });
-
-        builder.HasData(
-        new LightPostComplint
-        {
-            WorkPackageId = 5,
-            Name = "lightisnotworking",
-            Detail = "Light post LP001 is not working 4",
-            CreatedDate = new LocalDateTime(2025, 6, 20, 14, 14),
-            UpdatedDate = new LocalDateTime(2025, 6, 20, 14, 14),
-            Status = "Open",
-            ClientId = 1,
-            LightPostNumber = "LP002"
-        });
-
-        builder.HasData(
-        new LightPostComplint
-        {
-            WorkPackageId = 6,
-            Name = "lightisnotworking",
-            Detail = "Light post LP001 is not working 5",
-            CreatedDate = new LocalDateTime(2025, 6, 20, 14, 14),
-            UpdatedDate = new LocalDateTime(2025, 6, 20, 14, 14),
-            Status = "Open",
-            ClientId = 1,
-            LightPostNumber = "LP002"
-        });
+                ComplainId = 2,
+                Subject = "Light Post Issue",
+                Detail = "Light post not working at Main St.",
+                Status = ComplainStatus.New,
+                ClientId = "1",
+                LightPostNumber = "LP001",
+                CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
+                CreatedBy = "1",
+                IsActive = true
+            },
+            new LightPostComplain
+            {
+                ComplainId = 3,
+                Subject = "Light Post Issue 2",
+                Detail = "Light post LP001 is not working 2",
+                Status = ComplainStatus.New,
+                ClientId = "1",
+                LightPostNumber = "LP001",
+                CreatedAt = new LocalDateTime(2025, 6, 19, 14, 14, 0),
+                CreatedBy = "1",
+                IsActive = true
+            }
+            
+        );
     }
 }

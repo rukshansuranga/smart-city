@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NodaTime;
 using PSMModel.Models;
 
 namespace PSMDataAccess.Configurations;
@@ -13,15 +14,15 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             //Region R001
             new GCShedule
             {
-                Id = 1,
+                GCSheduleId = 1,
                 Day = "Monday",
-                Type = "Platic",
+                Type = "Plastic",
                 Time = "Morning",
                 RegionNo = "R001",
             },
             new GCShedule
             {
-                Id = 2,
+                GCSheduleId = 2,
                 Day = "Tuesday",
                 Type = "Garbage",
                 Time = "Morning",
@@ -29,7 +30,7 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             },
             new GCShedule
             {
-                Id = 3,
+                GCSheduleId = 3,
                 Day = "Wednesday",
                 Type = "Garbage",
                 Time = "Morning",
@@ -37,7 +38,7 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             },
             new GCShedule
             {
-                Id = 4,
+                GCSheduleId = 4,
                 Day = "Thursday",
                 Type = "Garbage",
                 Time = "Afternoon",
@@ -45,7 +46,7 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             },
             new GCShedule
             {
-                Id = 5,
+                GCSheduleId = 5,
                 Day = "Friday",
                 Type = "Paper",
                 Time = "Morning",
@@ -54,15 +55,15 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             //Region R002
             new GCShedule
             {
-                Id = 6,
+                GCSheduleId = 6,
                 Day = "Monday",
-                Type = "Platic",
+                Type = "Plastic",
                 Time = "Morning",
-                RegionNo = "R001",
+                RegionNo = "R002",
             },
             new GCShedule
             {
-                Id = 7,
+                GCSheduleId = 7,
                 Day = "Tuesday",
                 Type = "Garbage",
                 Time = "Morning",
@@ -70,7 +71,7 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             },
             new GCShedule
             {
-                Id = 8,
+                GCSheduleId = 8,
                 Day = "Wednesday",
                 Type = "Garbage",
                 Time = "Morning",
@@ -78,7 +79,7 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             },
             new GCShedule
             {
-                Id = 9,
+                GCSheduleId = 9,
                 Day = "Thursday",
                 Type = "Garbage",
                 Time = "Afternoon",
@@ -86,7 +87,7 @@ public class GCSheduleConfiguration : IEntityTypeConfiguration<GCShedule>
             },
             new GCShedule
             {
-                Id = 10,
+                GCSheduleId = 10,
                 Day = "Friday",
                 Type = "Paper",
                 Time = "Morning",

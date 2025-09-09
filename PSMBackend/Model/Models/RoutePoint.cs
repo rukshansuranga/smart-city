@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PSMModel.Models;
 
-public class RoutePoint
+public class RoutePoint : BaseEntity
 {
     [Key]
-    public int Id { get; set; }
-    public string Name { get; set; }
+    public int RoutePointId { get; set; }
+    public string PointName { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     [ForeignKey("Route")]

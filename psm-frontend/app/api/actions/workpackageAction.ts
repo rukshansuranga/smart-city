@@ -1,7 +1,7 @@
 "use server";
 
 import { fetchWrapper } from "@/lib/fetchWrapper";
-import { Paging, Workpackage } from "@/types";
+import { ActiveLightPostMarker, Paging, Complain, ApiResponse } from "@/types";
 
 export async function getWorkpackagePaging(complainPaging: {
   status: string;
@@ -9,23 +9,53 @@ export async function getWorkpackagePaging(complainPaging: {
   pageIndex: string;
   duration: string;
   type?: string;
-}): Promise<Paging<Workpackage>> {
-  console.log(34, complainPaging);
+  ticketWorkpackageType?: string;
+}): Promise<ApiResponse<Paging<Complain>>> {
   const queryString = new URLSearchParams(complainPaging).toString();
-  console.log("getWorkpackagePaging queryString:", queryString);
-  return fetchWrapper.get(`workpackage?${queryString}`);
+
+  return fetchWrapper.get(`complain?${queryString}`);
 }
 
 export async function getWorkpackageByTicketId(
   ticketId: number
-): Promise<Workpackage[]> {
-  return fetchWrapper.get(`workpackage/ticket/${ticketId}`);
+): Promise<ApiResponse<Complain[]>> {
+  return fetchWrapper.get(`complain/ticket/${ticketId}`);
 }
 
 export async function manageMappingByTicketAndPackage(managePackage: {
   ticketId: number;
-  workpackageId: number;
+  complainId: number;
   action: string;
-}) {
-  return fetchWrapper.post(`workpackage/ticket`, managePackage);
+}): Promise<ApiResponse<null>> {
+  return fetchWrapper.post(`complain/ticket`, managePackage);
+}
+
+export async function getWorkpackageById(
+  complainId: string,
+  type: string
+): Promise<ApiResponse<Complain>> {
+  return fetchWrapper.get(`complain/${type}/${complainId}`);
+}
+
+export async function getActiveLightPost(): Promise<
+  ApiResponse<ActiveLightPostMarker[]>
+> {
+  return fetchWrapper.get(`complain/lightpost/active`);
+}
+
+export async function getActiveAndAssignedLightPost(): Promise<
+  ApiResponse<ActiveLightPostMarker[]>
+> {
+  return fetchWrapper.get(`complain/lightpost/assigned`);
+}
+
+export async function getLightPostByLocation(managePackage: {
+  latitude: number;
+  longitude: number;
+  statuses: number[];
+}): Promise<ApiResponse<ActiveLightPostMarker[]>> {
+  return fetchWrapper.post(
+    `complain/lightpost/getpointincircle`,
+    managePackage
+  );
 }

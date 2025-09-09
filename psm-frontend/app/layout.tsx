@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import NavBar from "./nav/NavBar";
-import { SideBar } from "./sidebar";
+import { RoleBasedSidebar } from "./sidebar/RoleBasedSidebar";
 import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,13 +23,37 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <NavBar session={session} />
-        <main className="flex max-w-screen-2xl mx-auto px-5 pt-10 ">
-          <div className="w-1/6">
-            <SideBar />
-          </div>
-          <div className="w-5/6">{children}</div>
-        </main>
+        <SessionProvider session={session}>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#363636",
+                color: "#fff",
+              },
+              success: {
+                duration: 3000,
+                style: {
+                  background: "#10B981",
+                },
+              },
+              error: {
+                duration: 5000,
+                style: {
+                  background: "#EF4444",
+                },
+              },
+            }}
+          />
+          <NavBar session={session} />
+          <main className="flex max-w-screen-2xl mx-auto pt-10 ">
+            <div className="w-1/6">
+              <RoleBasedSidebar session={session} />
+            </div>
+            <div className="w-5/6">{children}</div>
+          </main>
+        </SessionProvider>
       </body>
     </html>
   );

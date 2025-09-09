@@ -1,22 +1,21 @@
 export const typeList = [
   { value: null, text: "Select Type" },
-  { value: "1", text: "Irrigation Project" },
-  { value: "2", text: "Building" },
-  { value: "3", text: "Building" },
+  { value: 0, text: "Road" },
+  { value: 1, text: "Building" },
+  { value: 2, text: "Irrigation" },
 ];
 
 export const statusList = [
-  { value: "1", text: "New" },
-  { value: "2", text: "Open" },
-  { value: "3", text: "In Progress" },
-  { value: "4", text: "Completed" },
-  { value: "5", text: "Cancelled" },
+  { value: 0, text: "New" },
+  { value: 1, text: "In Progress" },
+  { value: 2, text: "Completed" },
+  { value: 3, text: "On Hold" },
 ];
 
 export const ticketStatusList = [
-  { value: "1", text: "New" },
-  { value: "2", text: "Open" },
-  { value: "3", text: "In Progress" },
-  { value: "4", text: "Completed" },
-  { value: "5", text: "Cancelled" },
+  { value: 1, text: "New" },
+  { value: 2, text: "Open" },
+  { value: 3, text: "In Progress" },
+  { value: 4, text: "Completed" },
+  { value: 5, text: "Cancelled" },
 ];

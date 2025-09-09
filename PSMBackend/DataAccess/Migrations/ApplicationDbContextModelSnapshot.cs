@@ -23,20 +23,145 @@ namespace PSMDataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PSMModel.Models.Client", b =>
+            modelBuilder.Entity("PSMModel.Models.Attachment", b =>
                 {
-                    b.Property<int>("ClientId")
+                    b.Property<int>("AttachmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ClientId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AttachmentId"));
 
-                    b.Property<string>("Mobile")
+                    b.Property<string>("AttachmentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("ComplainId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentType")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EntityType")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<int?>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("AttachmentId");
+
+                    b.HasIndex("ComplainId");
+
+                    b.HasIndex("EntityType")
+                        .HasDatabaseName("IX_Attachment_EntityType");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("EntityType", "EntityId")
+                        .HasDatabaseName("IX_Attachment_EntityType_EntityId");
+
+                    b.ToTable("Attachments");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Client", b =>
+                {
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressLine1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Mobile")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
                     b.HasKey("ClientId");
@@ -46,15 +171,22 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            ClientId = 1,
-                            Mobile = "0714789562",
-                            Name = "Jeewan"
+                            ClientId = "1",
+                            AddressLine1 = "123 Main St",
+                            AddressLine2 = "Apt 4B",
+                            City = "Colombo",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            IsActive = true
                         },
                         new
                         {
-                            ClientId = 2,
-                            Mobile = "07777894562",
-                            Name = "Lakshitha"
+                            ClientId = "2",
+                            AddressLine1 = "456 Lake Rd",
+                            City = "Kandy",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            IsActive = true
                         });
                 });
 
@@ -66,30 +198,52 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CommentId"));
 
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
 
-                    b.Property<LocalDateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<bool?>("IsPrivate")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Type")
                         .HasColumnType("text");
 
-                    b.Property<LocalDateTime>("UpdatedDate")
+                    b.Property<LocalDateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
-                    b.Property<int>("WorkpackageId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.HasKey("CommentId");
 
@@ -97,20 +251,139 @@ namespace PSMDataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("WorkpackageId");
+                    b.HasIndex("EntityType", "EntityId");
 
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("PSMModel.Models.Company", b =>
+            modelBuilder.Entity("PSMModel.Models.Complain", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ComplainId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ComplainId"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ComplainType")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Detail")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("MyProperty")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("RatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("RatingReview")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sentiment")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ComplainId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Complains");
+
+                    b.HasDiscriminator<string>("ComplainType").HasValue("Complain");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ComplainTag", b =>
+                {
+                    b.Property<int>("ComplainId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ComplainId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ComplainTags");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Contractor", b =>
+                {
+                    b.Property<string>("ContractorId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressLine1")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Mobile")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -118,36 +391,65 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.ToTable("Companies");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ContractorId");
+
+                    b.ToTable("Contractors");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Address = "123 Main St, Colombo",
+                            ContractorId = "d0eca5fa-8cf4-4256-ab6a-9405c789c1b1",
+                            AddressLine1 = "123 Main St",
+                            City = "Colombo",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            IsActive = true,
+                            Mobile = "0771234567",
                             Name = "Maga"
                         },
                         new
                         {
-                            Id = 2,
-                            Address = "123 Main St, Gampaha",
+                            ContractorId = "a4aa5b28-36ab-4991-975a-5e5e441bf6fa",
+                            AddressLine1 = "123 Main St",
+                            City = "Gampaha",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            IsActive = true,
+                            Mobile = "0779876543",
                             Name = "Access Construction"
                         });
                 });
 
             modelBuilder.Entity("PSMModel.Models.GCShedule", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("GCSheduleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GCSheduleId"));
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Day")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("RegionNo")
                         .IsRequired()
@@ -161,7 +463,13 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("GCSheduleId");
 
                     b.HasIndex("RegionNo");
 
@@ -170,80 +478,100 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            GCSheduleId = 1,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Monday",
+                            IsActive = true,
                             RegionNo = "R001",
                             Time = "Morning",
-                            Type = "Platic"
+                            Type = "Plastic"
                         },
                         new
                         {
-                            Id = 2,
+                            GCSheduleId = 2,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Tuesday",
+                            IsActive = true,
                             RegionNo = "R001",
                             Time = "Morning",
                             Type = "Garbage"
                         },
                         new
                         {
-                            Id = 3,
+                            GCSheduleId = 3,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Wednesday",
+                            IsActive = true,
                             RegionNo = "R001",
                             Time = "Morning",
                             Type = "Garbage"
                         },
                         new
                         {
-                            Id = 4,
+                            GCSheduleId = 4,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Thursday",
+                            IsActive = true,
                             RegionNo = "R001",
                             Time = "Afternoon",
                             Type = "Garbage"
                         },
                         new
                         {
-                            Id = 5,
+                            GCSheduleId = 5,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Friday",
+                            IsActive = true,
                             RegionNo = "R001",
                             Time = "Morning",
                             Type = "Paper"
                         },
                         new
                         {
-                            Id = 6,
+                            GCSheduleId = 6,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Monday",
-                            RegionNo = "R001",
+                            IsActive = true,
+                            RegionNo = "R002",
                             Time = "Morning",
-                            Type = "Platic"
+                            Type = "Plastic"
                         },
                         new
                         {
-                            Id = 7,
+                            GCSheduleId = 7,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Tuesday",
+                            IsActive = true,
                             RegionNo = "R002",
                             Time = "Morning",
                             Type = "Garbage"
                         },
                         new
                         {
-                            Id = 8,
+                            GCSheduleId = 8,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Wednesday",
+                            IsActive = true,
                             RegionNo = "R002",
                             Time = "Morning",
                             Type = "Garbage"
                         },
                         new
                         {
-                            Id = 9,
+                            GCSheduleId = 9,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Thursday",
+                            IsActive = true,
                             RegionNo = "R002",
                             Time = "Afternoon",
                             Type = "Garbage"
                         },
                         new
                         {
-                            Id = 10,
+                            GCSheduleId = 10,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
                             Day = "Friday",
+                            IsActive = true,
                             RegionNo = "R002",
                             Time = "Morning",
                             Type = "Paper"
@@ -269,15 +597,103 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             LightPostNumber = "LP001",
-                            Latitude = 6.9271000000000003,
-                            Longitude = 79.861199999999997
+                            Latitude = 7.0259340000000003,
+                            Longitude = 80.026858000000004
                         },
                         new
                         {
                             LightPostNumber = "LP002",
-                            Latitude = 6.9272,
-                            Longitude = 79.8613
+                            Latitude = 7.027679,
+                            Longitude = 80.027620999999996
+                        },
+                        new
+                        {
+                            LightPostNumber = "LP003",
+                            Latitude = 7.0308330000000003,
+                            Longitude = 80.028531999999998
+                        },
+                        new
+                        {
+                            LightPostNumber = "LP004",
+                            Latitude = 7.0330199999999996,
+                            Longitude = 80.027282
+                        },
+                        new
+                        {
+                            LightPostNumber = "LP005",
+                            Latitude = 7.0348280000000001,
+                            Longitude = 80.025925999999998
                         });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ComplainId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComplainId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Project", b =>
@@ -288,22 +704,34 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AwadedTenderId")
+                    b.Property<int?>("AwardedTenderId")
                         .HasColumnType("integer");
 
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<LocalDate?>("EndDate")
                         .HasColumnType("date");
 
-                    b.Property<decimal>("EstimatedCost")
+                    b.Property<decimal?>("EstimatedCost")
                         .HasColumnType("numeric");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("double precision");
@@ -317,9 +745,8 @@ namespace PSMDataAccess.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("ProgressFrequency")
+                        .HasColumnType("integer");
 
                     b.Property<string>("SpecificationDocument")
                         .HasColumnType("text");
@@ -327,7 +754,10 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDate?>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Status")
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -337,8 +767,13 @@ namespace PSMDataAccess.Migrations
                     b.Property<LocalDate?>("TenderOpeningDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int?>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -349,42 +784,269 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            AwadedTenderId = 1,
+                            AwardedTenderId = 1,
                             City = "Weliveriya",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
                             Description = "Description for Project Alpha",
                             EndDate = new NodaTime.LocalDate(2023, 12, 31),
                             EstimatedCost = 1000000m,
+                            IsActive = true,
                             Latitude = 34.052199999999999,
                             Location = "Location A",
                             LocationNote = "Note for Location A",
                             Longitude = -118.2437,
-                            Name = "Project Alpha",
                             SpecificationDocument = "specification_alpha.pdf",
                             StartDate = new NodaTime.LocalDate(2023, 1, 1),
-                            Status = "Proposed",
+                            Status = 0,
+                            Subject = "Project Alpha",
                             TenderClosingDate = new NodaTime.LocalDate(2023, 1, 30),
                             TenderOpeningDate = new NodaTime.LocalDate(2023, 1, 15),
-                            Type = "Construction"
+                            Type = 0
                         },
                         new
                         {
                             Id = 2,
+                            AwardedTenderId = 2,
                             City = "Ambaraluwa",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
                             Description = "Weliveriya road project",
                             EndDate = new NodaTime.LocalDate(2023, 12, 31),
                             EstimatedCost = 1000000m,
+                            IsActive = true,
                             Latitude = 34.052199999999999,
                             Location = "Location A",
                             LocationNote = "Note for Location A",
                             Longitude = -118.2437,
-                            Name = "Weliveriya road project",
                             SpecificationDocument = "specification_alpha.pdf",
                             StartDate = new NodaTime.LocalDate(2023, 1, 1),
-                            Status = "Proposed",
+                            Status = 0,
+                            Subject = "Weliveriya road project",
                             TenderClosingDate = new NodaTime.LocalDate(2023, 1, 30),
                             TenderOpeningDate = new NodaTime.LocalDate(2023, 1, 15),
-                            Type = "Road Construction"
+                            Type = 0
                         });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectCoordinator", b =>
+                {
+                    b.Property<int>("ProjectCoordinatorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectCoordinatorId"));
+
+                    b.Property<LocalDate>("AssignDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CoordinatorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CoordinatorType")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ProjectCoordinatorId");
+
+                    b.HasIndex("CoordinatorId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectCoordinators");
+
+                    b.HasData(
+                        new
+                        {
+                            ProjectCoordinatorId = 1,
+                            AssignDate = new NodaTime.LocalDate(2025, 8, 24),
+                            CoordinatorId = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            CoordinatorType = 0,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            IsActive = true,
+                            Note = "Can you provide an update on the project status?",
+                            ProjectId = 1
+                        },
+                        new
+                        {
+                            ProjectCoordinatorId = 2,
+                            AssignDate = new NodaTime.LocalDate(2025, 8, 24),
+                            CoordinatorId = "43e63068-a5fd-4a45-acfb-0383ff4d45ea",
+                            CoordinatorType = 1,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            IsActive = true,
+                            Note = "Can you give support on the project?",
+                            ProjectId = 1
+                        },
+                        new
+                        {
+                            ProjectCoordinatorId = 3,
+                            AssignDate = new NodaTime.LocalDate(2025, 8, 24),
+                            CoordinatorId = "6c35c5ad-2f70-4c3f-aa44-c94bc61d10a1",
+                            CoordinatorType = 0,
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            IsActive = true,
+                            Note = "Can you give support on the project?",
+                            ProjectId = 2
+                        });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectInspection", b =>
+                {
+                    b.Property<int>("ProjectInspectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectInspectionId"));
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Findings")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime>("InspectionDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("ProjectCoordinatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Recommendations")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ProjectInspectionId");
+
+                    b.HasIndex("ProjectCoordinatorId");
+
+                    b.ToTable("ProjectInspections");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectProgress", b =>
+                {
+                    b.Property<int>("ProjectProgressId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectProgressId"));
+
+                    b.Property<LocalDate?>("ApprovedAt")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApprovedNote")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<LocalDate>("ProgressDate")
+                        .HasColumnType("date");
+
+                    b.Property<double>("ProgressPercentage")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ProjectProgressApprovedStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ProjectProgressId");
+
+                    b.HasIndex("ApprovedBy");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectProgresses");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectTag", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("ProjectId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ProjectTags");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Region", b =>
@@ -392,12 +1054,30 @@ namespace PSMDataAccess.Migrations
                     b.Property<string>("RegionNo")
                         .HasColumnType("text");
 
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Note")
-                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
                     b.HasKey("RegionNo");
@@ -408,12 +1088,18 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             RegionNo = "R001",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Name = "Weliveriya South",
                             Note = "This is a region in Gampaha district."
                         },
                         new
                         {
                             RegionNo = "R002",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Name = "Weliveriya North",
                             Note = "This is a region in Gampaha district."
                         });
@@ -421,11 +1107,19 @@ namespace PSMDataAccess.Migrations
 
             modelBuilder.Entity("PSMModel.Models.Ride", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("RideId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RideId"));
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<int>("Driver")
                         .HasColumnType("integer");
@@ -435,6 +1129,11 @@ namespace PSMDataAccess.Migrations
 
                     b.Property<LocalDateTime?>("EndTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
@@ -450,11 +1149,17 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
                     b.Property<string>("VehicalNo")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("RideId");
 
                     b.HasIndex("RegionNo");
 
@@ -465,9 +1170,12 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            RideId = 1,
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 7, 10, 12, 0),
+                            CreatedBy = "1",
                             Driver = 0,
                             DriverNo = 1,
+                            IsActive = true,
                             RegionNo = "R001",
                             StartTime = new NodaTime.LocalDateTime(2025, 7, 10, 13, 0),
                             Type = "Paper Collection",
@@ -477,11 +1185,11 @@ namespace PSMDataAccess.Migrations
 
             modelBuilder.Entity("PSMModel.Models.RidePoint", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("RidePointId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RidePointId"));
 
                     b.Property<double>("Latitude")
                         .HasColumnType("double precision");
@@ -495,7 +1203,7 @@ namespace PSMDataAccess.Migrations
                     b.Property<int>("RideId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("RidePointId");
 
                     b.HasIndex("RideId");
 
@@ -507,11 +1215,30 @@ namespace PSMDataAccess.Migrations
                     b.Property<string>("RouteNo")
                         .HasColumnType("text");
 
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
                     b.Property<float>("Distance")
                         .HasColumnType("real");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
                     b.HasKey("RouteNo");
@@ -522,24 +1249,43 @@ namespace PSMDataAccess.Migrations
                         new
                         {
                             RouteNo = "R001",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
                             Distance = 0f,
+                            IsActive = true,
                             Name = "Noth Root"
                         },
                         new
                         {
                             RouteNo = "R002",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
                             Distance = 0f,
+                            IsActive = true,
                             Name = "South Root"
                         });
                 });
 
             modelBuilder.Entity("PSMModel.Models.RoutePoint", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("RoutePointId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoutePointId"));
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<double>("Latitude")
                         .HasColumnType("double precision");
@@ -547,7 +1293,7 @@ namespace PSMDataAccess.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("PointName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -555,7 +1301,13 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("RoutePointId");
 
                     b.HasIndex("RouteNo");
 
@@ -564,110 +1316,255 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            RoutePointId = 1,
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Latitude = 80.026488999999998,
                             Longitude = 7.0249980000000001,
-                            Name = "maduma bankara vidyalaya",
+                            PointName = "maduma bankara vidyalaya",
                             RouteNo = "R001"
                         },
                         new
                         {
-                            Id = 2,
+                            RoutePointId = 2,
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Latitude = 80.022924000000003,
                             Longitude = 7.0254649999999996,
-                            Name = "gala gawa",
+                            PointName = "gala gawa",
                             RouteNo = "R001"
                         },
                         new
                         {
-                            Id = 3,
+                            RoutePointId = 3,
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Latitude = 80.021614,
                             Longitude = 7.0225910000000002,
-                            Name = "Sewa Piyasa",
+                            PointName = "Sewa Piyasa",
                             RouteNo = "R001"
                         },
                         new
                         {
-                            Id = 4,
+                            RoutePointId = 4,
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Latitude = 80.023321999999993,
                             Longitude = 7.0228789999999996,
-                            Name = "jayamal oil",
+                            PointName = "jayamal oil",
                             RouteNo = "R001"
                         },
                         new
                         {
-                            Id = 5,
+                            RoutePointId = 5,
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Latitude = 80.026511999999997,
                             Longitude = 7.0212519999999996,
-                            Name = "bathiya home",
+                            PointName = "bathiya home",
                             RouteNo = "R001"
                         },
                         new
                         {
-                            Id = 6,
+                            RoutePointId = 6,
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Latitude = 80.026774000000003,
                             Longitude = 7.0229679999999997,
-                            Name = "grace health",
+                            PointName = "grace health",
                             RouteNo = "R001"
+                        });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Tag", b =>
+                {
+                    b.Property<int>("TagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TagId"));
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("TagId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
+
+                    b.HasData(
+                        new
+                        {
+                            TagId = 1,
+                            Color = "#FF4444",
+                            Description = "High priority items",
+                            IsActive = true,
+                            Name = "Urgent"
+                        },
+                        new
+                        {
+                            TagId = 2,
+                            Color = "#FF8800",
+                            Description = "Bug related issues",
+                            IsActive = true,
+                            Name = "Bug"
+                        },
+                        new
+                        {
+                            TagId = 3,
+                            Color = "#00AA00",
+                            Description = "Feature improvements",
+                            IsActive = true,
+                            Name = "Enhancement"
+                        },
+                        new
+                        {
+                            TagId = 4,
+                            Color = "#0088FF",
+                            Description = "Routine maintenance tasks",
+                            IsActive = true,
+                            Name = "Maintenance"
+                        },
+                        new
+                        {
+                            TagId = 5,
+                            Color = "#8800FF",
+                            Description = "Documentation related",
+                            IsActive = true,
+                            Name = "Documentation"
                         });
                 });
 
             modelBuilder.Entity("PSMModel.Models.Tender", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("TenderId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TenderId"));
 
                     b.Property<decimal>("BidAmount")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("ContractorId")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
-                    b.Property<LocalDateTime>("SubmittedDate")
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("SubmittedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.Property<string>("TenderDocument")
+                        .HasColumnType("text");
 
-                    b.HasIndex("CompanyId");
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.HasIndex("ProjectId")
-                        .IsUnique();
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("TenderId");
+
+                    b.HasIndex("ContractorId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Tenders");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            TenderId = 1,
                             BidAmount = 500000m,
-                            CompanyId = 1,
-                            Name = "Tender for Project A",
+                            ContractorId = "d0eca5fa-8cf4-4256-ab6a-9405c789c1b1",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 10, 1, 9, 0),
+                            CreatedBy = "43e63068-a5fd-4a45-acfb-0383ff4d45ea",
+                            IsActive = true,
                             Note = "This is a tender for Project A",
                             ProjectId = 1,
+                            Subject = "Tender for Project A",
                             SubmittedDate = new NodaTime.LocalDateTime(2023, 10, 1, 10, 0)
                         },
                         new
                         {
-                            Id = 2,
+                            TenderId = 2,
                             BidAmount = 300000m,
-                            CompanyId = 1,
-                            Name = "Tender for Road Construction",
+                            ContractorId = "d0eca5fa-8cf4-4256-ab6a-9405c789c1b1",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 10, 1, 9, 0),
+                            CreatedBy = "43e63068-a5fd-4a45-acfb-0383ff4d45ea",
+                            IsActive = true,
                             Note = "This is a tender for Project A",
                             ProjectId = 1,
+                            Subject = "Tender for Road Construction",
+                            SubmittedDate = new NodaTime.LocalDateTime(2023, 10, 1, 10, 0)
+                        },
+                        new
+                        {
+                            TenderId = 3,
+                            BidAmount = 300000m,
+                            ContractorId = "a4aa5b28-36ab-4991-975a-5e5e441bf6fa",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 10, 1, 9, 0),
+                            CreatedBy = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            IsActive = true,
+                            Note = "This is a tender for Project 2",
+                            ProjectId = 2,
+                            Subject = "Tender for Project Building",
+                            SubmittedDate = new NodaTime.LocalDateTime(2023, 10, 1, 10, 0)
+                        },
+                        new
+                        {
+                            TenderId = 4,
+                            BidAmount = 400000m,
+                            ContractorId = "a4aa5b28-36ab-4991-975a-5e5e441bf6fa",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 10, 1, 9, 0),
+                            CreatedBy = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            IsActive = true,
+                            Note = "This is a tender for Project 2",
+                            ProjectId = 2,
+                            Subject = "Tender for Road Building",
                             SubmittedDate = new NodaTime.LocalDateTime(2023, 10, 1, 10, 0)
                         });
                 });
@@ -680,27 +1577,54 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketId"));
 
-                    b.Property<LocalDateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Detail")
                         .HasColumnType("text");
 
+                    b.Property<LocalDate?>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Estimation")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("text");
+                    b.Property<int?>("Priority")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Title")
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("TicketType")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.HasKey("TicketId");
 
@@ -708,42 +1632,157 @@ namespace PSMDataAccess.Migrations
 
                     b.ToTable("Tickets");
 
+                    b.HasDiscriminator<string>("TicketType").HasValue("Ticket");
+
+                    b.UseTphMappingStrategy();
+
                     b.HasData(
                         new
                         {
                             TicketId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Status = "New",
-                            Title = "Fix Light Post LP001",
-                            Type = "External",
-                            UserId = 1
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            Estimation = 0,
+                            IsActive = true,
+                            Status = 0,
+                            Subject = "Fix Light Post LP001",
+                            UserId = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a"
                         },
                         new
                         {
                             TicketId = 2,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Status = "New",
-                            Title = "Fix Light Post LP001 2",
-                            Type = "External",
-                            UserId = 2
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            Estimation = 0,
+                            IsActive = true,
+                            Status = 0,
+                            Subject = "Fix Light Post LP001 2",
+                            UserId = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a"
                         },
                         new
                         {
                             TicketId = 3,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Status = "New",
-                            Title = "Fix Light Post LP001 3",
-                            Type = "External",
-                            UserId = 2
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            Estimation = 0,
+                            IsActive = true,
+                            Status = 0,
+                            Subject = "Fix Light Post LP001 3",
+                            UserId = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a"
                         },
                         new
                         {
                             TicketId = 4,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Status = "New",
-                            Title = "Fix Light Post LP001 4",
-                            Type = "External",
-                            UserId = 2
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "43e63068-a5fd-4a45-acfb-0383ff4d45ea",
+                            Estimation = 0,
+                            IsActive = true,
+                            Status = 0,
+                            Subject = "Fix Light Post LP001 4",
+                            UserId = "43e63068-a5fd-4a45-acfb-0383ff4d45ea"
+                        });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.TicketActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Transition")
+                        .HasColumnType("integer");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TicketActivities");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.TicketComplain", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComplainId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ComplainTicketTicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComplainId");
+
+                    b.HasIndex("ComplainTicketTicketId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketComplains");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ComplainId = 2,
+                            TicketId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ComplainId = 3,
+                            TicketId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ComplainId = 4,
+                            TicketId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ComplainId = 5,
+                            TicketId = 4
                         });
                 });
 
@@ -755,18 +1794,17 @@ namespace PSMDataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketHistoryId"));
 
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ChangedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NewValue")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("OldValue")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PropertyName")
@@ -783,69 +1821,83 @@ namespace PSMDataAccess.Migrations
                     b.ToTable("TicketHistories");
                 });
 
-            modelBuilder.Entity("PSMModel.Models.TicketPackage", b =>
+            modelBuilder.Entity("PSMModel.Models.TicketTag", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<int>("TicketId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("WorkPackageId")
+                    b.Property<int>("TagId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasIndex("TicketId");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
-                    b.HasIndex("WorkPackageId");
+                    b.HasKey("TicketId", "TagId");
 
-                    b.ToTable("TicketPackages");
+                    b.HasIndex("TagId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            TicketId = 1,
-                            WorkPackageId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            TicketId = 1,
-                            WorkPackageId = 3
-                        },
-                        new
-                        {
-                            Id = 3,
-                            TicketId = 3,
-                            WorkPackageId = 4
-                        },
-                        new
-                        {
-                            Id = 4,
-                            TicketId = 4,
-                            WorkPackageId = 5
-                        });
+                    b.ToTable("TicketTags");
                 });
 
             modelBuilder.Entity("PSMModel.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressLine1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("AuthType")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("Name")
+                    b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TelNumber")
+                    b.Property<string>("Council")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Designation")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Mobile")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
                     b.Property<string>("UserType")
@@ -864,21 +1916,63 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = 1,
-                            Name = "Admin",
-                            TelNumber = "0777582696"
+                            UserId = "0c895075-b8e6-48f9-bb9e-2c9db9d7207a",
+                            City = "Colombo",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            Email = "ajith@example.com",
+                            FirstName = "Ajith",
+                            IsActive = true,
+                            LastName = "User",
+                            Mobile = "0777582696"
                         },
                         new
                         {
-                            UserId = 2,
-                            Name = "Kamal",
-                            TelNumber = "0147894562"
+                            UserId = "43e63068-a5fd-4a45-acfb-0383ff4d45ea",
+                            City = "Galle",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            Email = "kumara@example.com",
+                            FirstName = "Kumara",
+                            IsActive = true,
+                            LastName = "Perera",
+                            Mobile = "0147894562"
                         },
                         new
                         {
-                            UserId = 3,
-                            Name = "Kumara",
-                            TelNumber = "0117654321"
+                            UserId = "6c35c5ad-2f70-4c3f-aa44-c94bc61d10a1",
+                            City = "Kandy",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            Email = "upul@example.com",
+                            FirstName = "Upul",
+                            IsActive = true,
+                            LastName = "Fernando",
+                            Mobile = "0117654321"
+                        },
+                        new
+                        {
+                            UserId = "d0eca5fa-8cf4-4256-ab6a-9405c789c1b1",
+                            City = "Kandy",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            Email = "kamal@example.com",
+                            FirstName = "kamal",
+                            IsActive = true,
+                            LastName = "Fernando",
+                            Mobile = "0117654321"
+                        },
+                        new
+                        {
+                            UserId = "a4aa5b28-36ab-4991-975a-5e5e441bf6fa",
+                            City = "Kandy",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(1, 1, 1, 0, 0),
+                            Email = "kamal@example.com",
+                            FirstName = "constractor2",
+                            IsActive = true,
+                            LastName = "Fernando",
+                            Mobile = "0117654321"
                         });
                 });
 
@@ -891,12 +1985,31 @@ namespace PSMDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<LocalDateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("RegistrationNo")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<LocalDateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
                     b.Property<string>("Year")
@@ -912,6 +2025,9 @@ namespace PSMDataAccess.Migrations
                         {
                             VehicalNo = "T01",
                             Brand = "John Dear",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Model = "T66",
                             RegistrationNo = "GA1234",
                             Year = "1998"
@@ -920,126 +2036,29 @@ namespace PSMDataAccess.Migrations
                         {
                             VehicalNo = "T02",
                             Brand = "Toyota",
+                            CreatedAt = new NodaTime.LocalDateTime(2023, 1, 1, 9, 0),
+                            CreatedBy = "1",
+                            IsActive = true,
                             Model = "Truch",
                             RegistrationNo = "CAG3456",
                             Year = "2024"
                         });
                 });
 
-            modelBuilder.Entity("PSMModel.Models.WorkPackage", b =>
-                {
-                    b.Property<int>("WorkPackageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkPackageId"));
-
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("integer");
-
-                    b.Property<LocalDateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Detail")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("text");
-
-                    b.Property<LocalDateTime>("UpdatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("WorkPackageType")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)");
-
-                    b.HasKey("WorkPackageId");
-
-                    b.HasIndex("ClientId");
-
-                    b.ToTable("WorkPackages");
-
-                    b.HasDiscriminator<string>("WorkPackageType").HasValue("WorkPackage");
-
-                    b.UseTphMappingStrategy();
-
-                    b.HasData(
-                        new
-                        {
-                            WorkPackageId = 1,
-                            ClientId = 2,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Detail = "Garbage collection needed in area LP002",
-                            Name = "Garbage Collection",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14)
-                        });
-                });
-
-            modelBuilder.Entity("PSMModel.Models.Driver", b =>
-                {
-                    b.HasBaseType("PSMModel.Models.User");
-
-                    b.Property<LocalDateTime?>("ExpireDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("LicenNo")
-                        .HasColumnType("text");
-
-                    b.HasDiscriminator().HasValue("Driver");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 4,
-                            Name = "Upul",
-                            TelNumber = "0777582365",
-                            ExpireDate = new NodaTime.LocalDateTime(2027, 6, 19, 14, 14),
-                            LicenNo = "2345"
-                        },
-                        new
-                        {
-                            UserId = 5,
-                            Name = "Shantha",
-                            TelNumber = "0147894492",
-                            ExpireDate = new NodaTime.LocalDateTime(2028, 6, 19, 14, 14),
-                            LicenNo = "2345"
-                        });
-                });
-
             modelBuilder.Entity("PSMModel.Models.GarbageComplain", b =>
                 {
-                    b.HasBaseType("PSMModel.Models.WorkPackage");
+                    b.HasBaseType("PSMModel.Models.Complain");
 
                     b.Property<string>("GarbagePointNo")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("GarbageComplain");
-
-                    b.HasData(
-                        new
-                        {
-                            WorkPackageId = 7,
-                            ClientId = 2,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Detail = "Garbage collection needed in area",
-                            Name = "Garbage Collection",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            GarbagePointNo = "GP001"
-                        });
                 });
 
             modelBuilder.Entity("PSMModel.Models.GeneralComplain", b =>
                 {
-                    b.HasBaseType("PSMModel.Models.WorkPackage");
+                    b.HasBaseType("PSMModel.Models.Complain");
 
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("boolean");
@@ -1049,88 +2068,63 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            WorkPackageId = 12,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            ComplainId = 1,
+                            ClientId = "1",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
                             Detail = "General Complain 1 description",
-                            Name = "General Complain 1",
-                            Status = "New",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            IsActive = true,
+                            MyProperty = 0,
+                            Status = 0,
+                            Subject = "General Complain 1",
                             IsPrivate = false
                         });
                 });
 
-            modelBuilder.Entity("PSMModel.Models.LightPostComplint", b =>
+            modelBuilder.Entity("PSMModel.Models.LightPostComplain", b =>
                 {
-                    b.HasBaseType("PSMModel.Models.WorkPackage");
+                    b.HasBaseType("PSMModel.Models.Complain");
 
                     b.Property<string>("LightPostNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasDiscriminator().HasValue("LightPostComplint");
+                    b.HasIndex("LightPostNumber");
+
+                    b.HasDiscriminator().HasValue("LightPostComplain");
 
                     b.HasData(
                         new
                         {
-                            WorkPackageId = 2,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
-                            Detail = "Light post LP001 is not working",
-                            Name = "lightisnotworking",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            ComplainId = 2,
+                            ClientId = "1",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            Detail = "Light post not working at Main St.",
+                            IsActive = true,
+                            MyProperty = 0,
+                            Status = 0,
+                            Subject = "Light Post Issue",
                             LightPostNumber = "LP001"
                         },
                         new
                         {
-                            WorkPackageId = 3,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            ComplainId = 3,
+                            ClientId = "1",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
                             Detail = "Light post LP001 is not working 2",
-                            Name = "lightisnotworking",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            IsActive = true,
+                            MyProperty = 0,
+                            Status = 0,
+                            Subject = "Light Post Issue 2",
                             LightPostNumber = "LP001"
-                        },
-                        new
-                        {
-                            WorkPackageId = 4,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            Detail = "Light post LP001 is not working 3",
-                            Name = "lightisnotworking",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            LightPostNumber = "LP001"
-                        },
-                        new
-                        {
-                            WorkPackageId = 5,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            Detail = "Light post LP001 is not working 4",
-                            Name = "lightisnotworking",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            LightPostNumber = "LP002"
-                        },
-                        new
-                        {
-                            WorkPackageId = 6,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            Detail = "Light post LP001 is not working 5",
-                            Name = "lightisnotworking",
-                            Status = "Open",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 14, 14),
-                            LightPostNumber = "LP002"
                         });
                 });
 
             modelBuilder.Entity("PSMModel.Models.ProjectComplain", b =>
                 {
-                    b.HasBaseType("PSMModel.Models.WorkPackage");
+                    b.HasBaseType("PSMModel.Models.Complain");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
@@ -1142,60 +2136,162 @@ namespace PSMDataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            WorkPackageId = 31,
-                            ClientId = 1,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            ComplainId = 4,
+                            ClientId = "1",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
                             Detail = "Project Complain 1 description",
-                            Name = "Project Complain 1",
-                            Status = "New",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            IsActive = true,
+                            MyProperty = 0,
+                            Status = 0,
+                            Subject = "Project Complain 1",
                             ProjectId = 1
                         },
                         new
                         {
-                            WorkPackageId = 32,
-                            ClientId = 2,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 10, 0),
+                            ComplainId = 5,
+                            ClientId = "2",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 20, 10, 0),
+                            CreatedBy = "2",
                             Detail = "Project Complain 2 description",
-                            Name = "Project Complain 2",
-                            Status = "In Progress",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 20, 10, 0),
+                            IsActive = true,
+                            MyProperty = 0,
+                            Status = 2,
+                            Subject = "Project Complain 2",
                             ProjectId = 2
+                        });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ComplainTicket", b =>
+                {
+                    b.HasBaseType("PSMModel.Models.Ticket");
+
+                    b.Property<int?>("ComplainType")
+                        .HasColumnType("integer");
+
+                    b.HasDiscriminator().HasValue("ComplainTicket");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.InternalTicket", b =>
+                {
+                    b.HasBaseType("PSMModel.Models.Ticket");
+
+                    b.HasDiscriminator().HasValue("InternalTicket");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectTicket", b =>
+                {
+                    b.HasBaseType("PSMModel.Models.Ticket");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasDiscriminator().HasValue("ProjectTicket");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Driver", b =>
+                {
+                    b.HasBaseType("PSMModel.Models.User");
+
+                    b.Property<LocalDateTime?>("ExpireDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("LicenseNo")
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("Driver");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "4",
+                            City = "Colombo",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            FirstName = "Upul",
+                            IsActive = true,
+                            LastName = "Perera",
+                            Mobile = "0777582365",
+                            ExpireDate = new NodaTime.LocalDateTime(2027, 6, 19, 14, 14),
+                            LicenseNo = "2345"
                         },
                         new
                         {
-                            WorkPackageId = 33,
-                            ClientId = 2,
-                            CreatedDate = new NodaTime.LocalDateTime(2025, 6, 21, 9, 30),
-                            Detail = "Project Complain 3 description",
-                            Name = "Project Complain 3",
-                            Status = "Resolved",
-                            UpdatedDate = new NodaTime.LocalDateTime(2025, 6, 21, 9, 30),
-                            ProjectId = 3
+                            UserId = "5",
+                            City = "Galle",
+                            Council = "Mahara",
+                            CreatedAt = new NodaTime.LocalDateTime(2025, 6, 19, 14, 14),
+                            CreatedBy = "1",
+                            FirstName = "Shantha",
+                            IsActive = true,
+                            LastName = "Fernando",
+                            Mobile = "0147894492",
+                            ExpireDate = new NodaTime.LocalDateTime(2028, 6, 19, 14, 14),
+                            LicenseNo = "2345"
                         });
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Attachment", b =>
+                {
+                    b.HasOne("PSMModel.Models.Complain", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("ComplainId");
+
+                    b.HasOne("PSMModel.Models.Project", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("PSMModel.Models.Ticket", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("TicketId");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Comment", b =>
                 {
                     b.HasOne("PSMModel.Models.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("PSMModel.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("PSMModel.Models.WorkPackage", "WorkPackage")
-                        .WithMany("Comments")
-                        .HasForeignKey("WorkpackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Client");
 
                     b.Navigation("User");
+                });
 
-                    b.Navigation("WorkPackage");
+            modelBuilder.Entity("PSMModel.Models.Complain", b =>
+                {
+                    b.HasOne("PSMModel.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ComplainTag", b =>
+                {
+                    b.HasOne("PSMModel.Models.Complain", "Complain")
+                        .WithMany("ComplainTags")
+                        .HasForeignKey("ComplainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.Tag", "Tag")
+                        .WithMany("ComplainTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Complain");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("PSMModel.Models.GCShedule", b =>
@@ -1207,6 +2303,87 @@ namespace PSMDataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Region");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Notification", b =>
+                {
+                    b.HasOne("PSMModel.Models.Complain", "Complain")
+                        .WithMany()
+                        .HasForeignKey("ComplainId");
+
+                    b.HasOne("PSMModel.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId");
+
+                    b.Navigation("Complain");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectCoordinator", b =>
+                {
+                    b.HasOne("PSMModel.Models.User", "Coordinator")
+                        .WithMany()
+                        .HasForeignKey("CoordinatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coordinator");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectInspection", b =>
+                {
+                    b.HasOne("PSMModel.Models.ProjectCoordinator", "ProjectCoordinator")
+                        .WithMany()
+                        .HasForeignKey("ProjectCoordinatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectCoordinator");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectProgress", b =>
+                {
+                    b.HasOne("PSMModel.Models.User", "ApprovedByUser")
+                        .WithMany()
+                        .HasForeignKey("ApprovedBy");
+
+                    b.HasOne("PSMModel.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApprovedByUser");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ProjectTag", b =>
+                {
+                    b.HasOne("PSMModel.Models.Project", "Project")
+                        .WithMany("ProjectTags")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.Tag", "Tag")
+                        .WithMany("ProjectTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Ride", b =>
@@ -1252,19 +2429,19 @@ namespace PSMDataAccess.Migrations
 
             modelBuilder.Entity("PSMModel.Models.Tender", b =>
                 {
-                    b.HasOne("PSMModel.Models.Company", "Company")
+                    b.HasOne("PSMModel.Models.Contractor", "Contractor")
                         .WithMany()
-                        .HasForeignKey("CompanyId")
+                        .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PSMModel.Models.Project", "Project")
-                        .WithOne("AwadedTener")
-                        .HasForeignKey("PSMModel.Models.Tender", "ProjectId")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Company");
+                    b.Navigation("Contractor");
 
                     b.Navigation("Project");
                 });
@@ -1273,11 +2450,49 @@ namespace PSMDataAccess.Migrations
                 {
                     b.HasOne("PSMModel.Models.User", "User")
                         .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.TicketActivity", b =>
+                {
+                    b.HasOne("PSMModel.Models.Ticket", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.TicketComplain", b =>
+                {
+                    b.HasOne("PSMModel.Models.Complain", "Complain")
+                        .WithMany("TicketComplains")
+                        .HasForeignKey("ComplainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PSMModel.Models.ComplainTicket", null)
+                        .WithMany("TicketComplains")
+                        .HasForeignKey("ComplainTicketTicketId");
+
+                    b.HasOne("PSMModel.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Complain");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("PSMModel.Models.TicketHistory", b =>
@@ -1291,32 +2506,34 @@ namespace PSMDataAccess.Migrations
                     b.Navigation("Ticket");
                 });
 
-            modelBuilder.Entity("PSMModel.Models.TicketPackage", b =>
+            modelBuilder.Entity("PSMModel.Models.TicketTag", b =>
                 {
+                    b.HasOne("PSMModel.Models.Tag", "Tag")
+                        .WithMany("TicketTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PSMModel.Models.Ticket", "Ticket")
-                        .WithMany("TicketPackages")
+                        .WithMany("TicketTags")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PSMModel.Models.WorkPackage", "WorkPackage")
-                        .WithMany("TicketPackages")
-                        .HasForeignKey("WorkPackageId")
+                    b.Navigation("Tag");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.LightPostComplain", b =>
+                {
+                    b.HasOne("PSMModel.Models.LightPost", "LightPost")
+                        .WithMany()
+                        .HasForeignKey("LightPostNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Ticket");
-
-                    b.Navigation("WorkPackage");
-                });
-
-            modelBuilder.Entity("PSMModel.Models.WorkPackage", b =>
-                {
-                    b.HasOne("PSMModel.Models.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId");
-
-                    b.Navigation("Client");
+                    b.Navigation("LightPost");
                 });
 
             modelBuilder.Entity("PSMModel.Models.ProjectComplain", b =>
@@ -1330,11 +2547,33 @@ namespace PSMDataAccess.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("PSMModel.Models.ProjectTicket", b =>
+                {
+                    b.HasOne("PSMModel.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.Complain", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("ComplainTags");
+
+                    b.Navigation("TicketComplains");
+                });
+
             modelBuilder.Entity("PSMModel.Models.Project", b =>
                 {
-                    b.Navigation("AwadedTener");
+                    b.Navigation("Attachments");
 
                     b.Navigation("ProjectComplains");
+
+                    b.Navigation("ProjectTags");
                 });
 
             modelBuilder.Entity("PSMModel.Models.Ride", b =>
@@ -1342,16 +2581,27 @@ namespace PSMDataAccess.Migrations
                     b.Navigation("RidePoints");
                 });
 
-            modelBuilder.Entity("PSMModel.Models.Ticket", b =>
+            modelBuilder.Entity("PSMModel.Models.Tag", b =>
                 {
-                    b.Navigation("TicketPackages");
+                    b.Navigation("ComplainTags");
+
+                    b.Navigation("ProjectTags");
+
+                    b.Navigation("TicketTags");
                 });
 
-            modelBuilder.Entity("PSMModel.Models.WorkPackage", b =>
+            modelBuilder.Entity("PSMModel.Models.Ticket", b =>
                 {
-                    b.Navigation("Comments");
+                    b.Navigation("Activities");
 
-                    b.Navigation("TicketPackages");
+                    b.Navigation("Attachments");
+
+                    b.Navigation("TicketTags");
+                });
+
+            modelBuilder.Entity("PSMModel.Models.ComplainTicket", b =>
+                {
+                    b.Navigation("TicketComplains");
                 });
 #pragma warning restore 612, 618
         }

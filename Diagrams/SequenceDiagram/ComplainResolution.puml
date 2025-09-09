@@ -1,0 +1,37 @@
+
+@startuml
+
+actor User
+control "ComplainController" as CC
+participant "ComplainRepository" as CR
+Entity "TicketController" as TC
+participant "TicketRepository" as TR
+
+==Create  Complain==
+
+User -> CC: AddGeneralComplain(complainData)
+
+CC -> CR: AddGeneralComplainAsync(generalComplain) 
+
+CR --> CC: addedComplain
+
+CC --> User: addedComplain
+
+==Create  Ticket from Complain==
+
+User -> TC: AddExternalTicket(ticketRequest)
+TC --> TR: AddAsync(ticket)
+
+TR --> TC: addedTicket
+
+TC --> User: addedTicket
+
+==Start work on the ticket==
+
+User -> TC: StartWorkOnTicket(ticketId)
+TC -> TR: StartWorkOnTicketAsync(ticketId)
+
+TR --> TC: true/false
+TC --> User: Ok(true/false)
+
+@enduml 
