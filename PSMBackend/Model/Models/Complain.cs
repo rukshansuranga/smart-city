@@ -6,7 +6,7 @@ using PSMModel.Enums;
 
 namespace PSMModel.Models;
 
-public class Complain :BaseEntity
+public class Complain : BaseEntity, IAttachable
 {
     [Key]
     public int ComplainId { get; set; }
@@ -25,4 +25,14 @@ public class Complain :BaseEntity
     public Client? Client { get; set; }
     public string ComplainType { get; set; }
     public List<TicketComplain>? TicketComplains { get; set; }
+    
+    // Tag relationships
+    public virtual ICollection<ComplainTag> ComplainTags { get; set; } = new List<ComplainTag>();
+    
+    // Navigation property for attachments
+    public virtual ICollection<Attachment>? Attachments { get; set; }
+    
+    // IAttachable implementation
+    public int GetEntityId() => ComplainId;
+    public string GetEntityType() => nameof(Complain);
 }

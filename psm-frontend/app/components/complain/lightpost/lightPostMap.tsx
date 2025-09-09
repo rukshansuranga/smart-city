@@ -19,7 +19,7 @@ export type AutocompleteMode = { id: string; label: string };
 
 export default function LightPostMap({
   statusList,
-  setActiveMarkers,
+  //setActiveMarkers,
   activeMarkers,
   manageTicketInclusion,
   openPosition,
@@ -28,13 +28,13 @@ export default function LightPostMap({
   setOpenPosition,
 }: {
   statusList: number[];
-  setActiveMarkers: React.Dispatch<
-    React.SetStateAction<ActiveLightPostMarker[]>
-  >;
+  // setActiveMarkers: React.Dispatch<
+  //   React.SetStateAction<ActiveLightPostMarker[]>
+  // >;
   activeMarkers: ActiveLightPostMarker[];
   manageTicketInclusion: (
     workpackageIds: number[],
-    lightPostNumber?: string | null
+    lightPostNumber: string
   ) => void;
   openPosition?: boolean;
   openMarkerId?: string | null;
@@ -50,25 +50,35 @@ export default function LightPostMap({
       : { lat: 0, lng: 0 }
   );
 
-  async function handleSelectPlace(place: google.maps.places.Place | null) {
-    //setSelectedPlace(place);
-    if (place?.Dg?.location) {
-      console.log(
-        "selectedPlacexxxxx",
-        place?.Dg?.location?.lat,
-        place?.Dg?.location?.lng,
-        statusList
-      );
+  // async function handleSelectPlace(place: google.maps.places.Place | null) {
+  //   //setSelectedPlace(place);
+  //   if (place?.Dg?.location) {
 
+  //     await getLightPostByLocation({
+  //       latitude: place?.Dg?.location?.lat,
+  //       longitude: place?.Dg?.location?.lng,
+  //       statuses: statusList,
+  //     });
+
+  //     setMapCenter({
+  //       lat: place?.Dg?.location?.lat || 0,
+  //       lng: place?.Dg?.location?.lng || 0,
+  //     });
+  //   }
+  // }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async function handleSelectPlace(lat: number, lng: number, city: string) {
+    if (lat && lng) {
       await getLightPostByLocation({
-        latitude: place?.Dg?.location?.lat,
-        longitude: place?.Dg?.location?.lng,
+        latitude: lat,
+        longitude: lng,
         statuses: statusList,
       });
 
       setMapCenter({
-        lat: place?.Dg?.location?.lat || 0,
-        lng: place?.Dg?.location?.lng || 0,
+        lat: lat,
+        lng: lng,
       });
     }
   }

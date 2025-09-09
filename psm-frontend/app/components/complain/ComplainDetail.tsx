@@ -1,5 +1,5 @@
 import { ProjectStatus, ProjectType, ComplainStatus } from "@/enums";
-import { Complain } from "@/types";
+import { Complain, ProjectComplain } from "@/types";
 import { Badge, Card, Label, Textarea, TextInput } from "flowbite-react";
 
 export default function ComplainDetail({ complain }: { complain: Complain }) {
@@ -28,7 +28,7 @@ export default function ComplainDetail({ complain }: { complain: Complain }) {
         </div>
       </Card>
 
-      {complain.workpackageType == "ProjectComplain" && (
+      {complain.complainType == "ProjectComplain" && (
         <Card className="mt-3">
           <div className="mt-6 mb-2">
             <h3>Project Details</h3>
@@ -48,7 +48,9 @@ export default function ComplainDetail({ complain }: { complain: Complain }) {
               <div className="flex flex-col gap-3">
                 <Label>Type</Label>
                 <Badge color="indigo">
-                  <Label>{ProjectType[complain.project?.type]}</Label>
+                  <Label>
+                    {ProjectType[(complain as ProjectComplain).project?.type]}
+                  </Label>
                 </Badge>
               </div>
             </div>
@@ -57,7 +59,13 @@ export default function ComplainDetail({ complain }: { complain: Complain }) {
               <div className="flex flex-col gap-3">
                 <Label>Status</Label>
                 <Badge color="pink">
-                  <Label>{ProjectStatus[complain.project?.status]}</Label>
+                  <Label>
+                    {
+                      ProjectStatus[
+                        (complain as ProjectComplain).project?.status
+                      ]
+                    }
+                  </Label>
                 </Badge>
               </div>
             </div>
@@ -65,7 +73,7 @@ export default function ComplainDetail({ complain }: { complain: Complain }) {
         </Card>
       )}
 
-      {complain.workpackageType == "LightPostComplain" && (
+      {complain.complainType == "LightPostComplain" && (
         <Card className="mt-3">
           <div className="mt-6 mb-2">
             <h3>Light Post</h3>

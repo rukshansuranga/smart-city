@@ -2,14 +2,12 @@ import {
   ProjectStatus,
   ProjectType,
   TicketStatus,
-  TicketType,
   TicketPriority,
-  TicketWorkpackageType,
   ComplainStatus,
   ComplainType,
   ProjectProgressApprovedStatus,
   ProjectCoordinatorType,
-  TicketCategory,
+  TicketType,
 } from "@/enums";
 
 // Export the enum for use in other files
@@ -32,19 +30,6 @@ export type Permission =
   | "user"
   | "projectprogress";
 
-export type LightPostComplain = {
-  id?: string;
-  lightPostNumber: string;
-  userId: string;
-  complainDate: string;
-  resolveDate: string;
-  subject: string;
-  description: string;
-  note: string;
-  status: string;
-  isIncluded?: boolean;
-};
-
 export type Complain = {
   complainId?: string;
   subject: string;
@@ -65,12 +50,35 @@ export type Complain = {
   ticketPackages: Ticket[];
 };
 
+// export type LightPostComplain = {
+//   id?: string;
+//   lightPostNumber: string;
+//   userId: string;
+//   complainDate: string;
+//   resolveDate: string;
+//   subject: string;
+//   description: string;
+//   note: string;
+//   status: string;
+//   isIncluded?: boolean;
+// };
+
+export type LightPostComplain = Complain & {
+  lightPostNumber: string;
+  lightPost: LightPost;
+};
+
 export type TicketComplain = {
   id?: number;
   ticketId: number;
   complainId: number;
   ticket?: Ticket;
   complain?: Complain;
+};
+
+export type ProjectComplain = Complain & {
+  projectId: number;
+  project: Project;
 };
 
 export type TicketActivity = {
@@ -98,15 +106,16 @@ export type Ticket = {
   subject: string;
   detail?: string;
   note?: string;
-  tags?: string;
-  status?: TicketStatus;
+  tags?: Tag[]; // Updated to use Tag array instead of string
+  status: TicketStatus;
+  // type?: TicketType;
   type?: TicketType;
-  category?: TicketCategory;
+
   estimation: number;
   priority?: TicketPriority;
   dueDate?: Date | string;
   attachments?: string[];
-  userId?: string;
+  userId: string;
   createdAt?: Date;
   user?: {
     userId: string;
@@ -282,4 +291,70 @@ export type BoardTicket = {
   projectTickets: ProjectTicket[];
   complainTickets: ComplainTicket[];
   internalTickets: InternalTicket[];
+};
+
+export type Attachment = {
+  attachmentId: number;
+  fileName: string;
+  originalFileName: string;
+  filePath: string;
+  contentType: string;
+  fileSize: number;
+  description?: string;
+  entityType: string; // "Complain", "Ticket", "Project", etc.
+  entityId: number;
+  attachmentType?: string; // "Document", "Image", "Video", etc.
+  category?: string; // "Specification", "Progress", "Evidence", etc.
+  orderIndex?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type AttachmentUpload = {
+  file: File;
+  description?: string;
+  attachmentType?: string;
+  category?: string;
+};
+
+// Tag types
+export type Tag = {
+  tagId: number;
+  name: string;
+  description?: string;
+  color?: string;
+  isActive: boolean;
+};
+
+export type TagDto = {
+  tagId: number;
+  name: string;
+  description?: string;
+  color?: string;
+  isActive: boolean;
+};
+
+export type CreateTagRequest = {
+  name: string;
+  description?: string;
+  color?: string;
+  isActive?: boolean;
+};
+
+export type UpdateTagRequest = {
+  name?: string;
+  description?: string;
+  color?: string;
+  isActive?: boolean;
+};
+
+export type ProjectTask = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  dueDate: string;
+  assignee?: string;
+  completedDate?: string;
 };

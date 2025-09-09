@@ -1,6 +1,6 @@
 "use client";
 
-import { Navbar, NavbarBrand, Select } from "flowbite-react";
+import { Navbar, NavbarBrand } from "flowbite-react";
 import Logo from "./Logo";
 import Link from "next/link";
 import { Session } from "next-auth";
@@ -17,15 +17,16 @@ export default function NavBar({ session }: HeaderProps) {
   const { council, setCouncil, setLocation } = useCouncilStore();
 
   // Council locations mapping (you can adjust these coordinates as needed)
-  const councilLocations = useMemo(
-    () => ({
-      Mahara: { lat: 6.9913, lng: 79.9395 },
-      Kandy: { lat: 7.2906, lng: 80.6337 },
-      Galle: { lat: 6.0535, lng: 80.221 },
-      // Add more councils and their coordinates as needed
-    }),
-    []
-  );
+  const councilLocations: Record<string, { lat: number; lng: number }> =
+    useMemo(
+      () => ({
+        Mahara: { lat: 6.9913, lng: 79.9395 },
+        Kandy: { lat: 7.2906, lng: 80.6337 },
+        Galle: { lat: 6.0535, lng: 80.221 },
+        // Add more councils and their coordinates as needed
+      }),
+      []
+    );
 
   // Set council from session when it loads
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { Ticket } from "@/types";
 import Link from "next/link";
+import TagsDisplay from "../components/forms/TagsDisplay";
 
 interface TicketListProps {
   tickets: Ticket[];
@@ -18,6 +19,9 @@ export default function TicketList({ tickets }: TicketListProps) {
               Title
             </th>
             <th scope="col" className="px-6 py-3">
+              Tags
+            </th>
+            <th scope="col" className="px-6 py-3">
               Created Date
             </th>
             <th scope="col" className="px-6 py-3">
@@ -31,6 +35,9 @@ export default function TicketList({ tickets }: TicketListProps) {
             <tr key={ticket.ticketId}>
               <td className="px-6 py-4">{ticket.ticketId}</td>
               <td className="px-6 py-4">{ticket.subject}</td>
+              <td className="px-6 py-4">
+                <TagsDisplay tags={ticket.tags || []} maxDisplay={3} />
+              </td>
               <td className="px-6 py-4">
                 {new Date(ticket.createdAt!)?.toISOString().slice(0, 10)}
               </td>

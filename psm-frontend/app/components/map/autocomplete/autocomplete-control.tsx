@@ -4,7 +4,7 @@ import { AutocompleteCustom } from "../autocomplete-custom";
 
 type CustomAutocompleteControlProps = {
   controlPosition: ControlPosition;
-  onPlaceSelect: (place: google.maps.places.Place | null) => void;
+  onPlaceSelect: (lat: number, lng: number, city: string) => void;
 };
 
 const AutocompleteControl = ({

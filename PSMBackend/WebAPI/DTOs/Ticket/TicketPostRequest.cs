@@ -9,7 +9,6 @@ public class TicketPostRequest
     public string Subject { get; set; }
     public string? Detail { get; set; }
     public string? Note { get; set; }
-    public TicketType? Type { get; set; }
     public TicketStatus? Status { get; set; }
     public ComplainType? TicketComplainType { get; set; }
     public List<int>? ComplainIdList { get; set; }
@@ -19,5 +18,6 @@ public class TicketPostRequest
     public TicketPriority? Priority { get; set; }
     public LocalDate? DueDate { get; set; }
     public List<string>? Attachments { get; set; }
+    public List<int>? TagIds { get; set; } // New field for tag IDs
 
 }

@@ -1,5 +1,4 @@
 import { getTicketById } from "@/app/api/actions/ticketActions";
-import { Ticket } from "@/types";
 
 import ManageTicket from "../ManageTicket";
 

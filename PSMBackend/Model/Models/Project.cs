@@ -5,7 +5,7 @@ using PSMModel.Enums;
 
 namespace PSMModel.Models;
 
-public class Project: BaseEntity
+public class Project: BaseEntity, IAttachable
 {
     public int Id { get; set; }
     public string Subject { get; set; }
@@ -28,4 +28,14 @@ public class Project: BaseEntity
     public LocalDate? TenderOpeningDate { get; set; }
     public LocalDate? TenderClosingDate { get; set; }
     public ICollection<ProjectComplain>? ProjectComplains { get; set; }
+    
+    // Tag relationships
+    public virtual ICollection<ProjectTag> ProjectTags { get; set; } = new List<ProjectTag>();
+    
+    // Navigation property for attachments
+    public virtual ICollection<Attachment>? Attachments { get; set; }
+    
+    // IAttachable implementation
+    public int GetEntityId() => Id;
+    public string GetEntityType() => nameof(Project);
 }

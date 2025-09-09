@@ -6,6 +6,16 @@ interface Props {
   onPlaceSelect: (lat: number, lng: number, city: string) => void;
 }
 
+// Extended interface for Google Places with runtime properties
+interface ExtendedPlace extends google.maps.places.Place {
+  Dg?: {
+    location?: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
 export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
   const places = useMapsLibrary("places");
 
@@ -38,13 +48,16 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
       // resetSession() so a new one gets created for further search
       resetSession();
 
+      // Type assertion to access runtime properties that aren't in the type definitions
+      const placeWithLocation = place as ExtendedPlace;
+
       onPlaceSelect(
-        place?.Dg?.location?.lat || 0,
-        place?.Dg?.location?.lng || 0,
-        suggestion.placePrediction?.text.text
+        placeWithLocation?.Dg?.location?.lat || 0,
+        placeWithLocation?.Dg?.location?.lng || 0,
+        suggestion.placePrediction?.text.text || ""
       );
     },
-    [places, onPlaceSelect]
+    [places, onPlaceSelect, resetSession]
   );
 
   return (

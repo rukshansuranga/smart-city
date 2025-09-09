@@ -60,6 +60,12 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ITicketActivityRepository, TicketActivityRepository>();
 
+// Register Attachment Service
+builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+
+// Register Tag Service
+builder.Services.AddScoped<ITagService, TagService>();
+
 // Configure Keycloak Client Credentials
 builder.Services.Configure<KeycloakClientCredentialsOptions>(
     builder.Configuration.GetSection("keycloak:ClientCredentials"));

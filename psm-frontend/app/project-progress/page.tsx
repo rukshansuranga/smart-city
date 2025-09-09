@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { PageProtection } from "../components/PageProtection";
 import { Project } from "@/types";
 import { ProjectStatus, ProjectType } from "@/enums";
-import { filterProjects } from "../api/client/projectActions";
+//import { filterProjects } from "../api/client/projectActions";
 import { getProjectsByContractor } from "../api/client/projectActions";
 
 function ProjectProgressContent() {
@@ -33,11 +33,11 @@ function ProjectProgressContent() {
             "Contractor-specific endpoint not available, using filter:",
             error
           );
-          response = await filterProjects(`?contractorId=${session.user.id}`);
+          // response = await filterProjects(`?contractorId=${session.user.id}`);
 
-          if (!response.isSuccess) {
-            setError(response.message || "Failed to load projects");
-          }
+          // if (!response.isSuccess) {
+          //   setError(response.message || "Failed to load projects");
+          // }
         }
         setProjects(response?.data || []);
       } catch (err) {

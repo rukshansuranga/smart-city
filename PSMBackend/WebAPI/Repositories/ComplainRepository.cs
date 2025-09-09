@@ -109,10 +109,10 @@ public class ComplainRepository : IComplainRepository
                 qurery = qurery.Where(s => s.ComplainType == complainPaging.Type.Value.ToString());
             }
 
-            if(complainPaging.TicketComplainType.HasValue)
-            {
-                qurery = qurery.Where(s => s.ComplainType == complainPaging.TicketComplainType.Value.ToString());
-            }
+            // if(complainPaging.TicketComplainType.HasValue)
+            // {
+            //     qurery = qurery.Where(s => s.ComplainType == complainPaging.TicketComplainType.Value.ToString());
+            // }
 
             if (!isAdmin)
             {

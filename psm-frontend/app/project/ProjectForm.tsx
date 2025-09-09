@@ -23,6 +23,7 @@ import AutoCompleteMap from "../components/map/autocomplete";
 import { useCouncilStore } from "@/store";
 import { ProjectType, ProjectStatus } from "@/enums";
 import { Project, Tender } from "@/types";
+import { toast } from "react-hot-toast";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -141,11 +142,13 @@ export default function ProjectForm({
 
         if (isClosingDatePassed) {
           // Fetch tenders for this project
-          getTendersByProjectIdId(initialData.id || "").then((result) => {
-            if (result.isSuccess && result.data) {
-              setTenders(result.data);
+          getTendersByProjectIdId(initialData.id?.toString() || "").then(
+            (result) => {
+              if (result.isSuccess && result.data) {
+                setTenders(result.data);
+              }
             }
-          });
+          );
         }
       }
 
@@ -154,7 +157,14 @@ export default function ProjectForm({
       // Fetch data if no initial data provided
       setIsLoading(true);
       getProject(projectId)
-        .then((project) => {
+        .then((response) => {
+          if (!response.isSuccess) {
+            toast.error(response.message || "Failed to fetch project data");
+            return;
+          }
+
+          const project = response.data;
+
           reset({
             ...project,
             tenderOpeningDate: project.tenderOpeningDate

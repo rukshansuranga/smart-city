@@ -11,11 +11,16 @@ export async function uploadFile(
       return {
         isSuccess: true,
         message: result.message,
-        data: result.data.fileUrl || (result.data as unknown as string),
+        data: result.data.fileUrl,
         errors: [],
       };
     }
-    return result as ApiResponse<string>;
+    return {
+      isSuccess: false,
+      message: result.message || "Failed to upload file",
+      data: "",
+      errors: result.errors || [],
+    };
   } catch (error) {
     console.error("Error uploading file:", error);
     throw error;

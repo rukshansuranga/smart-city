@@ -1,34 +1,36 @@
-import { Ticket } from "@/types";
-import TicketForm from "./TicketForm";
+import { ComplainTicket, Ticket } from "@/types";
+import TicketForm from "../components/ticket/TicketForm";
 import WorkpackageAssigned from "./WorkpackageAssigned";
-import { TicketType, TicketWorkpackageType } from "@/enums";
+import { ComplainType, TicketType } from "@/enums";
 import LightPostWorkpackageAssigned from "./LightPostWorkpackageAssigned";
 
 export default async function ManageTicket({ ticket }: { ticket: Ticket }) {
-  console.log("ticket123", ticket);
+  // Determine the ticket type based on available data
+  const ticketType = ticket.type || TicketType.InternalTicket;
+
+  // Type assertion to access properties that might exist on specific ticket types
+  let complainType = ComplainType.GeneralComplain;
+
+  if (ticketType === TicketType.ComplainTicket) {
+    complainType =
+      (ticket as ComplainTicket)?.complainType || ComplainType.GeneralComplain;
+  }
 
   return (
     <div>
-      <TicketForm
-        ticket={ticket}
-        workpackageList={ticket?.ticketPackages?.map((pkg) => pkg.complain!)}
-        isInternal={ticket.type === TicketType.Internal}
-        ticketWorkpackageType={ticket.ticketWorkpackageType}
-      />
-      {ticket.type == TicketType.External &&
-        (ticket.ticketWorkpackageType ==
-          TicketWorkpackageType.GeneralComplain ||
-          ticket.ticketWorkpackageType ==
-            TicketWorkpackageType.ProjectComplain) && (
+      <TicketForm ticket={ticket} ticketType={ticketType} />
+
+      {ticket.type == TicketType.ComplainTicket &&
+        (complainType == ComplainType.GeneralComplain ||
+          complainType == ComplainType.ProjectComplain) && (
           <WorkpackageAssigned
             ticketId={ticket.ticketId!}
-            ticketWorkpackageType={ticket.ticketWorkpackageType}
+            complainType={complainType}
           />
         )}
 
-      {ticket.type == TicketType.External &&
-        ticket.ticketWorkpackageType ==
-          TicketWorkpackageType.LightPostComplain && (
+      {ticket.type == TicketType.ComplainTicket &&
+        complainType == ComplainType.LightPostComplain && (
           <LightPostWorkpackageAssigned ticketId={ticket.ticketId!} />
         )}
     </div>

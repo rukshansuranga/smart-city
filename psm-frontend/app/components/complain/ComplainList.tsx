@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getWorkpackagePaging } from "../../api/actions/workpackageAction";
+import { getComplainPaging } from "../../api/client/complainAction";
 
 import { Paging, Complain } from "@/types";
 import {
@@ -17,7 +17,7 @@ import CreateTicketForm from "../../ticket/new/popup";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Spinner } from "flowbite-react";
-import { TicketWorkpackageType, ComplainStatus } from "@/enums";
+import { ComplainType, ComplainStatus, TicketType } from "@/enums";
 
 export default function ComplainList({
   type,
@@ -40,12 +40,10 @@ export default function ComplainList({
     ComplainStatus.InProgress,
   ]);
 
-  const [selectedWorkpackages, setSelectedWorkpackages] = useState<Complain[]>(
-    []
+  const [selectedComplains, setSelectedComplains] = useState<Complain[]>([]);
+  const [complainType, setComplainType] = useState<ComplainType | undefined>(
+    undefined
   );
-  const [ticketWorkpackageType, setTicketWorkpackageType] = useState<
-    TicketWorkpackageType | undefined
-  >(undefined);
 
   const searchParams = useSearchParams();
   const pageIndex = searchParams.get("pageIndex") ?? "1";
@@ -54,23 +52,19 @@ export default function ComplainList({
 
   useEffect(() => {
     if (type) {
-      setTicketWorkpackageType(
-        TicketWorkpackageType[type as keyof typeof TicketWorkpackageType]
-      );
+      setComplainType(ComplainType[type as keyof typeof ComplainType]);
     }
   }, [type]);
-
-  console.log("Ticket Complain Type:", ticketWorkpackageType);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await getWorkpackagePaging({
+        const response = await getComplainPaging({
           status: statusList.join(","),
           pageSize: pageSize.toString(),
           pageIndex: pageIndex,
-          type: type,
+          complainType: type,
           duration: "60",
         });
         console.log("Fetched complain data:", response);
@@ -81,18 +75,14 @@ export default function ComplainList({
           console.error("Error fetching complain data:", response.message);
           setData({
             records: [],
-            totalRecords: 0,
-            currentPage: 1,
-            pageSize: pageSize,
+            totalItems: 0,
           });
         }
       } catch (error) {
         console.error("Error fetching complain data:", error);
         setData({
           records: [],
-          totalRecords: 0,
-          currentPage: 1,
-          pageSize: pageSize,
+          totalItems: 0,
         });
       } finally {
         setLoading(false);
@@ -102,35 +92,31 @@ export default function ComplainList({
     fetchData();
   }, [searchParams]);
 
-  function addWorkpackage(
+  function addComplain(
     complain: Complain | undefined,
     e: React.ChangeEvent<HTMLInputElement>
   ) {
     if (e.target.checked) {
       if (
-        !selectedWorkpackages.find(
-          (wp) => wp.complainId === complain?.complainId
-        )
+        !selectedComplains.find((wp) => wp.complainId === complain?.complainId)
       ) {
-        setSelectedWorkpackages((prev) => [...prev, complain!]);
+        setSelectedComplains((prev) => [...prev, complain!]);
       }
     } else {
-      setSelectedWorkpackages(
-        selectedWorkpackages.filter(
-          (wp) => wp.complainId !== complain?.complainId
-        )
+      setSelectedComplains(
+        selectedComplains.filter((wp) => wp.complainId !== complain?.complainId)
       );
     }
   }
 
-  function openPopupModel(initWorkpackage: Complain, open: boolean) {
+  function openPopupModel(initComplain: Complain, open: boolean) {
     if (
-      !selectedWorkpackages.find(
-        (wp) => wp.complainId === initWorkpackage?.complainId
+      !selectedComplains.find(
+        (wp) => wp.complainId === initComplain?.complainId
       ) ||
-      selectedWorkpackages.length === 0
+      selectedComplains.length === 0
     ) {
-      setSelectedWorkpackages((prev) => [...prev, initWorkpackage!]);
+      setSelectedComplains((prev) => [...prev, initComplain!]);
     }
 
     setOpenModal(open);
@@ -182,9 +168,9 @@ export default function ComplainList({
           </Button>
           <Button
             className={`shadow-lg ${
-              statusList.includes(ComplainStatus.Close) ? "bg-green-700" : ""
+              statusList.includes(ComplainStatus.Closed) ? "bg-green-700" : ""
             } `}
-            onClick={() => statusChange(ComplainStatus.Close)}
+            onClick={() => statusChange(ComplainStatus.Closed)}
           >
             Closed
           </Button>
@@ -233,8 +219,8 @@ export default function ComplainList({
                   {complain.ticketPackages?.length > 0 ? null : (
                     <Checkbox
                       id="accept"
-                      onChange={(e) => addWorkpackage(complain, e)}
-                      checked={selectedWorkpackages
+                      onChange={(e) => addComplain(complain, e)}
+                      checked={selectedComplains
                         .map((x) => x.complainId)
                         .includes(complain.complainId)}
                     />
@@ -280,8 +266,9 @@ export default function ComplainList({
         <ModalBody>
           <CreateTicketForm
             open={setOpenModal}
-            packages={selectedWorkpackages}
-            ticketWorkpackageType={ticketWorkpackageType!}
+            complains={selectedComplains}
+            complainType={complainType!}
+            ticketType={TicketType.ComplainTicket}
           />
         </ModalBody>
       </Modal>

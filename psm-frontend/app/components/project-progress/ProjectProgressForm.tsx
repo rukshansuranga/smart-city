@@ -32,7 +32,7 @@ export default function ProjectProgressForm({
     projectId: "",
     summary: "",
     description: "",
-    progressDate: new Date(),
+    progressDate: new Date().toISOString().split("T")[0],
     progressPercentage: 0,
     projectProgressApprovedStatus: ProjectProgressApprovedStatus.Pending,
   });
@@ -45,7 +45,7 @@ export default function ProjectProgressForm({
       projectId: defaultProjectId || "",
       summary: "",
       description: "",
-      progressDate: new Date(),
+      progressDate: new Date().toISOString().split("T")[0],
       progressPercentage: 0,
       projectProgressApprovedStatus: ProjectProgressApprovedStatus.Pending,
     });
@@ -122,10 +122,6 @@ export default function ProjectProgressForm({
     }
   };
 
-  const formatDateForInput = (date: Date) => {
-    return date.toISOString().split("T")[0];
-  };
-
   return (
     <Modal show={isOpen} onClose={onClose} size="lg">
       <div className="p-6">
@@ -198,11 +194,7 @@ export default function ProjectProgressForm({
                 id="progressDate"
                 name="progressDate"
                 type="date"
-                value={
-                  formData.progressDate
-                    ? formatDateForInput(formData.progressDate)
-                    : ""
-                }
+                value={formData.progressDate || ""}
                 onChange={handleInputChange}
                 required
               />

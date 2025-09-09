@@ -6,23 +6,9 @@ import {
   createInternalTicket,
 } from "@/app/api/client/ticketActions";
 
-import ComplainDetail from "@/app/components/complain/ComplainDetail";
-import {
-  TicketCategory,
-  TicketStatus,
-  TicketType,
-  TicketWorkpackageType,
-} from "@/enums";
-import { Ticket, Complain } from "@/types";
-import {
-  Badge,
-  Button,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Popover,
-} from "flowbite-react";
-import Link from "next/link";
+import { TicketType, TicketStatus } from "@/enums";
+import { Ticket, Complain, ComplainTicket, TicketComplain } from "@/types";
+import { Badge, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ComplainDetailContainer from "../components/ComplainDetailContainer";
@@ -30,13 +16,13 @@ import { useSession } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
 import TicketDetail from "@/app/components/board/TicketDetail";
 
-function GetCategory(category: TicketCategory) {
-  switch (category) {
-    case TicketCategory.ComplainTicket:
+function GetCategory(type: TicketType) {
+  switch (type) {
+    case TicketType.ComplainTicket:
       return "Complain";
-    case TicketCategory.ProjectTicket:
+    case TicketType.ProjectTicket:
       return "Project";
-    case TicketCategory.InternalTicket:
+    case TicketType.InternalTicket:
       return "Internal";
     default:
       return "Unknown";
@@ -44,9 +30,14 @@ function GetCategory(category: TicketCategory) {
 }
 
 export default function UserBoard() {
-  const { userId } = useParams();
-  const { data: session, status } = useSession();
-  const [columns, setColumns] = useState({
+  const { userId }: { userId: string } = useParams();
+  const { data: session } = useSession();
+  const [columns, setColumns] = useState<{
+    [key: string]: {
+      name: string;
+      items: Ticket[];
+    };
+  }>({
     [TicketStatus[TicketStatus.Open]]: {
       name: "Open",
       items: [],
@@ -68,7 +59,10 @@ export default function UserBoard() {
   const [activeColumn, setActiveColumn] = useState(
     TicketStatus[TicketStatus.Open]
   );
-  const [draggedItem, setDraggedItem] = useState(null);
+  const [draggedItem, setDraggedItem] = useState<{
+    columnId: string;
+    item: Ticket;
+  } | null>(null);
 
   const [selectedWorkpackage, setSelectedWorkpackage] =
     useState<Complain | null>(null);
@@ -79,7 +73,7 @@ export default function UserBoard() {
     fetchTicketsByUserId(userId);
   }, [userId]);
 
-  const fetchTicketsByUserId = async (userId) => {
+  const fetchTicketsByUserId = async (userId: string) => {
     try {
       const boardTickets = await getTicketsByUserId(userId);
 
@@ -109,7 +103,7 @@ export default function UserBoard() {
         if (updatedColumns[columnId]) {
           updatedColumns[columnId].items.push({
             ...ticket,
-            category: TicketCategory.ComplainTicket,
+            type: TicketType.ComplainTicket,
           });
         }
       });
@@ -119,7 +113,7 @@ export default function UserBoard() {
         if (updatedColumns[columnId]) {
           updatedColumns[columnId].items.push({
             ...ticket,
-            category: TicketCategory.ProjectTicket,
+            type: TicketType.ProjectTicket,
           });
         }
       });
@@ -129,7 +123,7 @@ export default function UserBoard() {
         if (updatedColumns[columnId]) {
           updatedColumns[columnId].items.push({
             ...ticket,
-            category: TicketCategory.InternalTicket,
+            type: TicketType.InternalTicket,
           });
         }
       });
@@ -182,9 +176,9 @@ export default function UserBoard() {
 
     const response = await createInternalTicket({
       subject: newTask,
-      userId: session?.user?.id,
-      type: TicketType.Internal,
+      userId: session?.user?.id || "",
       status: TicketStatus.Open,
+      estimation: 0,
     });
 
     if (!response.isSuccess) {
@@ -209,7 +203,7 @@ export default function UserBoard() {
 
     updatedColumns[activeColumn].items.push({
       ...response.data,
-      category: TicketCategory.InternalTicket,
+      type: TicketType.InternalTicket,
     });
     setColumns(updatedColumns);
     setNewTask("");
@@ -226,7 +220,7 @@ export default function UserBoard() {
     });
   };
 
-  const removeTask = (columnId, itemId) => {
+  const removeTask = (columnId: string, itemId: number) => {
     const updatedColumns = { ...columns };
     const taskToRemove = updatedColumns[columnId].items.find(
       (item) => item.ticketId === itemId
@@ -252,15 +246,15 @@ export default function UserBoard() {
     }
   };
 
-  const handleDragStart = (columnId, item) => {
+  const handleDragStart = (columnId: string, item: Ticket) => {
     setDraggedItem({ columnId, item });
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
-  const handleDrop = async (e, columnId) => {
+  const handleDrop = async (e: React.DragEvent, columnId: string) => {
     e.preventDefault();
     if (!draggedItem) return;
     const { columnId: sourceColumnId, item } = draggedItem;
@@ -278,7 +272,9 @@ export default function UserBoard() {
     try {
       if (columnId === TicketStatus[TicketStatus.InProgress]) {
         // If the item is dropped in the "In Progress" column, start the ticket
-        await startTicket(item?.ticketId);
+        if (item?.ticketId) {
+          await startTicket(item.ticketId.toString());
+        }
         toast(`Ticket "${item?.subject}" moved to In Progress`, {
           duration: 2000,
           icon: "🔄",
@@ -294,7 +290,9 @@ export default function UserBoard() {
 
       if (columnId === TicketStatus[TicketStatus.Resolved]) {
         // If the item is dropped in the "Resolved" column, resolve the ticket
-        await resolveTicket(item?.ticketId);
+        if (item?.ticketId) {
+          await resolveTicket(item.ticketId.toString());
+        }
         toast.success(`Ticket "${item?.subject}" has been resolved!`, {
           duration: 2000,
           style: {
@@ -353,7 +351,10 @@ export default function UserBoard() {
 
   console.log("column", columns);
 
-  function handleDetailHandler(ticket, complain) {
+  function handleDetailHandler(
+    ticket: Ticket | null,
+    complain: Complain | null
+  ) {
     console.log("Complain clicked:", complain);
     setSelectedWorkpackage(complain);
     setSelectedTicket(ticket);
@@ -411,10 +412,8 @@ export default function UserBoard() {
             {Object.keys(columns).map((columnId) => (
               <div
                 key={columnId}
-                className={`flex-shrink-0 flex-1 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border-t-4 ${
-                  columnStyles[columnId.border]
-                }`}
-                onDragOver={(e) => handleDragOver(e, columnId)}
+                className={`flex-shrink-0 flex-1 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border-t-4 ${columnStyles[columnId]?.border}`}
+                onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, columnId)}
               >
                 <div
@@ -445,7 +444,10 @@ export default function UserBoard() {
                             {item.subject}
                           </span>
                           <button
-                            onClick={() => removeTask(columnId, item.ticketId)}
+                            onClick={() =>
+                              item.ticketId &&
+                              removeTask(columnId, item.ticketId)
+                            }
                             className="text-[#264653]/60 hover:text-[#E76F51] transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[#E76F51]/20"
                           >
                             <span className="text-lg cursor-pointer">×</span>
@@ -453,29 +455,38 @@ export default function UserBoard() {
                         </div>
                         <div className="flex items-center justify-between w-full mt-2">
                           <span className="text-sm text-[#264653]/80">
-                            {GetCategory(item.category)}
+                            {item.type !== undefined
+                              ? GetCategory(item.type)
+                              : "Unknown"}
                           </span>
 
                           <div className="flex flex-wrap gap-2">
-                            {item.category == TicketCategory.ComplainTicket &&
-                              item.ticketComplains.length > 0 &&
-                              item.ticketComplains.map((pack) => (
-                                <Badge
-                                  onClick={() =>
-                                    handleDetailHandler(null, pack.complain)
-                                  }
-                                  key={pack?.complainId}
-                                  className="bg-[#2A9D8F] text-white hover:bg-[#E9C46A] hover:text-[#264653] cursor-pointer transition-all duration-200 shadow-md"
-                                  style={{
-                                    borderRadius: "10px",
-                                  }}
-                                  size="sm"
-                                >
-                                  {pack?.complainId}
-                                </Badge>
-                              ))}
+                            {item.type == TicketType.ComplainTicket &&
+                              (item as ComplainTicket).ticketComplains &&
+                              (item as ComplainTicket).ticketComplains!.length >
+                                0 &&
+                              (item as ComplainTicket).ticketComplains!.map(
+                                (pack: TicketComplain) => (
+                                  <Badge
+                                    onClick={() =>
+                                      handleDetailHandler(
+                                        null,
+                                        pack.complain || null
+                                      )
+                                    }
+                                    key={pack?.complainId}
+                                    className="bg-[#2A9D8F] text-white hover:bg-[#E9C46A] hover:text-[#264653] cursor-pointer transition-all duration-200 shadow-md"
+                                    style={{
+                                      borderRadius: "10px",
+                                    }}
+                                    size="sm"
+                                  >
+                                    {pack?.complainId}
+                                  </Badge>
+                                )
+                              )}
 
-                            {item.category == TicketCategory.ProjectTicket && (
+                            {item.type == TicketType.ProjectTicket && (
                               <Badge
                                 onClick={() => handleDetailHandler(item, null)}
                                 className="bg-[#2A9D8F] text-white hover:bg-[#E9C46A] hover:text-[#264653] cursor-pointer transition-all duration-200 shadow-md"
@@ -488,7 +499,7 @@ export default function UserBoard() {
                               </Badge>
                             )}
 
-                            {item.category == TicketCategory.InternalTicket && (
+                            {item.type == TicketType.InternalTicket && (
                               <Badge
                                 onClick={() => handleDetailHandler(item, null)}
                                 className="bg-[#2A9D8F] text-white hover:bg-[#E9C46A] hover:text-[#264653] cursor-pointer transition-all duration-200 shadow-md"

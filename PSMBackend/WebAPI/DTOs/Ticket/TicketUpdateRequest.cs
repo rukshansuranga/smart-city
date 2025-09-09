@@ -16,4 +16,5 @@ public class TicketUpdateRequest
     public TicketPriority? Priority { get; set; }
     public LocalDate? DueDate { get; set; }
     public List<string>? Attachments { get; set; }
+    public List<int>? TagIds { get; set; } // New field for tag IDs
 }

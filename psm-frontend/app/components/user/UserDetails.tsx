@@ -163,7 +163,7 @@ export default function UserDetails({ user }: UserDetailsProps) {
                   Authentication Type
                 </label>
                 <Badge color="gray" size="sm">
-                  {user.authType.toUpperCase()}
+                  {user.authType?.toString() || "N/A"}
                 </Badge>
               </div>
             )}

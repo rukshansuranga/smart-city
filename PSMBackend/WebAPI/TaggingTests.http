@@ -1,0 +1,183 @@
+### Tag Management API Tests
+
+# Get all tags
+GET {{baseUrl}}/api/tags
+Accept: application/json
+
+###
+
+# Get specific tag
+GET {{baseUrl}}/api/tags/1
+Accept: application/json
+
+###
+
+# Create a new tag
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "High Priority",
+    "description": "Items that require immediate attention",
+    "color": "#FF4444",
+    "isActive": true
+}
+
+###
+
+# Update a tag
+PUT {{baseUrl}}/api/tags/1
+Content-Type: application/json
+
+{
+    "description": "Updated description for urgent items",
+    "color": "#FF0000"
+}
+
+###
+
+# Search tags
+GET {{baseUrl}}/api/tags/search?searchTerm=urgent
+Accept: application/json
+
+###
+
+# Get tags by entity type
+GET {{baseUrl}}/api/tags/by-entity-type
+Accept: application/json
+
+###
+
+# Get tags for a specific ticket
+GET {{baseUrl}}/api/tags/entity/Ticket/1
+Accept: application/json
+
+###
+
+# Assign tags to a ticket
+POST {{baseUrl}}/api/tags/entity/Ticket/1
+Content-Type: application/json
+
+[1, 2, 3]
+
+###
+
+# Get tags for a specific complain
+GET {{baseUrl}}/api/tags/entity/Complain/1
+Accept: application/json
+
+###
+
+# Assign tags to a complain
+POST {{baseUrl}}/api/tags/entity/Complain/1
+Content-Type: application/json
+
+[1, 4, 5]
+
+###
+
+# Get tags for a specific project
+GET {{baseUrl}}/api/tags/entity/Project/1
+Accept: application/json
+
+###
+
+# Assign tags to a project
+POST {{baseUrl}}/api/tags/entity/Project/1
+Content-Type: application/json
+
+[2, 3, 4]
+
+###
+
+# Remove specific tags from a ticket
+DELETE {{baseUrl}}/api/tags/entity/Ticket/1
+Content-Type: application/json
+
+[1, 2]
+
+###
+
+# Remove all tags from an entity
+DELETE {{baseUrl}}/api/tags/entity/Ticket/1/all
+
+###
+
+# Delete a tag (soft delete)
+DELETE {{baseUrl}}/api/tags/1
+
+###
+
+# Example: Create multiple useful tags
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "Infrastructure",
+    "description": "Infrastructure related items",
+    "color": "#0088CC",
+    "isActive": true
+}
+
+###
+
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "Customer Facing",
+    "description": "Items that directly affect customers",
+    "color": "#00AA00",
+    "isActive": true
+}
+
+###
+
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "Scheduled Maintenance",
+    "description": "Planned maintenance activities",
+    "color": "#8800FF",
+    "isActive": true
+}
+
+###
+
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "Emergency",
+    "description": "Emergency situations requiring immediate response",
+    "color": "#FF0000",
+    "isActive": true
+}
+
+###
+
+POST {{baseUrl}}/api/tags
+Content-Type: application/json
+
+{
+    "name": "Research",
+    "description": "Research and development activities",
+    "color": "#FF8800",
+    "isActive": true
+}
+
+###
+
+# Example: Test ticket creation with tags (if you want to update your ticket endpoints)
+POST {{baseUrl}}/api/ticket/internal
+Content-Type: application/json
+
+{
+    "subject": "Network Infrastructure Upgrade",
+    "detail": "Upgrade network infrastructure to support increased capacity",
+    "userId": "user123",
+    "estimation": 8,
+    "priority": 1,
+    "tagIds": [1, 2, 4]
+}

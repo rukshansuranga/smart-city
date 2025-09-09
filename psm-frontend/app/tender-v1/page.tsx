@@ -17,11 +17,13 @@ export default function TenderPage() {
   async function fetchProjects() {
     setIsLoading(true);
     // Fetch projects from API
-    const list = await getAllProjects();
+    const response = await getAllProjects();
 
-    console.log("Fetched projects:", list);
+    console.log("Fetched projects:", response);
 
-    setProjects(list);
+    if (response.isSuccess && response.data) {
+      setProjects(response.data);
+    }
     setIsLoading(false);
   }
 

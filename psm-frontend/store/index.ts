@@ -1,7 +1,7 @@
 // Directory: /app/counter/_store/index.ts
 
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 
 // State types
 interface States {

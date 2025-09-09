@@ -1,5 +1,4 @@
-import { getWorkpackagePaging } from "@/app/api/actions/workpackageAction";
-import { TicketWorkpackageType, ComplainStatus } from "@/enums";
+import { ComplainStatus, ComplainType } from "@/enums";
 import { Paging, Complain } from "@/types";
 import {
   Button,
@@ -9,17 +8,18 @@ import {
   Spinner,
 } from "flowbite-react";
 import { useEffect, useState } from "react";
+import { getComplainPaging } from "../api/client/complainAction";
 
 const itemsPerPage = 8;
 
 export default function WorkpackageList({
   selectedWorkpackages,
   handleWorkpackageClick,
-  ticketWorkpackageType,
+  complainType,
 }: {
   selectedWorkpackages: Complain[];
   handleWorkpackageClick: (complain: Complain, isChecked: boolean) => void;
-  ticketWorkpackageType: TicketWorkpackageType;
+  complainType: ComplainType;
 }) {
   const [data, setData] = useState<Paging<Complain>>({
     records: [],
@@ -51,14 +51,14 @@ export default function WorkpackageList({
     try {
       setLoading(true);
 
-      console.log(45666, ticketWorkpackageType);
+      console.log(45666, complainType);
 
-      const response = await getWorkpackagePaging({
+      const response = await getComplainPaging({
         status: statusList.join(","),
         pageSize: itemsPerPage.toString(),
         pageIndex: pageIndex.toString(),
         duration: "60",
-        ticketWorkpackageType: TicketWorkpackageType[ticketWorkpackageType],
+        complainType: ComplainType[complainType],
       });
 
       if (response.isSuccess && response.data) {
@@ -67,18 +67,18 @@ export default function WorkpackageList({
         console.error("Error fetching complain data:", response.message);
         setData({
           records: [],
-          totalRecords: 0,
-          currentPage: 1,
-          pageSize: itemsPerPage,
+          totalItems: 0,
+          //currentPage: 1,
+          //pageSize: itemsPerPage,
         });
       }
     } catch (error) {
       console.error("Error fetching complain data:", error);
       setData({
         records: [],
-        totalRecords: 0,
-        currentPage: 1,
-        pageSize: itemsPerPage,
+        totalItems: 0,
+        //currentPage: 1,
+        //pageSize: itemsPerPage,
       });
     } finally {
       setLoading(false);
@@ -129,9 +129,9 @@ export default function WorkpackageList({
             </Button>
             <Button
               className={`shadow-lg ${
-                statusList.includes(ComplainStatus.Close) ? "bg-green-700" : ""
+                statusList.includes(ComplainStatus.Closed) ? "bg-green-700" : ""
               } `}
-              onClick={() => statusChange(ComplainStatus.Close)}
+              onClick={() => statusChange(ComplainStatus.Closed)}
             >
               Closed
             </Button>

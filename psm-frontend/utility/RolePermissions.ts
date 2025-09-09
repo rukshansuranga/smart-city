@@ -81,17 +81,17 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
       {
         label: "Tickets",
         href: "/ticket",
-        icon: "ticket",
+        icon: "ticketList",
       },
       {
         label: "New Ticket",
         href: "/ticket/new",
-        icon: "ticket",
+        icon: "ticketAddIcon",
       },
       {
         label: "Resolved",
         href: "/ticket/resolved",
-        icon: "ticket",
+        icon: "ticketAssignedIcon",
       },
     ],
   },

@@ -46,6 +46,15 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProjectCoordinator> ProjectCoordinators { get; set; }
     public DbSet<ProjectInspection> ProjectInspections { get; set; }
     public DbSet<ProjectProgress> ProjectProgresses { get; set; }
+    
+    // Attachments
+    public DbSet<Attachment> Attachments { get; set; }
+    
+    // Tags
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<TicketTag> TicketTags { get; set; }
+    public DbSet<ComplainTag> ComplainTags { get; set; }
+    public DbSet<ProjectTag> ProjectTags { get; set; }
 
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -104,6 +113,11 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ProjectComplainConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectCoordinatorConfiguration());
         modelBuilder.ApplyConfiguration(new CommentConfiguration());
+        modelBuilder.ApplyConfiguration(new AttachmentConfiguration());
+        modelBuilder.ApplyConfiguration(new TagConfiguration());
+        modelBuilder.ApplyConfiguration(new TicketTagConfiguration());
+        modelBuilder.ApplyConfiguration(new ComplainTagConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectTagConfiguration());
 
         #endregion
     }

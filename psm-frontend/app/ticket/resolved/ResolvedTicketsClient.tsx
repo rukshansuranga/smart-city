@@ -6,11 +6,13 @@ import {
   getResolvedTickets,
 } from "@/app/api/actions/ticketActions";
 import Link from "next/link";
+import { Ticket } from "@/types";
+import toast from "react-hot-toast";
 
-type Ticket = {
-  ticketId: string;
-  subject: string;
-};
+// type Ticket = {
+//   ticketId: string;
+//   subject: string;
+// };
 
 interface ResolvedTicketsClientProps {
   tickets: Ticket[];
@@ -26,7 +28,13 @@ export default function ResolvedTicketsClient({
   const fetchTickets = async () => {
     try {
       const tickets = await getResolvedTickets();
-      setLocalTickets(tickets);
+
+      if (!tickets.isSuccess) {
+        toast.error(tickets.message || "Failed to fetch tickets");
+        return;
+      }
+
+      setLocalTickets(tickets.data);
     } catch (error) {
       console.error("Failed to fetch tickets", error);
     }
@@ -64,9 +72,12 @@ export default function ResolvedTicketsClient({
               >
                 <Checkbox
                   id={`resolved-ticket-${ticket.ticketId}`}
-                  checked={selected.includes(ticket.ticketId)}
+                  checked={selected.includes(ticket.ticketId?.toString() || "")}
                   onChange={(e) =>
-                    handleCheck(ticket.ticketId, e.target.checked)
+                    handleCheck(
+                      ticket.ticketId?.toString() || "",
+                      e.target.checked
+                    )
                   }
                 />
                 <span>{ticket.subject}</span>

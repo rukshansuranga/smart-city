@@ -62,6 +62,22 @@ const iconComponents = {
   ticket: () => (
     <Image src="/images/ticket.png" alt="Ticket" width={30} height={30} />
   ),
+  ticketList: () => (
+    <Image src="/images/ticket-list.png" alt="Ticket" width={30} height={30} />
+  ),
+
+  ticketAddIcon: () => (
+    <Image src="/images/ticket-add.png" alt="Ticket" width={30} height={30} />
+  ),
+
+  ticketAssignedIcon: () => (
+    <Image
+      src="/images/ticket-assigned.png"
+      alt="Ticket"
+      width={30}
+      height={30}
+    />
+  ),
   projects: () => (
     <Image src="/images/projects.png" alt="Projects" width={30} height={30} />
   ),

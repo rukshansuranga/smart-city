@@ -27,21 +27,21 @@ export enum ComplainStatus {
   Closed = 3,
 }
 
-export enum TicketType {
-  Internal = 0,
-  External = 1,
-}
+// export enum TicketType {
+//   Internal = 0,
+//   External = 1,
+// }
 
-export enum TicketWorkpackageType {
+// export enum TicketWorkpackageType {
+//   GeneralComplain = 0,
+//   LightPostComplain = 1,
+//   ProjectComplain = 2,
+// }
+
+export enum ComplainType {
   GeneralComplain = 0,
   LightPostComplain = 1,
   ProjectComplain = 2,
-}
-
-export enum ComplainType {
-  General = 0,
-  LightPost = 1,
-  Project = 2,
 }
 
 export enum ProjectProgressApprovedStatus {
@@ -62,7 +62,7 @@ export enum AuthType {
   Councillor = 3,
 }
 
-export enum TicketCategory {
+export enum TicketType {
   ProjectTicket = 0,
   ComplainTicket = 1,
   InternalTicket = 2,

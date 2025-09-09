@@ -19,7 +19,7 @@ const mockProjectProgressData: ProjectProgress[] = [
     summary: "Foundation work completed",
     description:
       "All foundation work has been completed successfully. Ready to proceed to next phase.",
-    progressDate: new Date("2024-12-01"),
+    progressDate: "2024-12-01",
     progressPercentage: 25,
     approvedBy: "John Doe",
     approvedAt: new Date("2024-12-02"),
@@ -32,7 +32,7 @@ const mockProjectProgressData: ProjectProgress[] = [
     summary: "Structural framework in progress",
     description:
       "Steel framework installation is 50% complete. Weather conditions are favorable.",
-    progressDate: new Date("2024-12-15"),
+    progressDate: "2024-12-15",
     progressPercentage: 50,
     approvedBy: undefined,
     approvedAt: undefined,
@@ -45,7 +45,7 @@ const mockProjectProgressData: ProjectProgress[] = [
     summary: "Initial site preparation",
     description:
       "Site clearing and preparation work needs revision due to environmental concerns.",
-    progressDate: new Date("2024-11-20"),
+    progressDate: "2024-11-20",
     progressPercentage: 15,
     approvedBy: "Jane Smith",
     approvedAt: new Date("2024-11-22"),
@@ -201,7 +201,7 @@ export default function ProjectProgressListTab({
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {formatDate(progress.progressDate)}
+                {formatDate(new Date(progress.progressDate))}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {getStatusBadge(progress.projectProgressApprovedStatus)}

@@ -1,21 +1,13 @@
 "use client";
 import { getActiveLightPost } from "@/app/api/actions/workpackageAction";
-import TicketForm from "@/app/ticket/TicketForm";
+import TicketForm from "../../ticket/TicketForm";
 import { ActiveLightPostMarker } from "@/types";
-import {
-  AdvancedMarker,
-  APIProvider,
-  InfoWindow,
-  Pin,
-  Map,
-} from "@vis.gl/react-google-maps";
+
 import { Button, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useEffect, useState, useMemo } from "react";
 
-import InfoWindowCard from "./InfoWindowCard";
-import { IoReturnDownBackSharp } from "react-icons/io5";
 import LightPostMap from "./lightPostMap";
-import { TicketWorkpackageType } from "@/enums";
+import { ComplainType, TicketType } from "@/enums";
 
 export default function LightPost() {
   const [openPosition, setOpenPosition] = useState(false);
@@ -28,9 +20,15 @@ export default function LightPost() {
   const [openMarkerId, setOpenMarkerId] = useState<string | null>(null);
 
   async function fetchActiveMarkers() {
-    const markers = await getActiveLightPost();
-    console.log("Active Light Post Markers:", markers);
-    setActiveMarkers(markers);
+    const response = await getActiveLightPost();
+
+    if (!response.isSuccess) {
+      console.error("Failed to fetch active light posts:", response.message);
+      return;
+    }
+
+    console.log("Active Light Post Markers:", response.data);
+    setActiveMarkers(response.data);
   }
 
   const allWorkpackages = useMemo(
@@ -58,7 +56,9 @@ export default function LightPost() {
           return {
             ...marker,
             complains: marker.complains.map((complain) => {
-              const isContain = workpackageIds.includes(complain.complainId);
+              const isContain = workpackageIds.includes(
+                parseInt(complain.complainId ?? "")
+              );
 
               console.log("is container", workpackageIds, complain.complainId);
 
@@ -105,22 +105,22 @@ export default function LightPost() {
           <ModalHeader>Create Ticket</ModalHeader>
           <ModalBody>
             <TicketForm
+              ticketType={TicketType.ComplainTicket}
               ticket={null}
-              isInternal={false}
-              workpackageList={allWorkpackages}
+              complainList={allWorkpackages}
               initialValue={{
                 subject: "Light Post management",
                 detail: "you can see the all the light post in map",
               }}
               handleClose={handleCloseModal}
-              ticketWorkpackageType={TicketWorkpackageType.LightPostComplain}
+              complainType={ComplainType.LightPostComplain}
             />
           </ModalBody>
         </Modal>
       )}
       <LightPostMap
         statusList={[0]}
-        setActiveMarkers={setActiveMarkers}
+        //setActiveMarkers={setActiveMarkers}
         activeMarkers={activeMarkers}
         manageTicketInclusion={manageTicketInclusion}
         openPosition={openPosition}

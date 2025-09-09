@@ -8,13 +8,29 @@ import {
   SidebarItems,
 } from "flowbite-react";
 
-import { LuTicketPlus } from "react-icons/lu";
 import Image from "next/image";
 import { Session } from "next-auth";
 
 // Use a React component for the PNG icon
 const TicketIcon = () => (
   <Image src="/images/ticket.png" alt="Ticket" width={30} height={30} />
+);
+
+const TicketListIcon = () => (
+  <Image src="/images/ticket-list.png" alt="Ticket" width={30} height={30} />
+);
+
+const TicketAddIcon = () => (
+  <Image src="/images/ticket-add.png" alt="Ticket" width={30} height={30} />
+);
+
+const TicketAssignedIcon = () => (
+  <Image
+    src="/images/ticket-assigned.png"
+    alt="Ticket"
+    width={30}
+    height={30}
+  />
 );
 
 const DashboardIcon = () => (
@@ -58,10 +74,6 @@ const GarbageComplainIcon = () => (
 
 const UserIcon = () => (
   <Image src="/images/user.png" alt="User" width={30} height={30} />
-);
-
-const TenderIcon = () => (
-  <Image src="/images/bid.png" alt="Tender" width={30} height={30} />
 );
 
 const ProjectsIcon = () => (
@@ -170,21 +182,21 @@ export function SideBar({ session }: HeaderProps) {
           >
             <SidebarItem
               href="/ticket"
-              icon={LuTicketPlus}
+              icon={TicketListIcon}
               className="text-[#264653] hover:bg-[#F4A261]/20 hover:text-[#264653] transition-all duration-200 rounded-lg ml-4"
             >
               <span className="text-[#264653] font-medium">Tickets</span>
             </SidebarItem>
             <SidebarItem
               href="/ticket/new"
-              icon={LuTicketPlus}
+              icon={TicketAddIcon}
               className="text-[#264653] hover:bg-[#F4A261]/20 hover:text-[#264653] transition-all duration-200 rounded-lg ml-4"
             >
               <span className="text-[#264653] font-medium">New Ticket</span>
             </SidebarItem>
             <SidebarItem
               href="/ticket/resolved"
-              icon={LuTicketPlus}
+              icon={TicketAssignedIcon}
               className="text-[#264653] hover:bg-[#F4A261]/20 hover:text-[#264653] transition-all duration-200 rounded-lg ml-4"
             >
               <span className="text-[#264653] font-medium">Resolved</span>

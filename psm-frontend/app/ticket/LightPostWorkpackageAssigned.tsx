@@ -2,9 +2,8 @@
 
 import {
   getActiveAndAssignedLightPost,
-  getActiveLightPost,
-  getWorkpackageByTicketId,
-} from "@/app/api/actions/workpackageAction";
+  getComplainByTicketId,
+} from "@/app/api/client/complainAction";
 import LightPostMap from "@/app/components/complain/lightpost/lightPostMap";
 import { ActiveLightPostMarker, UpdateTicketPayload } from "@/types";
 import { Button, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
@@ -34,10 +33,23 @@ export default function LightPostWorkpackageAssigned({
 
   async function fetchMarkersByTicketId() {
     setLoading(true);
-    const data = await getWorkpackageByTicketId(ticketId);
+    const response = await getComplainByTicketId(ticketId);
+
+    if (!response.isSuccess) {
+      console.error("Error fetching workpackages:", response.message);
+      return;
+    }
+
+    const data = response.data;
     const markers = await getActiveAndAssignedLightPost();
 
-    const updatedMarkers = markers.map((marker) => {
+    if (!markers.isSuccess) {
+      console.error("Error fetching active light posts:", markers.message);
+      setLoading(false);
+      return;
+    }
+
+    const updatedMarkers = markers.data.map((marker) => {
       let isContain = false;
 
       return {
@@ -72,8 +84,8 @@ export default function LightPostWorkpackageAssigned({
     workpackageIds: number[],
     lightPostNumber: string
   ) {
-    const addingWorkpackages = [];
-    const removingWorkpackages = [];
+    const addingComplains: number[] = [];
+    const removingComplains: number[] = [];
 
     setActiveMarkers((prevMarkers) => {
       const updatedMarkers = prevMarkers.map((marker) => {
@@ -82,17 +94,19 @@ export default function LightPostWorkpackageAssigned({
           return {
             ...marker,
             complains: marker.complains.map((complain) => {
-              const isContain = workpackageIds.includes(complain.complainId);
+              const isContain = workpackageIds.includes(
+                parseInt(complain.complainId!)
+              );
 
               console.log("is container", workpackageIds, complain.complainId);
 
               if (isContain) {
                 isIncluded = true;
-                addingWorkpackages.push(complain.complainId);
+                addingComplains.push(parseInt(complain.complainId!));
 
                 return { ...complain, isChecked: true };
               } else {
-                removingWorkpackages.push(complain.complainId);
+                removingComplains.push(parseInt(complain.complainId!));
                 return { ...complain, isChecked: false };
               }
             }),
@@ -107,25 +121,24 @@ export default function LightPostWorkpackageAssigned({
     });
 
     await Promise.all([
-      addingWorkpackages.length > 0 &&
-        addingWorkpackagesToTicket(addingWorkpackages),
-      removingWorkpackages.length > 0 &&
-        removingWorkpackagesFromTicket(removingWorkpackages),
+      addingComplains.length > 0 && addingComplainsToTicket(addingComplains),
+      removingComplains.length > 0 &&
+        removingComplainsFromTicket(removingComplains),
     ]);
   }
 
-  async function addingWorkpackagesToTicket(workpackageIds: number[]) {
+  async function addingComplainsToTicket(complainIds: number[]) {
     const updateTicketPayload: UpdateTicketPayload = {
       ticketId,
-      workpackageIds,
+      complainIds,
     };
     await addWorkpackagesToTicket(updateTicketPayload);
   }
 
-  async function removingWorkpackagesFromTicket(workpackageIds: number[]) {
+  async function removingComplainsFromTicket(complainIds: number[]) {
     const updateTicketPayload: UpdateTicketPayload = {
       ticketId,
-      workpackageIds,
+      complainIds,
     };
     await removeWorkpackagesFromTicket(updateTicketPayload);
   }
@@ -167,7 +180,7 @@ export default function LightPostWorkpackageAssigned({
           <div style={{ height: "100vh", width: "100%" }}>
             <LightPostMap
               statusList={[0, 1]}
-              setActiveMarkers={setActiveMarkers}
+              // setActiveMarkers={setActiveMarkers}
               activeMarkers={activeMarkers}
               manageTicketInclusion={manageTicketInclusion}
               openPosition={openPosition}

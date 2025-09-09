@@ -57,9 +57,14 @@ export default function UpdateProject() {
         setTendersData([]);
       }
 
+      if (!progress.isSuccess) {
+        toast.error(progress.message || "Failed to load project progress");
+        setProgressData([]);
+      }
+
       setProjectData(project.data);
       setTendersData(tenders.data);
-      setProgressData(progress);
+      setProgressData(progress.data);
       setCoordinatorsData(coordinators.isSuccess ? coordinators.data : []);
     } catch (err) {
       console.error("Error loading data:", err);

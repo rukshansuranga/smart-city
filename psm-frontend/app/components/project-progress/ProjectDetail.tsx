@@ -26,8 +26,12 @@ export default function ProjectDetail({ projectId }: ProjectDetailProps) {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await getProject(projectId);
-        setProject(data);
+        const response = await getProject(projectId);
+        if (response.isSuccess && response.data) {
+          setProject(response.data);
+        } else {
+          setError(response.message || "Failed to load project details");
+        }
       } catch (error) {
         console.error("Error fetching project details:", error);
         setError("Failed to load project details");

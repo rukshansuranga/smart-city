@@ -25,8 +25,12 @@ export default function BidInformation({ projectId }: BidInformationProps) {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await getTendersByProjectIdId(projectId);
-        setTenders(data);
+        const response = await getTendersByProjectIdId(projectId);
+        if (response.isSuccess && response.data) {
+          setTenders(response.data);
+        } else {
+          setError(response.message || "Failed to load bid information");
+        }
       } catch (error) {
         console.error("Error fetching tender data:", error);
         setError("Failed to load bid information");

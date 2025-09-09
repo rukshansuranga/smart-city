@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import { APIProvider, ControlPosition, Map } from "@vis.gl/react-google-maps";
 import AutocompleteControl from "./autocomplete-control";
 import AutocompleteResult from "./autocomplete-result";
-import ControlPanel from "./control-panel";
 
-// @ts-ignore
+// @ts-expect-error - globalThis.GOOGLE_MAPS_API_KEY may not exist on globalThis
 const API_KEY: string = (globalThis.GOOGLE_MAPS_API_KEY ??
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) as string;
 
@@ -18,8 +17,9 @@ const implementations: Array<AutocompleteMode> = [
 ];
 
 export default function GoogleMapPage() {
-  const [selectedImplementation, setSelectedImplementation] =
-    useState<AutocompleteMode>(implementations[0]);
+  const [selectedImplementation] = useState<AutocompleteMode>(
+    implementations[0]
+  );
 
   const incompatibleVersionLoaded = Boolean(
     globalThis &&

@@ -1,6 +1,7 @@
-import { getWorkpackageById } from "@/app/api/actions/workpackageAction";
+// import { getWorkpackageById } from "@/app/api/actions/workpackageAction";
+import { getComplainById } from "@/app/api/client/complainAction";
 import ComplainDetail from "@/app/components/complain/ComplainDetail";
-import { Complain } from "@/types";
+import { Complain, LightPost, Project } from "@/types";
 import { useEffect, useState } from "react";
 
 export default function ComplainDetailContainer({
@@ -8,35 +9,52 @@ export default function ComplainDetailContainer({
 }: {
   complain: Complain;
 }) {
-  const [project, setProject] = useState(null);
-  const [lightPost, setLightPost] = useState(null);
+  const [project, setProject] = useState<Project | null | undefined>(null);
+  const [lightPost, setLightPost] = useState<LightPost | null | undefined>(
+    null
+  );
 
   useEffect(() => {
-    if (complain && complain.workpackageType === "ProjectComplain") {
+    if (complain && complain.complainType === "ProjectComplain") {
       console.log("project complain", complain);
-      fetchProjectByWorkpackageId(complain.complainId);
-    } else if (complain && complain.workpackageType === "LightPostComplain") {
-      fetchLightPostByWorkpackageId(complain.complainId);
+      fetchProjectByComplainId();
+    } else if (complain && complain.complainType === "LightPostComplain") {
+      fetchLightPostByComplainId();
     }
   }, [complain]);
 
-  async function fetchProjectByWorkpackageId(complainId: string) {
+  async function fetchProjectByComplainId() {
     // Fetch project details by complainId if needed
-    const work = await getWorkpackageById(
-      complain?.complainId,
+    const response = await getComplainById(
+      complain?.complainId ?? "",
       "ProjectComplain"
     );
 
-    setProject(work?.project);
+    if (!response.isSuccess) {
+      console.log("Error fetching project complain:", response.message);
+      return;
+    }
+
+    const project = response.data?.project;
+
+    setProject(project);
   }
 
-  async function fetchLightPostByWorkpackageId(complainId: string) {
+  async function fetchLightPostByComplainId() {
     // Fetch project details by complainId if needed
-    const work = await getWorkpackageById(
-      complain?.complainId,
+    const response = await getComplainById(
+      complain?.complainId ?? "",
       "LightPostComplain"
     );
-    setLightPost(work?.lightPost);
+
+    if (!response.isSuccess) {
+      console.log("Error fetching light post complain:", response.message);
+      return;
+    }
+
+    const lightPost = response.data?.lightPost;
+
+    setLightPost(lightPost);
   }
 
   return (

@@ -1,17 +1,19 @@
 "use client";
 
 import { Complain } from "@/types";
-import TicketForm from "../../TicketForm";
-import { TicketWorkpackageType } from "@/enums";
+import TicketForm from "../../../components/ticket/TicketForm";
+import { ComplainType, TicketType } from "@/enums";
 
 export default function CreateTicketForm({
   open,
-  packages,
-  ticketWorkpackageType,
+  complains,
+  complainType,
+  ticketType,
 }: {
   open: (open: boolean) => void;
-  packages: Complain[];
-  ticketWorkpackageType: TicketWorkpackageType;
+  complains: Complain[];
+  complainType: ComplainType;
+  ticketType: TicketType;
 }) {
   function handleClose() {
     open(false);
@@ -20,10 +22,10 @@ export default function CreateTicketForm({
   return (
     <div className="flex-col">
       <TicketForm
-        ticketWorkpackageType={ticketWorkpackageType}
-        isInternal={false}
+        complainType={complainType}
+        ticketType={ticketType}
         handleClose={handleClose}
-        workpackageList={packages}
+        complainList={complains}
       />
       <div className="w-full mt-4">
         <table className="w-full bg-gray-200 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -38,7 +40,7 @@ export default function CreateTicketForm({
             </tr>
           </thead>
           <tbody>
-            {packages.map((complain) => (
+            {complains.map((complain) => (
               <tr key={complain.complainId}>
                 <td className="px-6 py-4">{complain.complainId}</td>
                 <td className="px-6 py-4">{complain.subject}</td>

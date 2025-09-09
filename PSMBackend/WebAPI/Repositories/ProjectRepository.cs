@@ -166,7 +166,6 @@ public class ProjectRepository : IProjectRepository
             {
                 Subject = $"New Ticket for approve project progress, ProjectID: {projectProgress.ProjectId}",
                 Detail = $"New Ticket for approve project progress, ProjectID: {projectProgress.ProjectId}",
-                Type = TicketType.Internal,
                 Status = TicketStatus.Open,
                 Priority = TicketPriority.Medium,
                 UserId = coordinator?.CoordinatorId,

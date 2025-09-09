@@ -34,14 +34,18 @@ export default function AutoCompleteMap({
     const lat = event.detail.latLng?.lat;
     const lng = event.detail.latLng?.lng;
 
-    handleSelectPlace(lat, lng, "");
+    if (lat !== undefined && lng !== undefined) {
+      handleSelectPlace(lat, lng, "");
+    }
   };
 
-  const handleMarkerDrag = (event: MapMouseEvent) => {
-    const lat = event.detail.latLng?.lat;
-    const lng = event.detail.latLng?.lng;
+  const handleMarkerDrag = (e: google.maps.MapMouseEvent) => {
+    const lat = e.latLng?.lat();
+    const lng = e.latLng?.lng();
 
-    handleSelectPlace(lat, lng, "");
+    if (lat !== undefined && lng !== undefined) {
+      handleSelectPlace(lat, lng, "");
+    }
   };
 
   return (

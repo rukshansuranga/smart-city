@@ -1,20 +1,20 @@
 "use client";
 import {
-  getWorkpackageByTicketId,
+  getComplainByTicketId,
   manageMappingByTicketAndPackage,
-} from "@/app/api/actions/workpackageAction";
+} from "@/app/api/client/complainAction";
 import { Complain } from "@/types";
 import { useEffect, useState } from "react";
 import WorkpackageList from "./WorkpackageList";
-import { TicketWorkpackageType, ComplainStatus } from "@/enums";
+import { ComplainType, ComplainStatus } from "@/enums";
 import { Button, Spinner } from "flowbite-react";
 
 export default function WorkpackageAssigned({
   ticketId,
-  ticketWorkpackageType,
+  complainType,
 }: {
   ticketId: number;
-  ticketWorkpackageType: TicketWorkpackageType;
+  complainType: ComplainType;
 }) {
   const [workpackages, setWorkpackages] = useState<Complain[]>([]);
   const [loading, setLoading] = useState(false);
@@ -23,9 +23,14 @@ export default function WorkpackageAssigned({
     async function fetchWorkpackagesByTicketId() {
       try {
         setLoading(true);
-        const data = await getWorkpackageByTicketId(ticketId);
+        const response = await getComplainByTicketId(ticketId);
 
-        setWorkpackages(data);
+        if (!response.isSuccess) {
+          console.error("Error fetching workpackages:", response.message);
+          return;
+        }
+
+        setWorkpackages(response.data);
       } catch (error) {
         console.error("Error fetching workpackages:", error);
       } finally {
@@ -145,7 +150,7 @@ export default function WorkpackageAssigned({
         <WorkpackageList
           selectedWorkpackages={workpackages}
           handleWorkpackageClick={handleWorkpackageClick}
-          ticketWorkpackageType={ticketWorkpackageType}
+          complainType={complainType}
         />
       </div>
     </div>
